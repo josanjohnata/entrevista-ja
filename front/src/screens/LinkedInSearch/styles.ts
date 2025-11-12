@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { theme } from '../../GlobalStyles';
-import BackgroundImage from '../../assets/background.png';
+import BackgroundImage from '../../assets/Background.png';
 
 export const Hero = styled.header`
   background-image: url(${BackgroundImage});

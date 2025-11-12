@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { theme } from '../../../GlobalStyles';
-import BackgroundImage from '../../../assets/background.png';
+import BackgroundImage from '../../../assets/Background.png';
 
 export const HeroSection = styled.section`
   background-image: url(${BackgroundImage});

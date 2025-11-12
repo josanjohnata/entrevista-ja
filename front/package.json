@@ -11,9 +11,11 @@
   },
   "dependencies": {
     "@josanjohnata/optimize-cv": "^1.2.0",
+    "@supabase/supabase-js": "^2.39.0",
     "@tanstack/react-query": "^5.83.0",
     "@types/styled-components": "^5.1.34",
     "firebase": "^11.9.1",
+    "lucide-react": "^0.454.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-firebase-hooks": "^5.1.1",

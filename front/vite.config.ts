@@ -5,8 +5,15 @@ import path from 'path'
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, 'node_modules/@josanjohnata/optimize-cv/src'),
-    },
+    alias: [
+      {
+        find: '@',
+        replacement: path.resolve(__dirname, 'node_modules/@josanjohnata/optimize-cv/src')
+      },
+      {
+        find: /^\.\.\/\.\.\/\.\.\/\.\.\/public\//,
+        replacement: path.resolve(__dirname, 'public') + '/'
+      }
+    ],
   },
 })
