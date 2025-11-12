@@ -28,7 +28,7 @@ export const DesktopNav = styled.nav`
   align-items: center;
   gap: 1.5rem;
   
-  @media (min-width: ${theme.breakpoints.mobile}) {
+  @media (min-width: ${theme.breakpoints.md}) {
     display: flex;
   }
 `;
@@ -36,11 +36,11 @@ export const DesktopNav = styled.nav`
 export const NavLink = styled.a`
   font-size: 0.875rem;
   font-weight: 500;
-  color: ${theme.colors.text};
+  color: ${theme.colors.text.secondary};
   transition: color 0.3s ease;
 
   &:hover {
-    color: ${theme.colors.primary};
+    color: ${theme.colors.primary.main};
   }
 `;
 
@@ -50,7 +50,7 @@ export const MobileMenuButton = styled.button`
   border: none;
   cursor: pointer;
 
-  @media (min-width: ${theme.breakpoints.mobile}) {
+  @media (min-width: ${theme.breakpoints.md}) {
     display: none;
   }
 `;
@@ -64,10 +64,10 @@ export const LoginButton = styled.button`
   font-weight: 400;
   border-radius: 0.5rem;
   cursor: pointer;
-  border: 1px solid ${theme.colors.primary};
+  border: 1px solid ${theme.colors.primary.main};
   transition: opacity 0.3s ease;
   background-color: rgba(255, 255, 255, 0.95);
-  color: ${theme.colors.text};
+  color: ${theme.colors.text.secondary};
 
   &:hover {
     opacity: 0.9;

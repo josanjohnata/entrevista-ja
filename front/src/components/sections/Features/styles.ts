@@ -4,8 +4,8 @@ import { Container } from '../../common/Container';
 
 export const FeaturesSection = styled.section`
   padding: 5rem 0;
-  background-color: ${theme.colors.lightGray};
-  @media (min-width: ${theme.breakpoints.mobile}) {
+  background-color: ${theme.colors.background.tertiary};
+  @media (min-width: ${theme.breakpoints.md}) {
     padding: 6rem 0;
   }
 `;
@@ -17,7 +17,7 @@ export const FeaturesGrid = styled.div`
   gap: 3rem;
   margin-top: 2rem;
 
-  @media (min-width: ${theme.breakpoints.mobile}) {
+  @media (min-width: ${theme.breakpoints.md}) {
     grid-template-columns: 1fr 1fr;
     gap: 6rem;
   }
@@ -45,7 +45,7 @@ export const FeatureItem = styled.li`
   display: flex;
   align-items: flex-start;
   font-size: 1.125rem;
-  color: ${theme.colors.text};
+  color: ${theme.colors.text.secondary};
   
   svg {
     flex-shrink: 0;

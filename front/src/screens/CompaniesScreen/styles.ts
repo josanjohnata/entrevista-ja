@@ -4,7 +4,7 @@ import { theme } from '../../GlobalStyles';
 const { colors } = theme;
 
 export const PageWrapper = styled.main`
-  background-color: ${colors.lightGray || '#F8F7F4'};
+  background-color: ${colors.background.tertiary || '#F8F7F4'};
   padding: 3rem 2rem;
 `;
 
@@ -19,11 +19,11 @@ export const Hero = styled.header`
   h1 {
     font-size: 2.25rem;
     font-weight: 700;
-    color: ${colors.primary};
+    color: ${colors.primary.main};
   }
   p {
     font-size: 1.125rem;
-    color: ${colors.text};
+    color: ${colors.text.secondary};
     margin-top: 0.5rem;
   }
 `;
@@ -72,7 +72,7 @@ export const CompanyLogo = styled.img`
 export const CompanyName = styled.h3`
   font-size: 1.125rem;
   font-weight: 600;
-  color: ${colors.primary};
+  color: ${colors.primary.main};
 `;
 
 export const CompanyStats = styled.div`
@@ -90,7 +90,7 @@ export const StatRow = styled.div`
   justify-content: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: ${colors.text};
+  color: ${colors.text.secondary};
 `;
 
 export const LoadingState = styled.p`
@@ -109,8 +109,8 @@ export const PaginationControls = styled.div`
 
 export const PageButton = styled.button`
   background-color: white;
-  color: ${colors.primary};
-  border: 1px solid ${colors.primary};
+  color: ${colors.primary.main};
+  border: 1px solid ${colors.primary.main};
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-weight: 600;
@@ -118,7 +118,7 @@ export const PageButton = styled.button`
   transition: all 0.2s;
   
   &:hover:not(:disabled) {
-    background-color: ${colors.primary};
+    background-color: ${colors.primary.main};
     color: white;
   }
   

@@ -18,13 +18,13 @@ export const Section = styled.section`
 `;
 
 export const HeroSection = styled(Section)`
-  background-color: ${colors.lightGray};
+  background-color: ${colors.background.tertiary};
   padding: 5rem 0;
   text-align: center;
 `;
 
 export const Title = styled.h1`
-  color: ${colors.primary};
+  color: ${colors.primary.main};
   font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 1.5rem;
@@ -35,7 +35,7 @@ export const Title = styled.h1`
 
 export const Subtitle = styled.p`
   font-size: 1.25rem;
-  color: ${colors.text};
+  color: ${colors.text.secondary};
   margin-bottom: 2rem;
   @media (min-width: 768px) {
     font-size: 1.5rem;
@@ -64,8 +64,8 @@ export const Icon = styled.span`
 
 export const CtaButton = styled.a`
   display: inline-block;
-  background-color: ${colors.primary};
-  color: ${colors.white};
+  background-color: ${colors.primary.main};
+  color: ${colors.background.primary};
   font-weight: 600;
   font-size: 1.125rem;
   padding: 0.75rem 2rem;
@@ -73,7 +73,7 @@ export const CtaButton = styled.a`
   text-decoration: none;
   transition: background-color 0.3s ease;
   &:hover {
-    background-color: ${colors.primary};
+    background-color: ${colors.primary.main};
   }
 `;
 
@@ -93,8 +93,8 @@ export const ChallengeCardContent = styled.div`
 export const IconPlaceholder = styled.div`
   flex-shrink: 0;
   width: 40px; height: 40px;
-  background-color: ${colors.primary};
-  color: ${colors.text};
+  background-color: ${colors.primary.main};
+  color: ${colors.text.secondary};
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -110,12 +110,12 @@ export const CardTextWrapper = styled.div`
     margin-bottom: 0.5rem;
   }
   p {
-    color: ${colors.text};
+    color: ${colors.text.secondary};
   }
 `;
 
 export const SolutionSection = styled(Section)`
-  background-color: ${colors.lightGray};
+  background-color: ${colors.background.tertiary};
 `;
 
 export const GridChallenge = styled.div`
@@ -130,7 +130,7 @@ export const GridChallenge = styled.div`
 `;
 
 export const Card = styled.div`
-  background-color: ${colors.white};
+  background-color: ${colors.background.primary};
   border-radius: 0.5rem;
   padding: 1.5rem;
   transition: transform 0.3s ease;
@@ -148,13 +148,13 @@ export const SolutionCard = styled(Card)`
     margin-bottom: 0.5rem;
   }
   p {
-    color: ${colors.text};
+    color: ${colors.text.secondary};
   }
 `;
 export const IconChallenge = styled.div`
   font-size: 2.25rem;
   margin-bottom: 1rem;
-  color: ${colors.primary};
+  color: ${colors.primary.main};
 `;
 
 export const SectionTitle = styled.h2`
@@ -167,7 +167,7 @@ export const SectionTitle = styled.h2`
 
 export const SectionSubtitle = styled.p`
   font-size: 1.125rem;
-  color: ${colors.text};
+  color: ${colors.text.secondary};
   margin-bottom: 2.5rem;
   text-align: center;
   max-width: 700px;
@@ -185,7 +185,7 @@ export const StepHeader = styled.div`
 `;
 
 export const StepNumber = styled.div`
-  background-color: ${colors.primary};
+  background-color: ${colors.primary.main};
   color: white;
   border-radius: 50%;
   width: 40px;
@@ -219,7 +219,7 @@ export const StepDetails = styled.div<{ isOpen: boolean }>`
 `;
 
 export const ResourcesSection = styled(Section)`
-  background-color: ${colors.lightGray};
+  background-color: ${colors.background.tertiary};
 `;
 
 export const GridResources = styled.div`
@@ -249,7 +249,7 @@ export const DifferentiatorIconPlaceholder = styled.div`
   flex-shrink: 0;
   width: 40px;
   height: 40px;
-  background-color: ${colors.primary};
+  background-color: ${colors.primary.main};
   color: white;
   border-radius: 50%;
   display: flex;
@@ -266,7 +266,7 @@ export const DifferentiatorCardTextWrapper = styled.div`
     margin-bottom: 0.5rem;
   }
   p {
-    color: ${colors.text};
+    color: ${colors.text.secondary};
     }
 `;
 
@@ -275,16 +275,16 @@ export const FeatureCard = styled(Card)`
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: ${colors.primary};
+    color: ${colors.primary.main};
   }
   p {
-    color: ${colors.text};
+    color: ${colors.text.secondary};
     line-height: 1.5;
   }
 `;
 
 export const SectionSuccessStories = styled.section`
-  background-color: ${colors.lightGray};
+  background-color: ${colors.background.tertiary};
 `;
 
 export const CarouselContainer = styled.div`
@@ -298,8 +298,8 @@ export const Carousel = styled.div`
   padding-bottom: 1rem;
   scroll-snap-type: x mandatory;
   &::-webkit-scrollbar { height: 8px; }
-  &::-webkit-scrollbar-track { background: ${colors.lightGray}; border-radius: 10px; }
-  &::-webkit-scrollbar-thumb { background: ${colors.primary}; border-radius: 10px; }
+  &::-webkit-scrollbar-track { background: ${colors.background.tertiary}; border-radius: 10px; }
+  &::-webkit-scrollbar-thumb { background: ${colors.primary.main}; border-radius: 10px; }
 `;
 
 export const TestimonialCard = styled(Card)`
@@ -361,18 +361,18 @@ export const FutureCard = styled(Card)`
     font-size: 1.25rem;
     font-weight: 600;
     margin-bottom: 0.5rem;
-    color: ${colors.primary};
+    color: ${colors.primary.main};
   }
   p {
-    color: ${colors.text};
+    color: ${colors.text.secondary};
   }
 `;
 
 export const JoinUsCtaSection = styled.section`
   padding: 5rem 0;
   text-align: center;
-  background-color: ${colors.white};
-  color: ${colors.text};
+  background-color: ${colors.background.primary};
+  color: ${colors.text.secondary};
 `;
 
 export const JoinUsTitle = styled.h2`
@@ -395,15 +395,15 @@ export const JoinUsSubtitle = styled.p`
 export const JoinUsCtaButton = styled.a`
   text-decoration: none;
   display: inline-block;
-  background-color: ${colors.primary};
-  color: ${colors.white};
+  background-color: ${colors.primary.main};
+  color: ${colors.background.primary};
   font-weight: 600;
   font-size: 1.125rem;
   padding: 0.75rem 2rem;
   border-radius: 0.5rem;
   transition: all 0.3s ease;
   &:hover {
-    background-color: ${colors.lightGray};
+    background-color: ${colors.background.tertiary};
     transform: translateY(-2px);
   }
 `;

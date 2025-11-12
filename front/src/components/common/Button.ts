@@ -12,8 +12,8 @@ export const Button = styled.button`
   border: none;
   transition: opacity 0.3s ease;
 
-  background-color: ${theme.colors.primary};
-  color: ${theme.colors.white};
+  background-color: ${theme.colors.primary.main};
+  color: ${theme.colors.primary.contrast};
 
   &:hover {
     opacity: 0.9;

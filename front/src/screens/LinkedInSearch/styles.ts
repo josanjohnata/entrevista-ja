@@ -7,11 +7,11 @@ export const Hero = styled.header`
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  color: ${theme.colors.text};
+  color: ${theme.colors.text.secondary};
   padding: 4rem 0;
   text-align: center;
 
-  @media (max-width: ${theme.breakpoints.mobile}) {
+  @media (max-width: ${theme.breakpoints.md}) {
     padding: 2rem 0;
   }
 `;
@@ -40,7 +40,7 @@ export const HeroTitle = styled.h1`
   margin-bottom: 1rem;
   line-height: 1.2;
 
-  @media (min-width: ${theme.breakpoints.mobile}) {
+  @media (min-width: ${theme.breakpoints.md}) {
     font-size: 3.75rem;
   }
 `;
@@ -57,7 +57,7 @@ export const HeroSubtitle = styled.p`
 export const MainContent = styled.div`
   padding: 4rem 0;
 
-  @media (max-width: ${theme.breakpoints.mobile}) {
+  @media (max-width: ${theme.breakpoints.md}) {
     padding: 2rem 0;
   }
 `;
@@ -73,23 +73,23 @@ export const FormGroup = styled.div`
 export const Select = styled.select`
   width: 100%;
   padding: 0.5rem 1rem;
-  border: 2px solid ${theme.colors.border};
+  border: 2px solid ${theme.colors.border.light};
   border-radius: 0.5rem;
   font-size: 1rem;
-  background-color: ${theme.colors.white};
-  color: ${theme.colors.text};
+  background-color: ${theme.colors.background.primary};
+  color: ${theme.colors.text.secondary};
   cursor: pointer;
   transition: all 0.2s;
   box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: ${theme.colors.primary};
-    box-shadow: 0 0 0 3px ${theme.colors.primary}20;
+    border-color: ${theme.colors.primary.main};
+    box-shadow: 0 0 0 3px ${theme.colors.primary.main}20;
   }
 
   &:hover {
-    border-color: ${theme.colors.primary};
+    border-color: ${theme.colors.primary.main};
   }
 `;
 
@@ -98,7 +98,7 @@ export const ButtonGroup = styled.div`
   gap: 1rem;
   margin-top: 2rem;
 
-  @media (max-width: ${theme.breakpoints.mobile}) {
+  @media (max-width: ${theme.breakpoints.md}) {
     flex-direction: column;
   }
 `;
