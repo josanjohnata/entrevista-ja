@@ -9,8 +9,8 @@ export const PageWrapper = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: ${colors.backgroundLight};
-  color: ${colors.textDark};
+  background-color: ${colors.lightGray};
+  color: ${colors.text};
   padding: 2rem;
 `;
 
@@ -85,13 +85,13 @@ export const InputGroup = styled.div`
 
 export const Label = styled.label`
   font-size: 1rem;
-  color: ${colors.textMedium};
+  color: ${colors.text};
 `;
 
 export const Input = styled.input`
-  background-color: ${colors.grayLight};
+  background-color: ${colors.lightGray};
   border: 1px solid #444;
-  color: ${colors.textDark};
+  color: ${colors.text};
   padding: 0.875rem 1rem;
   border-radius: 6px;
   font-size: 1rem;
@@ -118,7 +118,7 @@ export const CheckboxWrapper = styled.div`
 `;
 
 export const ForgotPasswordLink = styled.a`
-  color: ${colors.textMedium};
+  color: ${colors.text};
   text-decoration: none;
   &:hover {
     text-decoration: underline;
@@ -140,12 +140,12 @@ export const ActionButton = styled.button`
   text-decoration: none;
 
   &:hover {
-    background-color: ${colors.primaryDark};
+    background-color: ${colors.primary};
   }
 `;
 
 export const DescriptionText = styled.p`
-  color: ${colors.textMedium};
+  color: ${colors.text};
   line-height: 1.6;
   margin-bottom: 1.5rem;
 `;

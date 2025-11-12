@@ -50,7 +50,6 @@ import {
 } from './styles';
 import { challenges, differentiators, featuresData, futurePlans, solutions, stepsData, testimonials } from './data';
 import { Header } from '../../components/Header/Header';
-import { FooterContainer } from '../PaymentPlans/styles';
 
 const StepItem: React.FC<{ step: typeof stepsData[0], isOpen: boolean, onClick: () => void }> = ({ step, isOpen, onClick }) => (
   <StepItemContainer onClick={onClick}>
@@ -218,11 +217,6 @@ export const LandingPageScreen: React.FC = () => {
             <JoinUsSocials>Siga-nos nas redes sociais: @Entrevista Já</JoinUsSocials>
           </Container>
         </JoinUsCtaSection>
-
-        <FooterContainer>
-          <p>&copy; {new Date().getFullYear()} Entrevista Já Todos os direitos reservados.</p>
-          <p>Feito com 💙 para ajudar juniores a decolar!</p>
-        </FooterContainer>
     </>
   );
 };

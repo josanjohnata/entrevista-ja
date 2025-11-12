@@ -21,7 +21,6 @@ export const Logo = styled.a`
   font-family: 'Readex Pro', sans-serif;
   font-size: 1.5rem;
   font-weight: bold;
-  color: #4A90E2;
   text-decoration: none;
 `;
 

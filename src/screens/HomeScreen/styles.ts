@@ -4,7 +4,7 @@ import { theme } from '../../GlobalStyles';
 const { colors } = theme;
 
 export const PageWrapper = styled.main`
-  background-color: ${colors.background || '#F8F7F4'};
+  background-color: ${colors.lightGray || '#F8F7F4'};
   padding: 3rem 2rem;
 `;
 
@@ -19,11 +19,11 @@ export const Hero = styled.header`
   h1 {
     font-size: 2.25rem;
     font-weight: 700;
-    color: ${colors.textDark};
+    color: ${colors.primary};
   }
   p {
     font-size: 1.125rem;
-    color: ${colors.textMedium};
+    color: ${colors.text};
     margin-top: 0.5rem;
   }
 `;
@@ -47,7 +47,7 @@ export const FilterGroup = styled.div`
   label {
     font-weight: 500;
     font-size: 0.875rem;
-    color: ${colors.textMedium};
+    color: ${colors.text};
   }
 `;
 
@@ -89,7 +89,7 @@ export const SearchButton = styled.button`
   gap: 0.5rem;
   transition: background-color 0.3s;
   &:hover {
-    background-color: ${colors.primaryDark};
+    background-color: ${colors.primary};
   }
 `;
 
@@ -136,7 +136,7 @@ export const CardRow = styled.div`
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: ${colors.textMedium};
+  color: ${colors.text};
 `;
 
 export const CompanyInfo = styled.div`
@@ -162,7 +162,7 @@ export const CompanyInfo = styled.div`
   }
   .company-location {
     font-size: 0.875rem;
-    color: ${colors.textMedium};
+    color: ${colors.text};
   }
 `;
 

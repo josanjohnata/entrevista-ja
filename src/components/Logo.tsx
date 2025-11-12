@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { theme } from '../GlobalStyles';
+import { Link } from 'react-router-dom';
 
 const LogoLink = styled.a`
   font-size: 1.25rem;
@@ -9,5 +10,5 @@ const LogoLink = styled.a`
 `;
 
 export const Logo: React.FC = () => {
-  return <LogoLink href="/">Entrevista Já</LogoLink>;
+  return <LogoLink as={Link} to="/home">Entrevista Já</LogoLink>;
 };

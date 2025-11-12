@@ -4,7 +4,7 @@ import { theme } from '../../GlobalStyles';
 const { colors } = theme;
 
 export const PageWrapper = styled.main`
-  background-color: ${colors.background || '#F8F7F4'};
+  background-color: ${colors.lightGray || '#F8F7F4'};
   min-height: 100vh;
   padding: 3rem 2rem;
 `;
@@ -49,14 +49,14 @@ export const Avatar = styled.img`
 export const UserName = styled.h2`
   font-size: 1.5rem;
   font-weight: 600;
-  color: ${colors.textDark};
+  color: ${colors.primary};
   margin: 0;
   text-align: center;
 `;
 
 export const UserEmail = styled.p`
   font-size: 0.875rem;
-  color: ${colors.textMedium};
+  color: ${colors.text};
   margin: 0;
   text-align: center;
 `;
@@ -71,7 +71,7 @@ export const MainContent = styled.div`
 export const SectionTitle = styled.h3`
   font-size: 1.25rem;
   font-weight: 600;
-  color: ${colors.textDark};
+  color: ${colors.primary};
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid #e1e4e8;
@@ -92,7 +92,7 @@ export const FormGroup = styled.div`
 export const Label = styled.label`
   font-size: 0.875rem;
   font-weight: 600;
-  color: ${colors.textDark};
+  color: ${colors.primary};
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -164,12 +164,12 @@ export const FileInput = styled.input`
 export const FileUploadIcon = styled.div`
   font-size: 2rem;
   margin-bottom: 0.5rem;
-  color: ${colors.textMedium};
+  color: ${colors.text};
 `;
 
 export const FileUploadText = styled.p`
   font-size: 0.875rem;
-  color: ${colors.textMedium};
+  color: ${colors.text};
   margin: 0.5rem 0;
 `;
 
@@ -188,7 +188,7 @@ export const FileName = styled.div`
   align-items: center;
   gap: 0.5rem;
   font-size: 0.875rem;
-  color: ${colors.textDark};
+  color: ${colors.primary};
 `;
 
 export const RemoveButton = styled.button`
@@ -236,14 +236,14 @@ export const Button = styled.button<{ variant?: 'primary' | 'secondary' }>`
         border: none;
         
         &:hover:not(:disabled) {
-          background: ${colors.primaryDark};
+          background: ${colors.primary};
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
       `
       : `
         background: white;
-        color: ${colors.textMedium};
+        color: ${colors.text};
         border: 1px solid #d1d5db;
         
         &:hover:not(:disabled) {
@@ -296,7 +296,7 @@ export const SocialLink = styled.a`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: ${colors.textMedium};
+  color: ${colors.text};
   text-decoration: none;
   font-size: 0.875rem;
   transition: color 0.2s;
@@ -308,7 +308,7 @@ export const SocialLink = styled.a`
 
 export const HelpText = styled.span`
   font-size: 0.75rem;
-  color: ${colors.textMedium};
+  color: ${colors.text};
   font-style: italic;
 `;
 
@@ -323,10 +323,10 @@ export const CloseButton = styled.button`
   border: none;
   cursor: pointer;
   font-size: 1.25rem;
-  color: ${colors.textMedium};
+  color: ${colors.text};
 
   &:hover {
-    color: ${colors.textDark};
+    color: ${colors.primary};
   }
 `;
 

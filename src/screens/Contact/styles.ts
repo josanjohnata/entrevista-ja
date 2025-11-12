@@ -17,7 +17,7 @@ export const Section = styled.section`
 `;
 
 export const SectionTitle = styled.h2`
-color: ${colors.textDark};
+color: ${colors.primary};
   font-size: 2.25rem;
   font-weight: bold;
   margin-bottom: 1rem;
@@ -26,8 +26,8 @@ color: ${colors.textDark};
 `;
 
 export const ContactSection = styled(Section)`
-  background-color: ${colors.background};
-  color: ${colors.textDark};
+  background-color: ${colors.lightGray};
+  color: ${colors.text};
 `;
 
 export const ContentGrid = styled.div`
@@ -63,15 +63,15 @@ export const ContactForm = styled.form`
 
 export const Label = styled.label`
   font-size: 0.875rem;
-  color: ${colors.textMedium};
+  color: ${colors.text};
   margin-bottom: -1rem;
 `;
 
 export const Input = styled.input`
   width: 100%;
-  background-color: ${colors.backgroundLight};
+  background-color: ${colors.lightGray};
   border: 1px solid #444;
-  color: ${colors.textDark};
+  color: ${colors.text};
   padding: 0.75rem 1rem;
   border-radius: 6px;
   font-size: 1rem;
@@ -85,9 +85,9 @@ export const Input = styled.input`
 
 export const Textarea = styled.textarea`
   width: 100%;
-  background-color: ${colors.backgroundLight};
+  background-color: ${colors.lightGray};
   border: 1px solid #444;
-  color: ${colors.textDark};
+  color: ${colors.text};
   padding: 0.75rem 1rem;
   border-radius: 6px;
   font-size: 1rem;
@@ -115,7 +115,7 @@ export const SubmitButton = styled.button`
   align-self: flex-start;
 
   &:hover {
-    background-color: ${colors.primaryDark};
+    background-color: ${colors.primary};
   }
 `;
 
@@ -129,13 +129,13 @@ export const ContactInfoList = styled.div`
 export const ContactInfoItem = styled.div`
   display: flex;
   align-items: center;
-  background-color: ${colors.backgroundLight};
+  background-color: ${colors.lightGray};
   padding: 0.75rem 1rem;
   border-radius: 6px;
   border: 1px solid #444;
   
   svg {
-    color: ${colors.textMedium};
+    color: ${colors.text};
     margin-right: 1rem;
     flex-shrink: 0;
     width: 20px;
@@ -145,7 +145,7 @@ export const ContactInfoItem = styled.div`
 
 export const FaqTitle = styled(SectionTitle)`
   margin-top: 4rem;
-  color: ${colors.textDark};
+  color: ${colors.primary};
 `;
 
 export const FaqWrapper = styled.div`
@@ -156,7 +156,7 @@ export const FaqWrapper = styled.div`
 `;
 
 export const FaqItem = styled.div`
-  background-color: ${colors.backgroundLight};
+  background-color: ${colors.lightGray};
   border-radius: 6px;
   border: 1px solid #444;
   overflow: hidden;
@@ -170,7 +170,7 @@ export const QuestionButton = styled.button`
   padding: 1.25rem;
   background: none;
   border: none;
-  color: ${colors.textDark};
+  color: ${colors.primary};
   font-size: 1.125rem;
   font-weight: 600;
   text-align: left;
@@ -187,7 +187,7 @@ export const AnswerWrapper = styled.div<{ isOpen: boolean }>`
   max-height: ${({ isOpen }) => (isOpen ? '300px' : '0')};
   overflow: hidden;
   transition: max-height 0.4s ease-in-out;
-  color: ${colors.textMedium};
+  color: ${colors.text};
   
   p {
     padding: 0 1.25rem 1.25rem 1.25rem;

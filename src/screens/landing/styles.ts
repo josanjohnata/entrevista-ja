@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import 'styled-components';
 import { theme } from '../../GlobalStyles';
 
-const { colors, shadows } = theme;
+const { colors } = theme;
 
 export const Container = styled.div`
   max-width: 1100px;
@@ -18,7 +18,7 @@ export const Section = styled.section`
 `;
 
 export const HeroSection = styled(Section)`
-  background-color: ${colors.backgroundLight};
+  background-color: ${colors.lightGray};
   padding: 5rem 0;
   text-align: center;
 `;
@@ -35,7 +35,7 @@ export const Title = styled.h1`
 
 export const Subtitle = styled.p`
   font-size: 1.25rem;
-  color: ${colors.textMedium};
+  color: ${colors.text};
   margin-bottom: 2rem;
   @media (min-width: 768px) {
     font-size: 1.5rem;
@@ -50,7 +50,6 @@ export const IconWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: ${shadows.lg};
   @media (min-width: 768px) {
     width: 12rem; height: 12rem;
   }
@@ -74,7 +73,7 @@ export const CtaButton = styled.a`
   text-decoration: none;
   transition: background-color 0.3s ease;
   &:hover {
-    background-color: ${colors.primaryDark};
+    background-color: ${colors.primary};
   }
 `;
 
@@ -95,7 +94,7 @@ export const IconPlaceholder = styled.div`
   flex-shrink: 0;
   width: 40px; height: 40px;
   background-color: ${colors.primary};
-  color: ${colors.textLight};
+  color: ${colors.text};
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -111,12 +110,12 @@ export const CardTextWrapper = styled.div`
     margin-bottom: 0.5rem;
   }
   p {
-    color: ${colors.textMedium};
+    color: ${colors.text};
   }
 `;
 
 export const SolutionSection = styled(Section)`
-  background-color: #f3f4f6;
+  background-color: ${colors.lightGray};
 `;
 
 export const GridChallenge = styled.div`
@@ -133,7 +132,6 @@ export const GridChallenge = styled.div`
 export const Card = styled.div`
   background-color: ${colors.white};
   border-radius: 0.5rem;
-  box-shadow: ${shadows.md};
   padding: 1.5rem;
   transition: transform 0.3s ease;
 
@@ -150,13 +148,13 @@ export const SolutionCard = styled(Card)`
     margin-bottom: 0.5rem;
   }
   p {
-    color: ${colors.textMedium};
+    color: ${colors.text};
   }
 `;
 export const IconChallenge = styled.div`
   font-size: 2.25rem;
   margin-bottom: 1rem;
-  color: ${colors.secondary};
+  color: ${colors.primary};
 `;
 
 export const SectionTitle = styled.h2`
@@ -169,7 +167,7 @@ export const SectionTitle = styled.h2`
 
 export const SectionSubtitle = styled.p`
   font-size: 1.125rem;
-  color: ${colors.textMedium};
+  color: ${colors.text};
   margin-bottom: 2.5rem;
   text-align: center;
   max-width: 700px;
@@ -221,7 +219,7 @@ export const StepDetails = styled.div<{ isOpen: boolean }>`
 `;
 
 export const ResourcesSection = styled(Section)`
-  background-color: ${colors.grayLight};
+  background-color: ${colors.lightGray};
 `;
 
 export const GridResources = styled.div`
@@ -268,7 +266,7 @@ export const DifferentiatorCardTextWrapper = styled.div`
     margin-bottom: 0.5rem;
   }
   p {
-    color: ${colors.textMedium};
+    color: ${colors.text};
     }
 `;
 
@@ -280,13 +278,13 @@ export const FeatureCard = styled(Card)`
     color: ${colors.primary};
   }
   p {
-    color: ${colors.textMedium};
+    color: ${colors.text};
     line-height: 1.5;
   }
 `;
 
 export const SectionSuccessStories = styled.section`
-  background-color: ${colors.grayLight};
+  background-color: ${colors.lightGray};
 `;
 
 export const CarouselContainer = styled.div`
@@ -300,7 +298,7 @@ export const Carousel = styled.div`
   padding-bottom: 1rem;
   scroll-snap-type: x mandatory;
   &::-webkit-scrollbar { height: 8px; }
-  &::-webkit-scrollbar-track { background: ${colors.backgroundLight}; border-radius: 10px; }
+  &::-webkit-scrollbar-track { background: ${colors.lightGray}; border-radius: 10px; }
   &::-webkit-scrollbar-thumb { background: ${colors.primary}; border-radius: 10px; }
 `;
 
@@ -333,7 +331,6 @@ export const CarouselButton = styled.button`
   background-color: white;
   padding: 0.5rem;
   border-radius: 50%;
-  box-shadow: ${shadows.md};
   cursor: pointer;
   border: none;
   display: none;
@@ -367,7 +364,7 @@ export const FutureCard = styled(Card)`
     color: ${colors.primary};
   }
   p {
-    color: ${colors.textMedium}
+    color: ${colors.text};
   }
 `;
 
@@ -375,7 +372,7 @@ export const JoinUsCtaSection = styled.section`
   padding: 5rem 0;
   text-align: center;
   background-color: ${colors.white};
-  color: ${colors.textLight};
+  color: ${colors.text};
 `;
 
 export const JoinUsTitle = styled.h2`
@@ -406,7 +403,7 @@ export const JoinUsCtaButton = styled.a`
   border-radius: 0.5rem;
   transition: all 0.3s ease;
   &:hover {
-    background-color: ${colors.backgroundLight};
+    background-color: ${colors.lightGray};
     transform: translateY(-2px);
   }
 `;

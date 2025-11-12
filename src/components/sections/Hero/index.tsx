@@ -3,6 +3,7 @@ import { Button } from '../../common/Button';
 import { Input } from '../../common/Input';
 import { Container } from '../../common/Container';
 import { HeroSection, HeroContent, Title, Subtitle, FormContainer, FinePrint } from './styles';
+import { Link } from 'react-router-dom';
 
 export const Hero: React.FC = () => {
   return (
@@ -15,7 +16,7 @@ export const Hero: React.FC = () => {
           </Subtitle>
           <FormContainer>
             <Input type="email" placeholder="Endereço de e-mail" style={{ flex: 1 }} />
-            <Button type="submit">Assine Agora</Button>
+            <Button type="submit" as={Link} to="/planos">Assine Agora</Button>
           </FormContainer>
           <FinePrint>
             Comece seu teste agora. Cancele quando quiser.
