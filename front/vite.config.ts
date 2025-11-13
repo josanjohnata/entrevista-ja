@@ -8,7 +8,7 @@ export default defineConfig({
     alias: {
       '@vaga-turbo-bot': path.resolve(__dirname, '../vaga-turbo-bot/src'),
       '@josanjohnata/optimize-cv': path.resolve(__dirname, '../vaga-turbo-bot'),
-      '@': path.resolve(__dirname, '../vaga-turbo-bot/src'),
+      '@': path.resolve(__dirname, '../lib/src'),
     },
   },
 })

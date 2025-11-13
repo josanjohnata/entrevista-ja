@@ -38,9 +38,9 @@ class ErrorBoundary extends Component<
   }
 }
 
-import { IndexPage } from '../../../../vaga-turbo-bot/src/presentation/pages/Index/Index';
-import { theme } from '../../../../vaga-turbo-bot/src/styles/theme';
-import { GlobalStyles } from '../../../../vaga-turbo-bot/src/styles/GlobalStyles';
+import { IndexPage } from '../../../../lib/src/presentation/pages/Index/Index';
+import { theme } from '../../../../lib/src/styles/theme';
+import { GlobalStyles } from '../../../../lib/src/styles/GlobalStyles';
 
 const queryClient = new QueryClient({
   defaultOptions: {
