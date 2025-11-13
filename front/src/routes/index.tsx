@@ -13,9 +13,9 @@ import { CompaniesScreen } from '../screens/CompaniesScreen/CompaniesScreen';
 import { ProfileScreen } from '../screens/ProfileScreen/ProfileScreen';
 import LandingPage from '../screens/landing/App';
 
-import { ResultadosPage } from '@josanjohnata/optimize-cv/src/presentation/pages/Resultados/Resultados';
-import { theme } from '@josanjohnata/optimize-cv/src/styles/theme';
-import { GlobalStyles } from '@josanjohnata/optimize-cv/src/styles/GlobalStyles';
+import { ResultadosPage } from '../../../vaga-turbo-bot/src/presentation/pages/Resultados/Resultados';
+import { theme } from '../../../vaga-turbo-bot/src/styles/theme';
+import { GlobalStyles } from '../../../vaga-turbo-bot/src/styles/GlobalStyles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'styled-components';
 import { ToastContainer } from 'react-toastify';
