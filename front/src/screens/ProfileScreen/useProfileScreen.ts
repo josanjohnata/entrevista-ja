@@ -158,6 +158,7 @@ export function useProfileScreen() {
         setUploadingFile(false);
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const profileData: Record<string, any> = {
         uid: currentUser.uid,
         displayName: displayName.trim() || currentUser.displayName || '',

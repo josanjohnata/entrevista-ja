@@ -1,0 +1,9 @@
+{
+  "name": "entrevista-ja",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build:vercel": "cd front && npm run build"
+  }
+}
+
