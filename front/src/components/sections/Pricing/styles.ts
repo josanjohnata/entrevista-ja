@@ -8,7 +8,7 @@ export const PricingSection = styled.section`
   background-position: center;
   background-repeat: no-repeat;
   padding: 5rem 0;
-  @media (min-width: ${theme.breakpoints.mobile}) {
+  @media (min-width: ${theme.breakpoints.md}) {
     padding: 6rem 0;
   }
 `;
@@ -25,7 +25,7 @@ export const PricingCard = styled.div`
   width: 100%;
   max-width: 450px;
   border-radius: 0.75rem;
-  border: 1px solid ${theme.colors.border};
+  border: 1px solid ${theme.colors.border.light};
   background-color: white;
   padding: 2rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
@@ -35,11 +35,11 @@ export const PriceText = styled.p`
   margin-top: 1rem;
   font-size: 3rem;
   font-weight: 700;
-  color: ${theme.colors.primary};
+  color: ${theme.colors.primary.main};
   
   span {
     font-size: 1.125rem;
     font-weight: 500;
-    color: ${theme.colors.text};
+    color: ${theme.colors.text.secondary};
   }
 `;

@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const LogoLink = styled.a`
   font-size: 1.25rem;
   font-weight: 700;
-  color: ${theme.colors.primary};
+  color: ${theme.colors.primary.main};
 `;
 
 export const Logo: React.FC = () => {

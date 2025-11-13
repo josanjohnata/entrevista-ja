@@ -4,7 +4,7 @@ import { theme } from '../../GlobalStyles';
 const { colors } = theme;
 
 export const PageWrapper = styled.main`
-  background-color: ${colors.lightGray || '#F8F7F4'};
+  background-color: ${colors.neutral[100] || '#F8F7F4'};
   min-height: 100vh;
   padding: 3rem 2rem;
 `;

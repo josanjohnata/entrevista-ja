@@ -26,7 +26,7 @@ color: ${colors.primary};
 `;
 
 export const ContactSection = styled(Section)`
-  background-color: ${colors.lightGray};
+  background-color: ${colors.neutral[100]};
   color: ${colors.text};
 `;
 
@@ -69,7 +69,7 @@ export const Label = styled.label`
 
 export const Input = styled.input`
   width: 100%;
-  background-color: ${colors.lightGray};
+  background-color: ${colors.neutral[100]};
   border: 1px solid #444;
   color: ${colors.text};
   padding: 0.75rem 1rem;
@@ -85,7 +85,7 @@ export const Input = styled.input`
 
 export const Textarea = styled.textarea`
   width: 100%;
-  background-color: ${colors.lightGray};
+  background-color: ${colors.neutral[100]};
   border: 1px solid #444;
   color: ${colors.text};
   padding: 0.75rem 1rem;
@@ -129,7 +129,7 @@ export const ContactInfoList = styled.div`
 export const ContactInfoItem = styled.div`
   display: flex;
   align-items: center;
-  background-color: ${colors.lightGray};
+  background-color: ${colors.neutral[100]};
   padding: 0.75rem 1rem;
   border-radius: 6px;
   border: 1px solid #444;
@@ -156,7 +156,7 @@ export const FaqWrapper = styled.div`
 `;
 
 export const FaqItem = styled.div`
-  background-color: ${colors.lightGray};
+  background-color: ${colors.neutral[100]};
   border-radius: 6px;
   border: 1px solid #444;
   overflow: hidden;

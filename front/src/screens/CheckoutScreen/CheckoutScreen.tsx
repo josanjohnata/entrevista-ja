@@ -1,5 +1,5 @@
 "use client"
-import { use, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useState } from "react";
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import {
   CheckoutGrid,
@@ -10,10 +10,8 @@ import {
   MainContainer,
   MainTitle,
   PageWrapper,
-  PaymentOptions,
   PlanTitle,
   PriceBox,
-  RadioWrapper,
   SectionHeader,
   SubmitButton,
   SummaryCard,
@@ -21,14 +19,9 @@ import {
   TermsLink,
   TermsLabel
 } from "./styles";
-import { FiBarChart, FiCheck, FiCreditCard, FiUser } from "react-icons/fi";
-import { FaPix, FaStripe } from "react-icons/fa6";
+import { FiCheck, FiUser } from "react-icons/fi";
 import { auth } from "../../lib/firebase";
 import { FeaturesList, FeatureItem } from "../../components/sections/Features/styles";
-import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js"
-import { loadStripe } from "@stripe/stripe-js";
-import { ActionButton, CheckboxWrapper, ErrorMessage, ForgotPasswordLink, LoginForm, OptionsRow } from "../Login/styles";
-import { Label } from "../Contact/styles";
 import { useSearchParams } from "react-router-dom";
 import Checkout from "./Checkout";
 

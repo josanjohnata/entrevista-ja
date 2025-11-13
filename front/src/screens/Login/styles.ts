@@ -9,7 +9,7 @@ export const PageWrapper = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: ${colors.lightGray};
+  background-color: ${colors.neutral[100]};
   color: ${colors.text};
   padding: 2rem;
 `;
@@ -89,7 +89,7 @@ export const Label = styled.label`
 `;
 
 export const Input = styled.input`
-  background-color: ${colors.lightGray};
+  background-color: ${colors.neutral[100]};
   border: 1px solid #444;
   color: ${colors.text};
   padding: 0.875rem 1rem;
