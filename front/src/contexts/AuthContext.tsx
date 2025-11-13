@@ -1,6 +1,17 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import type { User } from 'firebase/auth';
+import { 
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
+  createUserWithEmailAndPassword,
+  updateProfile,
+  signOut,
+  onAuthStateChanged
+} from 'firebase/auth';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { auth, db } from '../lib/firebase';
 
 export const UserRole = {
   RECRUITER: 'recruiter',
@@ -66,9 +77,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('Firebase não está configurado. Configure as variáveis de ambiente para usar autenticação.');
     }
     
-    const { signInWithEmailAndPassword } = await import('firebase/auth');
-    const { auth } = await import('../lib/firebase');
-    
     try {
       const result = await signInWithEmailAndPassword(auth, email, password);
       const userData = await fetchUserData(result.user);
@@ -85,9 +93,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
     
     try {
-      const { signInWithPopup, GoogleAuthProvider } = await import('firebase/auth');
-      const { auth } = await import('../lib/firebase');
-      
       const provider = new GoogleAuthProvider();
       provider.addScope('email');
       provider.addScope('profile');
@@ -113,9 +118,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       throw new Error('Firebase não está configurado. Configure as variáveis de ambiente para usar autenticação.');
     }
     
-    const { createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth');
-    const { auth } = await import('../lib/firebase');
-    
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password);
       
@@ -135,9 +137,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!firebaseConfigured) {
       throw new Error('Firebase não está configurado. Configure as variáveis de ambiente para usar autenticação.');
     }
-    
-    const { signOut } = await import('firebase/auth');
-    const { auth } = await import('../lib/firebase');
     
     try {
       await signOut(auth);
@@ -170,9 +169,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!firebaseConfigured) return null;
     
     try {
-      const { doc, getDoc } = await import('firebase/firestore');
-      const { db } = await import('../lib/firebase');
-      
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
       
@@ -199,9 +195,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (!firebaseConfigured) return;
     
     try {
-      const { doc, getDoc, setDoc } = await import('firebase/firestore');
-      const { db } = await import('../lib/firebase');
-      
       const userDocRef = doc(db, 'users', user.uid);
       const userData: Partial<UserData> = {
         uid: user.uid,
@@ -250,42 +243,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     let isMounted = true;
 
-    const initializeAuth = async () => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!isMounted) return;
+      
       try {
-        const { onAuthStateChanged } = await import('firebase/auth');
-        const { auth } = await import('../lib/firebase');
-        
-        const unsubscribe = onAuthStateChanged(auth, async (user) => {
-          if (!isMounted) return;
-          
-          try {
-            if (user) {
-              setCurrentUser(user);
-              const userData = await fetchUserData(user);
-              setUserData(userData);
-            } else {
-              setCurrentUser(null);
-              setUserData(null);
-            }
-          } catch (error) {
-            console.warn('Erro ao processar dados do usuário:', error);
-          }
-          setLoading(false);
-        });
-
-        return unsubscribe;
+        if (user) {
+          setCurrentUser(user);
+          const userData = await fetchUserData(user);
+          setUserData(userData);
+        } else {
+          setCurrentUser(null);
+          setUserData(null);
+        }
       } catch (error) {
-        console.warn('Erro ao inicializar Firebase Auth:', error);
-        setLoading(false);
-        return () => {};
+        console.warn('Erro ao processar dados do usuário:', error);
       }
-    };
-
-    const unsubscribePromise = initializeAuth();
+      setLoading(false);
+    });
     
     return () => {
       isMounted = false;
-      unsubscribePromise.then(unsubscribe => unsubscribe?.());
+      unsubscribe();
     };
   }, [fetchUserData, firebaseConfigured]);
 

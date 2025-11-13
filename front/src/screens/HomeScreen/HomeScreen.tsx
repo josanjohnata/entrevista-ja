@@ -38,9 +38,9 @@ class ErrorBoundary extends Component<
   }
 }
 
-import { IndexPage } from '../../../../lib/src/presentation/pages/Index/Index';
-import { theme } from '../../../../lib/src/styles/theme';
-import { GlobalStyles } from '../../../../lib/src/styles/GlobalStyles';
+import { IndexPage } from '../../presentation/pages/Index/Index';
+import { theme } from '../../styles/theme';
+import { GlobalStyles } from '../../styles/GlobalStyles';
 
 const queryClient = new QueryClient({
   defaultOptions: {

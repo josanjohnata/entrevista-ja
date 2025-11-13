@@ -11,4 +11,22 @@ export default defineConfig({
       '@': path.resolve(__dirname, '../lib/src'),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Separa Firebase em seu próprio chunk
+          'firebase': ['firebase/app', 'firebase/auth', 'firebase/firestore', 'firebase/storage'],
+          // Separa React e suas dependências
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          // Separa styled-components
+          'styled': ['styled-components'],
+          // Separa Supabase se estiver sendo usado
+          'supabase': ['@supabase/supabase-js'],
+        },
+      },
+    },
+    // Aumenta o limite de aviso para 600kb (ainda vai alertar se passar disso)
+    chunkSizeWarningLimit: 600,
+  },
 })

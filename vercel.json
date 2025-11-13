@@ -1,7 +1,6 @@
 {
-  "buildCommand": "npm run build:vercel",
-  "installCommand": "npm install --prefix backend && npm install --prefix lib && npm install --prefix front",
-  "framework": null,
+  "buildCommand": "npm install && npm run build",
+  "installCommand": "npm --version",
   "outputDirectory": "front/dist"
 }
 

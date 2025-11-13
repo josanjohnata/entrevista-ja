@@ -13,13 +13,14 @@ import { CompaniesScreen } from '../screens/CompaniesScreen/CompaniesScreen';
 import { ProfileScreen } from '../screens/ProfileScreen/ProfileScreen';
 import LandingPage from '../screens/landing/App';
 
-import { ResultadosPage } from '../../../lib/src/presentation/pages/Resultados/Resultados';
-import { theme } from '../../../lib/src/styles/theme';
-import { GlobalStyles } from '../../../lib/src/styles/GlobalStyles';
+import { ResultadosPage } from '../presentation/pages/Resultados/Resultados';
+import { theme } from '../styles/theme';
+import { GlobalStyles } from '../styles/GlobalStyles';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ThemeProvider } from 'styled-components';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { NotFoundPage } from '../presentation/pages/NotFound/NotFound';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -61,6 +62,8 @@ export const AppRoutes: React.FC = () => {
       <Route path="/contato" element={<ContactScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/checkout" element={<CheckoutScreen />} />
+      <Route path="/resultados" element={<ResultadosPage />} />
+      <Route path="*" element={<NotFoundPage />} />
       <Route
         path="/home"
         element={
