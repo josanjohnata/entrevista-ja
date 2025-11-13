@@ -127,7 +127,7 @@ export const ForgotPasswordLink = styled.a`
 `;
 
 export const ActionButton = styled.button`
-  background-color: ${colors.primary};
+  background-color: ${colors.primary.main};
   color: white;
   border: none;
   padding: 0.875rem;

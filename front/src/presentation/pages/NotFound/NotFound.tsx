@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Home } from 'lucide-react';
 
-import { Button } from '../../../presentation/components/Button';
+import { Button } from '@/presentation/components/Button';
 
 import * as S from './NotFound.styles';
 

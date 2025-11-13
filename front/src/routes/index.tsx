@@ -62,7 +62,7 @@ export const AppRoutes: React.FC = () => {
       <Route path="/contato" element={<ContactScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/checkout" element={<CheckoutScreen />} />
-      <Route path="/resultados" element={<ResultadosPage />} />
+      <Route path="/resultados" element={<ResultadosPageWrapper />} />
       <Route path="*" element={<NotFoundPage />} />
       <Route
         path="/home"
@@ -93,14 +93,6 @@ export const AppRoutes: React.FC = () => {
         element={
           <ProtectedRoute requireAuth={true}>
             <ProfileScreen />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/resultados"
-        element={
-          <ProtectedRoute requireAuth={true}>
-            <ResultadosPageWrapper />
           </ProtectedRoute>
         }
       />

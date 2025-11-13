@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2, Sparkles, Target, TrendingUp, Upload } from 'lucide-react';
 import { toast } from 'react-toastify';
 
-import { Button } from '../../../presentation/components/Button';
-import { Card } from '../../../presentation/components/Card';
-// import { Input } from '../../../presentation/components/Input';
-import { Textarea } from '../../../presentation/components/Textarea';
-import { Label } from '../../../presentation/components/Label';
-import { Container, Page } from '../../../presentation/components/Layout';
-import { supabase } from '../../../infrastructure/supabase/client';
+import { Button } from '@/presentation/components/Button';
+import { Card } from '@/presentation/components/Card';
+import { Input } from '@/presentation/components/Input';
+import { Textarea } from '@/presentation/components/Textarea';
+import { Label } from '@/presentation/components/Label';
+import { Container, Page } from '@/presentation/components/Layout';
+import { supabase } from '@/infrastructure/supabase/client';
 
 import * as S from './Index.styles';
 
