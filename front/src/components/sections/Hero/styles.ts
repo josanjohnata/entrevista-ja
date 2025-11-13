@@ -1,14 +1,14 @@
 import styled from 'styled-components';
 import { theme } from '../../../GlobalStyles';
-import BackgroundImage from '../../../assets/Background.png';
+// import BackgroundImage from '../../../assets/background.png';
 
 export const HeroSection = styled.section`
-  background-image: url(${BackgroundImage});
+  background-image: url(${`https://avatars.githubusercontent.com/u/38167590?v=4`});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
   padding: 5rem 0;
-  @media (min-width: ${theme.breakpoints.md}) {
+  @media (min-width: ${theme.breakpoints.mobile}) {
     padding: 8rem 0;
   }
 `;
@@ -24,7 +24,7 @@ export const HeroContent = styled.div`
 export const Title = styled.h1`
   font-size: 2rem;
   letter-spacing: -0.02em;
-  @media (min-width: ${theme.breakpoints.md}) {
+  @media (min-width: ${theme.breakpoints.mobile}) {
     font-size: 3rem;
   }
 `;
@@ -33,7 +33,7 @@ export const Subtitle = styled.p`
   margin-top: 1.5rem;
   max-width: 800px;
   font-size: 1.125rem;
-  color: ${theme.colors.text.secondary};
+  color: ${theme.colors.text};
 `;
 
 export const FormContainer = styled.div`
@@ -43,7 +43,7 @@ export const FormContainer = styled.div`
   max-width: 550px;
   gap: 0.5rem;
   
-  @media (max-width: ${theme.breakpoints.md}) {
+  @media (max-width: ${theme.breakpoints.mobile}) {
     flex-direction: column;
   }
 `;
@@ -51,5 +51,5 @@ export const FormContainer = styled.div`
 export const FinePrint = styled.p`
   margin-top: 0.75rem;
   font-size: 0.75rem;
-  color: ${theme.colors.text.secondary};
+  color: ${theme.colors.text};
 `;

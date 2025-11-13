@@ -61,45 +61,45 @@ export const AppRoutes: React.FC = () => {
       <Route path="/contato" element={<ContactScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/checkout" element={<CheckoutScreen />} />
-      <Route 
-        path="/home" 
+      <Route
+        path="/home"
         element={
           <ProtectedRoute requiredRole={UserRole.BASIC_PLAN}>
             <HomeScreen />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/admin" 
+      <Route
+        path="/admin"
         element={
           <ProtectedRoute requireAuth={true}>
             <AdminPanel />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/linkedin-search" 
-        element={<LinkedInSearchScreen />} 
+      <Route
+        path="/linkedin-search"
+        element={<LinkedInSearchScreen />}
       />
-      <Route 
-        path="/empresas" 
-        element={<CompaniesScreen />} 
+      <Route
+        path="/empresas"
+        element={<CompaniesScreen />}
       />
-      <Route 
-        path="/profile" 
+      <Route
+        path="/profile"
         element={
           <ProtectedRoute requireAuth={true}>
             <ProfileScreen />
           </ProtectedRoute>
-        } 
+        }
       />
-      <Route 
-        path="/resultados" 
+      <Route
+        path="/resultados"
         element={
           <ProtectedRoute requireAuth={true}>
             <ResultadosPageWrapper />
           </ProtectedRoute>
-        } 
+        }
       />
     </Routes>
   );

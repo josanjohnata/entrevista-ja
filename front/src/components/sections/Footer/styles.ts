@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { theme } from '../../../GlobalStyles';
 
 export const FooterWrapper = styled.footer`
-  border-top: 1px solid ${theme.colors.border.light};
+  border-top: 1px solid ${theme.colors.border};
   padding: 2rem 0;
 `;
 
@@ -16,10 +16,10 @@ export const FooterContent = styled.div`
   
   p {
     font-size: 0.875rem;
-    color: ${theme.colors.text.secondary};
+    color: ${theme.colors.text};
   }
 
-  @media (min-width: ${theme.breakpoints.md}) {
+  @media (min-width: ${theme.breakpoints.mobile}) {
     flex-direction: column;
     align-items: center;
   }

@@ -1,17 +1,17 @@
 import styled from 'styled-components';
 import { theme } from '../../GlobalStyles';
-import BackgroundImage from '../../assets/Background.png';
+// import BackgroundImage from '../../assets/background.png';
 
 export const Hero = styled.header`
-  background-image: url(${BackgroundImage});
+  background-image: url(${`https://avatars.githubusercontent.com/u/38167590?v=4`});
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  color: ${theme.colors.text.secondary};
+  color: ${theme.colors.text};
   padding: 4rem 0;
   text-align: center;
 
-  @media (max-width: ${theme.breakpoints.md}) {
+  @media (max-width: ${theme.breakpoints.mobile}) {
     padding: 2rem 0;
   }
 `;
@@ -40,7 +40,7 @@ export const HeroTitle = styled.h1`
   margin-bottom: 1rem;
   line-height: 1.2;
 
-  @media (min-width: ${theme.breakpoints.md}) {
+  @media (min-width: ${theme.breakpoints.mobile}) {
     font-size: 3.75rem;
   }
 `;
@@ -57,7 +57,7 @@ export const HeroSubtitle = styled.p`
 export const MainContent = styled.div`
   padding: 4rem 0;
 
-  @media (max-width: ${theme.breakpoints.md}) {
+  @media (max-width: ${theme.breakpoints.mobile}) {
     padding: 2rem 0;
   }
 `;
@@ -73,23 +73,23 @@ export const FormGroup = styled.div`
 export const Select = styled.select`
   width: 100%;
   padding: 0.5rem 1rem;
-  border: 2px solid ${theme.colors.border.light};
+  border: 2px solid ${theme.colors.border};
   border-radius: 0.5rem;
   font-size: 1rem;
-  background-color: ${theme.colors.background.primary};
-  color: ${theme.colors.text.secondary};
+  background-color: ${theme.colors.white};
+  color: ${theme.colors.text};
   cursor: pointer;
   transition: all 0.2s;
   box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: ${theme.colors.primary.main};
-    box-shadow: 0 0 0 3px ${theme.colors.primary.main}20;
+    border-color: ${theme.colors.primary};
+    box-shadow: 0 0 0 3px ${theme.colors.primary}20;
   }
 
   &:hover {
-    border-color: ${theme.colors.primary.main};
+    border-color: ${theme.colors.primary};
   }
 `;
 
@@ -98,7 +98,7 @@ export const ButtonGroup = styled.div`
   gap: 1rem;
   margin-top: 2rem;
 
-  @media (max-width: ${theme.breakpoints.md}) {
+  @media (max-width: ${theme.breakpoints.mobile}) {
     flex-direction: column;
   }
 `;

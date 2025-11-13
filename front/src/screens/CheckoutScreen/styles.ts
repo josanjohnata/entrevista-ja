@@ -4,8 +4,8 @@ import { theme } from '../../GlobalStyles';
 const { colors } = theme;
 
 export const PageWrapper = styled.div`
-  background-color: ${colors.background.primary};
-  color: ${colors.text.secondary};
+  background-color: ${colors.white};
+  color: ${colors.text};
   padding: 3rem 2rem;
   min-height: 100vh;
   
@@ -53,7 +53,7 @@ export const MainTitle = styled.h1`
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background-color: ${colors.primary.main};
+    background-color: ${colors.primary};
   }
 `;
 
@@ -73,8 +73,8 @@ export const CheckoutGrid = styled.div`
 `;
 
 export const FormColumn = styled.div`
-  background-color: ${colors.background.tertiary};
-  color: ${colors.text.secondary};
+  background-color: ${colors.lightGray};
+  color: ${colors.text};
   padding: 2rem;
   border-radius: 8px;
   
@@ -110,13 +110,13 @@ export const InputGroup = styled.div`
 `;
 
 export const Input = styled.input`
-  background-color: ${colors.background.primary};
+  background-color: ${colors.white};
   border: 1px solid #ccc;
   padding: 0.875rem;
   border-radius: 6px;
   font-size: 1rem;
   width: 100%;
-  &:focus { outline-color: ${colors.primary.main}; }
+  &:focus { outline-color: ${colors.primary}; }
 `;
 
 export const PaymentOptions = styled.div`
@@ -128,7 +128,7 @@ export const PaymentOptions = styled.div`
 export const RadioWrapper = styled.label`
   display: flex;
   align-items: center;
-  background-color: ${colors.background.primary};
+  background-color: ${colors.white};
   padding: 1rem;
   border-radius: 6px;
   border: 2px solid #eee;
@@ -149,7 +149,7 @@ export const RadioWrapper = styled.label`
   }
 
   &.selected {
-    border-color: ${colors.primary.main};
+    border-color: ${colors.primary};
   }
 
   &.disabled {
@@ -185,7 +185,7 @@ export const RadioWrapper = styled.label`
     margin-left: 1rem;
     margin-right: 1rem;
     font-size: 0.875rem;
-    color: ${colors.text.secondary};
+    color: ${colors.text};
     white-space: nowrap;
     
     @media (max-width: 768px) {
@@ -216,7 +216,7 @@ export const RadioWrapper = styled.label`
 `;
 
 export const SummaryCard = styled.div`
-  background-color: ${colors.background.tertiary};
+  background-color: ${colors.lightGray};
   padding: 2rem;
   border-radius: 8px;
   
@@ -252,7 +252,7 @@ export const FeatureItem = styled.div`
   }
 
   .title {
-    color: ${colors.primary.main};
+    color: ${colors.primary};
     font-weight: 600;
   }
 
@@ -265,7 +265,7 @@ export const FeatureItem = styled.div`
 `;
 
 export const PriceBox = styled.div`
-  background-color: ${colors.background.tertiary};
+  background-color: ${colors.lightGray};
   padding: 1.5rem;
   border-radius: 8px;
   text-align: center;
@@ -273,12 +273,12 @@ export const PriceBox = styled.div`
   
   .installments {
     font-size: 1.5rem;
-    span { font-weight: bold; font-size: 2rem; color: ${colors.primary.main}; }
+    span { font-weight: bold; font-size: 2rem; color: ${colors.primary}; }
   }
 
   .full-price {
     font-size: 0.875rem;
-    color: ${colors.text.secondary};
+    color: ${colors.text};
     margin-top: 0.5rem;
   }
 `;
@@ -292,19 +292,19 @@ export const SubmitButton = styled.button`
   border: none;
   cursor: pointer;
   margin-top: 1.5rem;
-  background-color: ${colors.primary.main};
+  background-color: ${colors.primary};
   color: white;
   transition: background-color 0.3s;
-  &:hover { background-color: ${colors.primary.main}; }
+  &:hover { background-color: ${colors.primary}; }
 `;
 
 export const TermsLink = styled.span`
-  color: ${colors.primary.main};
+  color: ${colors.primary};
   text-decoration: underline;
   cursor: pointer;
   
   &:hover {
-    color: ${colors.primary.main};
+    color: ${colors.primary};
   }
 `;
 

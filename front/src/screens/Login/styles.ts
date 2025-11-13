@@ -9,8 +9,8 @@ export const PageWrapper = styled.div`
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: ${colors.background.tertiary};
-  color: ${colors.text.secondary};
+  background-color: ${colors.lightGray};
+  color: ${colors.text};
   padding: 2rem;
 `;
 
@@ -30,7 +30,7 @@ export const MainTitle = styled.h1`
     transform: translateX(-50%);
     width: 60px;
     height: 3px;
-    background-color: ${colors.primary.main};
+    background-color: ${colors.primary};
   }
 `;
 
@@ -67,7 +67,7 @@ export const Subheading = styled.h2`
     transform: translateY(-50%);
     width: 4px;
     height: 70%;
-    background-color: ${colors.primary.main};
+    background-color: ${colors.primary};
   }
 `;
 
@@ -85,13 +85,13 @@ export const InputGroup = styled.div`
 
 export const Label = styled.label`
   font-size: 1rem;
-  color: ${colors.text.secondary};
+  color: ${colors.text};
 `;
 
 export const Input = styled.input`
-  background-color: ${colors.background.tertiary};
+  background-color: ${colors.lightGray};
   border: 1px solid #444;
-  color: ${colors.text.secondary};
+  color: ${colors.text};
   padding: 0.875rem 1rem;
   border-radius: 6px;
   font-size: 1rem;
@@ -99,7 +99,7 @@ export const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: ${colors.primary.main};
+    border-color: ${colors.primary};
   }
 `;
 
@@ -118,16 +118,16 @@ export const CheckboxWrapper = styled.div`
 `;
 
 export const ForgotPasswordLink = styled.a`
-  color: ${colors.text.secondary};
+  color: ${colors.text};
   text-decoration: none;
   &:hover {
     text-decoration: underline;
-    color: ${colors.primary.main};
+    color: ${colors.primary};
   }
 `;
 
 export const ActionButton = styled.button`
-  background-color: ${colors.primary.main};
+  background-color: ${colors.primary};
   color: white;
   border: none;
   padding: 0.875rem;
@@ -140,12 +140,12 @@ export const ActionButton = styled.button`
   text-decoration: none;
 
   &:hover {
-    background-color: ${colors.primary.main};
+    background-color: ${colors.primary};
   }
 `;
 
 export const DescriptionText = styled.p`
-  color: ${colors.text.secondary};
+  color: ${colors.text};
   line-height: 1.6;
   margin-bottom: 1.5rem;
 `;

@@ -5,12 +5,12 @@ export const Input = styled.input`
   width: 100%;
   padding: 0.75rem 1rem;
   font-size: 1rem;
-  border: 1px solid ${theme.colors.border.light};
+  border: 1px solid ${theme.colors.border};
   border-radius: 0.5rem;
   transition: border-color 0.3s ease;
 
   &:focus {
     outline: none;
-    border-color: ${theme.colors.primary.main};
+    border-color: ${theme.colors.primary};
   }
 `;
