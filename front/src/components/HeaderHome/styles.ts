@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { theme } from '../../GlobalStyles';
 
 export const HeaderContainer = styled.header`
   background-color: #FFFFFF;
@@ -37,10 +38,6 @@ export const NavLink = styled.a<{ $isActive?: boolean }>`
   cursor: pointer;
   position: relative;
 
-  &:hover {
-    background-color: #DBDBD4;
-  }
-
   ${({ $isActive }) =>
     $isActive &&
     `
@@ -62,7 +59,7 @@ export const LoginButton = styled(NavLink)`
   padding: 0.5rem 1rem;
 
   &:hover {
-    background-color: #357ABD;
+    opacity: 0.8;
   }
 
   &::after {
@@ -82,7 +79,7 @@ export const MobileMenuButton = styled.button`
   }
   
   &:hover {
-    color: #4A90E2;
+    color: ${theme.colors.primary.light};
   }
 `;
 

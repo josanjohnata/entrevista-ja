@@ -4,7 +4,7 @@ import { theme } from '../../GlobalStyles';
 const { colors } = theme;
 
 export const PageWrapper = styled.main`
-  background-color: ${colors.neutral[100] || '#F8F7F4'};
+  background-color: ${colors.neutral[100]};
   padding: 3rem 2rem;
 `;
 
@@ -109,8 +109,8 @@ export const PaginationControls = styled.div`
 
 export const PageButton = styled.button`
   background-color: white;
-  color: ${colors.primary};
-  border: 1px solid ${colors.primary};
+  color: ${colors.primary.main};
+  border: 1px solid ${colors.primary.main};
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-weight: 600;
@@ -118,7 +118,7 @@ export const PageButton = styled.button`
   transition: all 0.2s;
   
   &:hover:not(:disabled) {
-    background-color: ${colors.primary};
+    background-color: ${colors.primary.light};
     color: white;
   }
   

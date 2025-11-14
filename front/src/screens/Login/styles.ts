@@ -122,7 +122,7 @@ export const ForgotPasswordLink = styled.a`
   text-decoration: none;
   &:hover {
     text-decoration: underline;
-    color: ${colors.primary};
+    color: ${colors.primary.light};
   }
 `;
 
@@ -140,7 +140,7 @@ export const ActionButton = styled.button`
   text-decoration: none;
 
   &:hover {
-    background-color: ${colors.primary};
+    background-color: ${colors.primary.light};
   }
 `;
 

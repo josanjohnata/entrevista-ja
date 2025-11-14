@@ -42,8 +42,13 @@ const variantStyles = {
     border: 2px solid ${({ theme }) => theme.colors.primary.main};
 
     &:hover:not(:disabled) {
-      background-color: ${({ theme }) => theme.colors.primary.main};
-      color: ${({ theme }) => theme.colors.primary.contrast};
+      transform: translateY(-2px);
+      box-shadow: ${({ theme }) => theme.shadows.lg};
+      color: ${({ theme }) => theme.colors.primary.main};
+    }
+
+    &:active:not(:disabled) {
+      transform: translateY(0);
     }
   `,
   

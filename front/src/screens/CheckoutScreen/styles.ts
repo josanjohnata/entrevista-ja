@@ -295,7 +295,11 @@ export const SubmitButton = styled.button`
   background-color: ${colors.primary.main};
   color: white;
   transition: background-color 0.3s;
-  &:hover { background-color: ${colors.primary.main}; }
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    background-color: ${colors.primary.main};
+  }
 `;
 
 export const TermsLink = styled.span`
@@ -304,7 +308,7 @@ export const TermsLink = styled.span`
   cursor: pointer;
   
   &:hover {
-    color: ${colors.primary.main};
+    color: ${colors.primary.light};
   }
 `;
 

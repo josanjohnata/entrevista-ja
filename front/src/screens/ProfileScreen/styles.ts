@@ -147,12 +147,12 @@ export const FileUploadArea = styled.div`
   background-color: #f9fafb;
   
   &:hover {
-    border-color: ${colors.primary};
+    border-color: ${colors.primary.main};
     background-color: #f3f4f6;
   }
   
   &.dragging {
-    border-color: ${colors.primary};
+    border-color: ${colors.primary.main};
     background-color: rgba(99, 102, 241, 0.05);
   }
 `;
@@ -231,12 +231,12 @@ export const Button = styled.button<{ variant?: 'primary' | 'secondary' }>`
   ${({ variant }) =>
     variant === 'primary'
       ? `
-        background: ${colors.primary};
+        background: ${colors.primary.main};
         color: white;
         border: none;
         
         &:hover:not(:disabled) {
-          background: ${colors.primary};
+          background: ${colors.primary.light};
           transform: translateY(-2px);
           box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
@@ -248,6 +248,8 @@ export const Button = styled.button<{ variant?: 'primary' | 'secondary' }>`
         
         &:hover:not(:disabled) {
           background: #f9fafb;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         }
       `}
   
@@ -302,7 +304,7 @@ export const SocialLink = styled.a`
   transition: color 0.2s;
   
   &:hover {
-    color: ${colors.primary};
+    color: ${colors.primary.light};
   }
 `;
 
@@ -326,7 +328,7 @@ export const CloseButton = styled.button`
   color: ${colors.text};
 
   &:hover {
-    color: ${colors.primary};
+    color: ${colors.primary.light};
   }
 `;
 

@@ -64,7 +64,7 @@ export const Icon = styled.span`
 
 export const CtaButton = styled.a`
   display: inline-block;
-  background-color: ${colors.primary};
+  background-color: ${colors.primary.main};
   color: ${colors.background.primary};
   font-weight: 600;
   font-size: 1.125rem;
@@ -73,7 +73,7 @@ export const CtaButton = styled.a`
   text-decoration: none;
   transition: background-color 0.3s ease;
   &:hover {
-    background-color: ${colors.primary};
+    background-color: ${colors.primary.light};
   }
 `;
 
@@ -93,7 +93,7 @@ export const ChallengeCardContent = styled.div`
 export const IconPlaceholder = styled.div`
   flex-shrink: 0;
   width: 40px; height: 40px;
-  background-color: ${colors.primary};
+  background-color: ${colors.primary.main};
   color: ${colors.text};
   border-radius: 50%;
   display: flex;
@@ -395,7 +395,7 @@ export const JoinUsSubtitle = styled.p`
 export const JoinUsCtaButton = styled.a`
   text-decoration: none;
   display: inline-block;
-  background-color: ${colors.primary};
+  background-color: ${colors.primary.main};
   color: ${colors.background.primary};
   font-weight: 600;
   font-size: 1.125rem;
@@ -403,7 +403,7 @@ export const JoinUsCtaButton = styled.a`
   border-radius: 0.5rem;
   transition: all 0.3s ease;
   &:hover {
-    background-color: ${colors.neutral[100]};
+    background-color: ${colors.primary.light};
     transform: translateY(-2px);
   }
 `;

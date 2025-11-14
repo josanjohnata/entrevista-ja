@@ -75,7 +75,7 @@ export const Select = styled.select`
 `;
 
 export const SearchButton = styled.button`
-  background-color: ${colors.primary};
+  background-color: ${colors.primary.main};
   color: white;
   padding: 0.75rem;
   border: none;
@@ -89,7 +89,7 @@ export const SearchButton = styled.button`
   gap: 0.5rem;
   transition: background-color 0.3s;
   &:hover {
-    background-color: ${colors.primary};
+    background-color: ${colors.primary.light};
   }
 `;
 
@@ -182,15 +182,15 @@ export const PaginationControls = styled.div`
 
 export const PageButton = styled.button`
   background-color: white;
-  color: ${colors.primary};
-  border: 1px solid ${colors.primary};
+  color: ${colors.primary.main};
+  border: 1px solid ${colors.primary.main};
   padding: 0.5rem 1rem;
   border-radius: 6px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   &:hover:not(:disabled) {
-    background-color: ${colors.primary};
+    background-color: ${colors.primary.light};
     color: white;
   }
   &:disabled {
