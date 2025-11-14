@@ -1,7 +1,11 @@
 import styled from 'styled-components';
+import BackgroundImage from '../../../Background.png';
 
 export const Hero = styled.header`
-  background-image: url('/Background.png');
+  background-image: url(${BackgroundImage});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
