@@ -2,9 +2,9 @@ import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { ArrowLeft, TrendingUp, AlertCircle, Lightbulb, FileText } from 'lucide-react';
 
-import { Button } from '@/presentation/components/Button';
-import { Badge } from '@/presentation/components/Badge';
-import { Container, Page } from '@/presentation/components/Layout';
+import { Button } from '../../../presentation/components/Button';
+import { Badge } from '../../../presentation/components/Badge';
+import { Container, Page } from '../../../presentation/components/Layout';
 
 import * as S from './Resultados.styles';
 

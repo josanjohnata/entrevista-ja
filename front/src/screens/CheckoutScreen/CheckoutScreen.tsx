@@ -1,5 +1,4 @@
 "use client"
-import { useState } from "react";
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import {
   CheckoutGrid,
@@ -20,23 +19,18 @@ import {
   TermsLabel
 } from "./styles";
 import { FiCheck, FiUser } from "react-icons/fi";
-import { auth } from "../../lib/firebase";
+import { auth, /*db*/ } from "../../lib/firebase";
 import { FeaturesList, FeatureItem } from "../../components/sections/Features/styles";
 import { useSearchParams } from "react-router-dom";
 import Checkout from "./Checkout";
+// import { doc, setDoc } from "firebase/firestore";
+import type { FormEvent } from 'react';
 
 
 export const CheckoutScreen: React.FC = () => {
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
+  const [createUserWithEmailAndPassword, loading] = useCreateUserWithEmailAndPassword(auth);
   const [params, setParams] = useSearchParams();
-
-  const isRegisterPlan = params.get("registerPlan");
-
-  const [
-    createUserWithEmailAndPassword,
-    loading,
-  ] = useCreateUserWithEmailAndPassword(auth);
+  const isRegisterPlan = params.get("email");
 
   const planFeatures = [
     'Acesso a templates de currículo',
@@ -49,11 +43,43 @@ export const CheckoutScreen: React.FC = () => {
     'Cancele quando quiser',
   ];
 
-  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await createUserWithEmailAndPassword(email, password);
-    setParams("?registerPlan=true");
-  }
+  const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // Sempre primeiro para evitar o recarregamento da página
+
+    const form = new FormData(event.currentTarget);
+    const formData = Object.fromEntries(form.entries()) as Record<string, string>;
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(
+        formData.email,
+        formData.password
+      );
+
+      // O código aqui só será executado se o createUserWithEmailAndPassword for bem-sucedido.
+      // Não precisa de setTimeout!
+      if (userCredential && userCredential.user) { // userCredential.user será sempre definido aqui
+        // await setDoc(doc(db, "infosUsers", userCredential.user.uid), {
+        //   cpf: formData.doc || "", // 'doc' pode ser uma referência a um documento de identificação, certo?
+        //   nome: formData.name,
+        //   planId: "", // Informação inicial do plano
+        // });
+
+        // Finalmente, atualize os parâmetros ou o estado da UI.
+        setParams(`?email=${formData.email}`);
+        // console.log("Usuário criado e informações salvas no Firestore!", userCredential.user.uid);
+      }
+    } catch (e) { // Capture o erro como 'any' para acessar propriedades como 'code' e 'message'
+      console.log("Erro ao criar usuário ou salvar dados:", e);
+      // Aqui você pode adicionar lógica para mostrar mensagens de erro ao usuário:
+      // if (e.code === 'auth/email-already-in-use') {
+      //   alert('Este email já está em uso.');
+      // } else if (e.code === 'auth/weak-password') {
+      //   alert('A senha é muito fraca.');
+      // } else {
+      //   alert('Ocorreu um erro ao criar a conta: ' + e.message);
+      // }
+    }
+  };
 
   return (
     <>
@@ -62,25 +88,25 @@ export const CheckoutScreen: React.FC = () => {
           <MainTitle>Assine o Plano</MainTitle>
           <CheckoutGrid>
             <FormColumn>
-              {isRegisterPlan ? <Checkout email={email} /> :
+              {isRegisterPlan ? <Checkout email={isRegisterPlan} /> :
                 <form onSubmit={handleSignIn}>
                   <FormSection>
                     <SectionHeader><FiUser /> Dados</SectionHeader>
                     <InputGroup>
                       <label htmlFor="name">Nome Completo</label>
-                      <Input id="name" type="text" placeholder="João da Silva" required />
+                      <Input id="name" type="text" placeholder="João da Silva" name="name" required />
                     </InputGroup>
                     <InputGroup>
                       <label htmlFor="email">Email</label>
-                      <Input id="email" type="email" placeholder="joao@email.com" onChange={(e) => setEmail(e.target.value)} required />
+                      <Input id="email" type="email" placeholder="joao@email.com" name="email" required />
                     </InputGroup>
                     <InputGroup>
                       <label htmlFor="password">Senha</label>
-                      <Input id="password" type="password" placeholder="********" onChange={(e) => setPassword(e.target.value)} required />
+                      <Input id="password" type="password" placeholder="********" name="password" required />
                     </InputGroup>
                     <InputGroup>
                       <label htmlFor="document">CPF (Opcional)</label>
-                      <Input id="document" type="text" placeholder="123.456.789-00" />
+                      <Input id="document" type="text" placeholder="123.456.789-00" name="doc" />
                     </InputGroup>
                   </FormSection>
                   <FormSection>

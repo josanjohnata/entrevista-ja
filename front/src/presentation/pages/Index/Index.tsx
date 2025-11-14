@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Loader2, Sparkles, Target, TrendingUp, Upload } from 'lucide-react';
 import { toast } from 'react-toastify';
 
-import { Button } from '@/presentation/components/Button';
-import { Card } from '@/presentation/components/Card';
-import { Input } from '@/presentation/components/Input';
-import { Textarea } from '@/presentation/components/Textarea';
-import { Label } from '@/presentation/components/Label';
-import { Container, Page } from '@/presentation/components/Layout';
-import { supabase } from '@/infrastructure/supabase/client';
+import { Button } from '../../../presentation/components/Button';
+import { Card } from '../../../presentation/components/Card';
+// import { Input } from '@/presentation/components/Input';
+import { Textarea } from '../../../presentation/components/Textarea';
+import { Label } from '../../../presentation/components/Label';
+import { Container, Page } from '../../../presentation/components/Layout';
+import { supabase } from '../../../infrastructure/supabase/client';
 
 import * as S from './Index.styles';
 
@@ -131,7 +131,7 @@ export const IndexPage: React.FC = () => {
       navigate('/resultados', { state: { analysis: data } });
     } catch (error) {
       console.error('Erro ao analisar currículo:', error);
-      toast.error('Ocorreu um erro ao processar sua análise. Tente novamente.');
+        toast.error('Ocorreu um erro ao processar sua análise. Tente novamente.');
     } finally {
       setIsAnalyzing(false);
     }
