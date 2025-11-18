@@ -1,5 +1,22 @@
 import React, { useRef, useState } from 'react';
-import { FiUser, FiGithub, FiLinkedin, FiFileText, FiUpload, FiX, FiMail, FiCheckCircle, FiAlertCircle, FiExternalLink } from 'react-icons/fi';
+import { 
+  FiUser, 
+  FiGithub, 
+  FiLinkedin, 
+  FiFileText, 
+  FiUpload, 
+  FiX, 
+  FiMail, 
+  FiCheckCircle, 
+  FiAlertCircle, 
+  FiExternalLink,
+  FiBriefcase,
+  FiBookOpen,
+  FiGlobe,
+  FiPlus,
+  FiPhone,
+  FiMapPin
+} from 'react-icons/fi';
 import { HeaderHome } from '../../components/HeaderHome/HeaderHome';
 import { useProfileScreen } from './useProfileScreen';
 import {
@@ -35,7 +52,23 @@ import {
   SmallFileText,
   NewBadge,
   ResumeActions,
-  ResumeLink
+  ResumeLink,
+  Section,
+  SectionHeader,
+  SectionSubtitle,
+  AddButton,
+  RepeatableItem,
+  RepeatableItemHeader,
+  RepeatableItemTitle,
+  RemoveItemButton,
+  FormRow,
+  CheckboxGroup,
+  CheckboxLabel,
+  Checkbox,
+  Select,
+  EmptyState,
+  RequiredBadge,
+  FirstAccessBanner
 } from './styles';
 
 export const ProfileScreen: React.FC = () => {
@@ -46,14 +79,39 @@ export const ProfileScreen: React.FC = () => {
     saving,
     uploadingFile,
     message,
+    isFirstAccess,
+    
     displayName,
     setDisplayName,
-    about,
-    setAbout,
-    github,
-    setGithub,
+    professionalTitle,
+    setProfessionalTitle,
+    phone,
+    setPhone,
+    location,
+    setLocation,
     linkedin,
     setLinkedin,
+    github,
+    setGithub,
+    
+    about,
+    setAbout,
+    
+    experiences,
+    addExperience,
+    updateExperience,
+    removeExperience,
+    
+    education,
+    addEducation,
+    updateEducation,
+    removeEducation,
+    
+    languages,
+    addLanguage,
+    updateLanguage,
+    removeLanguage,
+    
     resumeFile,
     handleFileChange,
     handleSubmit,
@@ -156,6 +214,16 @@ export const ProfileScreen: React.FC = () => {
           </Sidebar>
 
           <MainContent>
+            {isFirstAccess && (
+              <FirstAccessBanner>
+                <h3>🎉 Bem-vindo! Complete seu perfil</h3>
+                <p>
+                  Para começar a usar a plataforma, precisamos que você preencha algumas informações importantes sobre sua carreira profissional.
+                  Todos os campos marcados com <RequiredBadge>*</RequiredBadge> são obrigatórios.
+                </p>
+              </FirstAccessBanner>
+            )}
+
             <SectionTitle>
               <FiUser /> Informações do Perfil
             </SectionTitle>
@@ -171,142 +239,465 @@ export const ProfileScreen: React.FC = () => {
             )}
 
             <Form onSubmit={handleSubmit}>
-              <FormGroup>
-                <Label htmlFor="displayName">
-                  <FiUser /> Nome
-                </Label>
-                <Input
-                  id="displayName"
-                  type="text"
-                  placeholder="Seu nome completo"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  required
-                />
-              </FormGroup>
+              <Section>
+                <SectionSubtitle>
+                  <FiUser /> Dados Pessoais
+                </SectionSubtitle>
 
-              <FormGroup>
-                <Label htmlFor="email">
-                  <FiMail /> Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={currentUser.email || ''}
-                  disabled
-                  readOnly
-                />
-                <HelpText>O email não pode ser alterado</HelpText>
-              </FormGroup>
+                <FormRow>
+                  <FormGroup>
+                    <Label htmlFor="displayName">
+                      Nome Completo {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                    </Label>
+                    <Input
+                      id="displayName"
+                      type="text"
+                      placeholder="Seu nome completo"
+                      value={displayName}
+                      onChange={(e) => setDisplayName(e.target.value)}
+                      required={isFirstAccess}
+                    />
+                  </FormGroup>
 
-              <FormGroup>
-                <Label htmlFor="about">
-                  Sobre você
-                </Label>
-                <TextArea
-                  id="about"
-                  placeholder="Conte um pouco sobre você, suas experiências e objetivos profissionais..."
-                  value={about}
-                  onChange={(e) => setAbout(e.target.value)}
-                />
-              </FormGroup>
+                  <FormGroup>
+                    <Label htmlFor="professionalTitle">
+                      Título Profissional
+                    </Label>
+                    <Input
+                      id="professionalTitle"
+                      type="text"
+                      placeholder="Ex: Software Engineer, Designer"
+                      value={professionalTitle}
+                      onChange={(e) => setProfessionalTitle(e.target.value)}
+                    />
+                  </FormGroup>
+                </FormRow>
 
-              <FormGroup>
-                <Label htmlFor="github">
-                  <FiGithub /> GitHub
-                </Label>
-                <Input
-                  id="github"
-                  type="url"
-                  placeholder="https://github.com/seu-usuario"
-                  value={github}
-                  onChange={(e) => setGithub(e.target.value)}
-                />
-              </FormGroup>
+                <FormGroup>
+                  <Label htmlFor="email">
+                    <FiMail /> Email
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={currentUser.email || ''}
+                    disabled
+                    readOnly
+                  />
+                  <HelpText>O email não pode ser alterado</HelpText>
+                </FormGroup>
 
-              <FormGroup>
-                <Label htmlFor="linkedin">
-                  <FiLinkedin /> LinkedIn
-                </Label>
-                <Input
-                  id="linkedin"
-                  type="url"
-                  placeholder="https://linkedin.com/in/seu-perfil"
-                  value={linkedin}
-                  onChange={(e) => setLinkedin(e.target.value)}
-                />
-              </FormGroup>
+                <FormRow>
+                  <FormGroup>
+                    <Label htmlFor="phone">
+                      <FiPhone /> Telefone/Celular
+                    </Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+55 11 99999-9999"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                    />
+                  </FormGroup>
 
-              <FormGroup>
-                <Label htmlFor="resume">
-                  <FiFileText /> Currículo
-                </Label>
+                  <FormGroup>
+                    <Label htmlFor="location">
+                      <FiMapPin /> Localização
+                    </Label>
+                    <Input
+                      id="location"
+                      type="text"
+                      placeholder="Ex: São Paulo, Brasil"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                    />
+                  </FormGroup>
+                </FormRow>
+
+                <FormRow>
+                  <FormGroup>
+                    <Label htmlFor="linkedin">
+                      <FiLinkedin /> LinkedIn
+                    </Label>
+                    <Input
+                      id="linkedin"
+                      type="url"
+                      placeholder="https://linkedin.com/in/seu-perfil"
+                      value={linkedin}
+                      onChange={(e) => setLinkedin(e.target.value)}
+                    />
+                  </FormGroup>
+
+                  <FormGroup>
+                    <Label htmlFor="github">
+                      <FiGithub /> GitHub (opcional)
+                    </Label>
+                    <Input
+                      id="github"
+                      type="url"
+                      placeholder="https://github.com/seu-usuario"
+                      value={github}
+                      onChange={(e) => setGithub(e.target.value)}
+                    />
+                  </FormGroup>
+                </FormRow>
+              </Section>
+
+              <Section>
+                <SectionSubtitle>Resumo Profissional</SectionSubtitle>
                 
-                {!profile?.resumeURL && !resumeFile ? (
-                  <FileUploadArea
-                    onClick={() => fileInputRef.current?.click()}
-                    onDragOver={handleDragOver}
-                    onDragLeave={handleDragLeave}
-                    onDrop={handleDrop}
-                    className={isDragging ? 'dragging' : ''}
-                  >
-                    <FileUploadIcon>
-                      <FiUpload />
-                    </FileUploadIcon>
-                    <FileUploadText>
-                      <strong>Clique para fazer upload</strong> ou arraste seu currículo aqui
-                    </FileUploadText>
-                    <SmallFileText>
-                      PDF, DOC ou DOCX (máx. 5MB)
-                    </SmallFileText>
-                  </FileUploadArea>
+                <FormGroup>
+                  <Label htmlFor="about">
+                    Sobre você {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                  </Label>
+                  <TextArea
+                    id="about"
+                    placeholder="Conte um pouco sobre você, suas experiências, habilidades e objetivos profissionais..."
+                    value={about}
+                    onChange={(e) => setAbout(e.target.value)}
+                    required={isFirstAccess}
+                    style={{ minHeight: '150px' }}
+                  />
+                  <HelpText>
+                    Descreva sua trajetória profissional, principais competências e o que você busca na carreira.
+                  </HelpText>
+                </FormGroup>
+              </Section>
+
+              <Section>
+                <SectionHeader>
+                  <SectionSubtitle>
+                    <FiBriefcase /> Experiência Profissional {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                  </SectionSubtitle>
+                  <AddButton type="button" onClick={addExperience}>
+                    <FiPlus /> Adicionar Experiência
+                  </AddButton>
+                </SectionHeader>
+
+                {experiences.length === 0 ? (
+                  <EmptyState>
+                    Nenhuma experiência adicionada. Clique em "Adicionar Experiência" para começar.
+                  </EmptyState>
                 ) : (
-                  <CurrentFile>
-                    <FileName>
-                      <FiFileText />
-                      {resumeFile ? resumeFile.name : profile?.resumeName}
-                      {resumeFile && <NewBadge>• Novo</NewBadge>}
-                    </FileName>
-                    <ResumeActions>
-                      {profile?.resumeURL && !resumeFile && (
-                        <ResumeLink
-                          href={profile.resumeURL} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          <FiExternalLink />
-                        </ResumeLink>
-                      )}
-                      <RemoveButton
-                        type="button"
-                        onClick={() => {
-                          if (resumeFile) {
-                            handleFileChange(null);
-                          } else {
-                            handleRemoveResume();
-                          }
-                        }}
-                      >
-                        <FiX />
-                      </RemoveButton>
-                    </ResumeActions>
-                  </CurrentFile>
+                  experiences.map((exp, index) => (
+                    <RepeatableItem key={exp.id}>
+                      <RepeatableItemHeader>
+                        <RepeatableItemTitle>Experiência #{index + 1}</RepeatableItemTitle>
+                        <RemoveItemButton type="button" onClick={() => removeExperience(exp.id)}>
+                          <FiX /> Remover
+                        </RemoveItemButton>
+                      </RepeatableItemHeader>
+
+                      <FormRow>
+                        <FormGroup>
+                          <Label>
+                            Empresa {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                          </Label>
+                          <Input
+                            type="text"
+                            placeholder="Nome da empresa"
+                            value={exp.company}
+                            onChange={(e) => updateExperience(exp.id, 'company', e.target.value)}
+                            required={isFirstAccess}
+                          />
+                        </FormGroup>
+
+                        <FormGroup>
+                          <Label>
+                            Cargo {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                          </Label>
+                          <Input
+                            type="text"
+                            placeholder="Seu cargo"
+                            value={exp.position}
+                            onChange={(e) => updateExperience(exp.id, 'position', e.target.value)}
+                            required={isFirstAccess}
+                          />
+                        </FormGroup>
+                      </FormRow>
+
+                      <FormGroup>
+                        <Label>Localização da Empresa</Label>
+                        <Input
+                          type="text"
+                          placeholder="Ex: Toronto, Ontario, Canada"
+                          value={exp.location || ''}
+                          onChange={(e) => updateExperience(exp.id, 'location', e.target.value)}
+                        />
+                      </FormGroup>
+
+                      <FormRow>
+                        <FormGroup>
+                          <Label>
+                            Data de Início {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                          </Label>
+                          <Input
+                            type="text"
+                            placeholder="MM/AAAA"
+                            value={exp.startDate}
+                            onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)}
+                            required={isFirstAccess}
+                          />
+                          <HelpText>Formato: MM/AAAA (ex: 01/2020)</HelpText>
+                        </FormGroup>
+
+                        {!exp.isCurrent && (
+                          <FormGroup>
+                            <Label>Data de Término</Label>
+                            <Input
+                              type="text"
+                              placeholder="MM/AAAA"
+                              value={exp.endDate || ''}
+                              onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
+                            />
+                            <HelpText>Formato: MM/AAAA (ex: 12/2023)</HelpText>
+                          </FormGroup>
+                        )}
+                      </FormRow>
+
+                      <CheckboxGroup>
+                        <Checkbox
+                          type="checkbox"
+                          id={`current-${exp.id}`}
+                          checked={exp.isCurrent}
+                          onChange={(e) => updateExperience(exp.id, 'isCurrent', e.target.checked)}
+                        />
+                        <CheckboxLabel htmlFor={`current-${exp.id}`}>
+                          Trabalho aqui atualmente
+                        </CheckboxLabel>
+                      </CheckboxGroup>
+
+                      <FormGroup>
+                        <Label>Descrição das Atividades</Label>
+                        <TextArea
+                          placeholder="Descreva suas responsabilidades, conquistas e projetos relevantes..."
+                          value={exp.description}
+                          onChange={(e) => updateExperience(exp.id, 'description', e.target.value)}
+                        />
+                      </FormGroup>
+                    </RepeatableItem>
+                  ))
                 )}
+              </Section>
+
+              <Section>
+                <SectionHeader>
+                  <SectionSubtitle>
+                    <FiBookOpen /> Formação Acadêmica {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                  </SectionSubtitle>
+                  <AddButton type="button" onClick={addEducation}>
+                    <FiPlus /> Adicionar Formação
+                  </AddButton>
+                </SectionHeader>
+
+                {education.length === 0 ? (
+                  <EmptyState>
+                    Nenhuma formação adicionada. Clique em "Adicionar Formação" para começar.
+                  </EmptyState>
+                ) : (
+                  education.map((edu, index) => (
+                    <RepeatableItem key={edu.id}>
+                      <RepeatableItemHeader>
+                        <RepeatableItemTitle>Formação #{index + 1}</RepeatableItemTitle>
+                        <RemoveItemButton type="button" onClick={() => removeEducation(edu.id)}>
+                          <FiX /> Remover
+                        </RemoveItemButton>
+                      </RepeatableItemHeader>
+
+                      <FormGroup>
+                        <Label>
+                          Instituição de Ensino {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                        </Label>
+                        <Input
+                          type="text"
+                          placeholder="Nome da instituição"
+                          value={edu.institution}
+                          onChange={(e) => updateEducation(edu.id, 'institution', e.target.value)}
+                          required={isFirstAccess}
+                        />
+                      </FormGroup>
+
+                      <FormRow>
+                        <FormGroup>
+                          <Label>Grau / Tipo de Diploma</Label>
+                          <Input
+                            type="text"
+                            placeholder="Ex: Bacharelado, Pós-graduação, Técnico"
+                            value={edu.degree}
+                            onChange={(e) => updateEducation(edu.id, 'degree', e.target.value)}
+                          />
+                        </FormGroup>
+
+                        <FormGroup>
+                          <Label>Área de Estudo / Curso</Label>
+                          <Input
+                            type="text"
+                            placeholder="Ex: Ciência da Computação, Engenharia"
+                            value={edu.fieldOfStudy}
+                            onChange={(e) => updateEducation(edu.id, 'fieldOfStudy', e.target.value)}
+                          />
+                        </FormGroup>
+                      </FormRow>
+
+                      <FormRow>
+                        <FormGroup>
+                          <Label>Data de Início</Label>
+                          <Input
+                            type="text"
+                            placeholder="MM/AAAA"
+                            value={edu.startDate || ''}
+                            onChange={(e) => updateEducation(edu.id, 'startDate', e.target.value)}
+                          />
+                          <HelpText>Formato: MM/AAAA (ex: 01/2016)</HelpText>
+                        </FormGroup>
+
+                        <FormGroup>
+                          <Label>Data de Conclusão</Label>
+                          <Input
+                            type="text"
+                            placeholder="MM/AAAA"
+                            value={edu.endDate || ''}
+                            onChange={(e) => updateEducation(edu.id, 'endDate', e.target.value)}
+                          />
+                          <HelpText>Formato: MM/AAAA (ex: 12/2020)</HelpText>
+                        </FormGroup>
+                      </FormRow>
+                    </RepeatableItem>
+                  ))
+                )}
+              </Section>
+
+              <Section>
+                <SectionHeader>
+                  <SectionSubtitle>
+                    <FiGlobe /> Idiomas {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                  </SectionSubtitle>
+                  <AddButton type="button" onClick={addLanguage}>
+                    <FiPlus /> Adicionar Idioma
+                  </AddButton>
+                </SectionHeader>
+
+                {languages.length === 0 ? (
+                  <EmptyState>
+                    Nenhum idioma adicionado. Clique em "Adicionar Idioma" para começar.
+                  </EmptyState>
+                ) : (
+                  languages.map((lang, index) => (
+                    <RepeatableItem key={lang.id}>
+                      <RepeatableItemHeader>
+                        <RepeatableItemTitle>Idioma #{index + 1}</RepeatableItemTitle>
+                        <RemoveItemButton type="button" onClick={() => removeLanguage(lang.id)}>
+                          <FiX /> Remover
+                        </RemoveItemButton>
+                      </RepeatableItemHeader>
+
+                      <FormRow>
+                        <FormGroup>
+                          <Label>
+                            Idioma {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                          </Label>
+                          <Input
+                            type="text"
+                            placeholder="Ex: Inglês, Português, Espanhol"
+                            value={lang.language}
+                            onChange={(e) => updateLanguage(lang.id, 'language', e.target.value)}
+                            required={isFirstAccess}
+                          />
+                        </FormGroup>
+
+                        <FormGroup>
+                          <Label>Nível de Proficiência</Label>
+                          <Select
+                            value={lang.proficiency}
+                            onChange={(e) => updateLanguage(lang.id, 'proficiency', e.target.value)}
+                          >
+                            <option value="basic">Básico</option>
+                            <option value="intermediate">Intermediário</option>
+                            <option value="professional">Profissional</option>
+                            <option value="native">Nativo</option>
+                          </Select>
+                        </FormGroup>
+                      </FormRow>
+                    </RepeatableItem>
+                  ))
+                )}
+              </Section>
+
+              <Section>
+                <SectionSubtitle>
+                  <FiFileText /> Currículo (Opcional)
+                </SectionSubtitle>
                 
-                <FileInput
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleFileInputChange}
-                />
-              </FormGroup>
+                <FormGroup>
+                  {!profile?.resumeURL && !resumeFile ? (
+                    <FileUploadArea
+                      onClick={() => fileInputRef.current?.click()}
+                      onDragOver={handleDragOver}
+                      onDragLeave={handleDragLeave}
+                      onDrop={handleDrop}
+                      className={isDragging ? 'dragging' : ''}
+                    >
+                      <FileUploadIcon>
+                        <FiUpload />
+                      </FileUploadIcon>
+                      <FileUploadText>
+                        <strong>Clique para fazer upload</strong> ou arraste seu currículo aqui
+                      </FileUploadText>
+                      <SmallFileText>
+                        PDF, DOC ou DOCX (máx. 5MB)
+                      </SmallFileText>
+                    </FileUploadArea>
+                  ) : (
+                    <CurrentFile>
+                      <FileName>
+                        <FiFileText />
+                        {resumeFile ? resumeFile.name : profile?.resumeName}
+                        {resumeFile && <NewBadge>• Novo</NewBadge>}
+                      </FileName>
+                      <ResumeActions>
+                        {profile?.resumeURL && !resumeFile && (
+                          <ResumeLink
+                            href={profile.resumeURL} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                          >
+                            <FiExternalLink />
+                          </ResumeLink>
+                        )}
+                        <RemoveButton
+                          type="button"
+                          onClick={() => {
+                            if (resumeFile) {
+                              handleFileChange(null);
+                            } else {
+                              handleRemoveResume();
+                            }
+                          }}
+                        >
+                          <FiX />
+                        </RemoveButton>
+                      </ResumeActions>
+                    </CurrentFile>
+                  )}
+                  
+                  <FileInput
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleFileInputChange}
+                  />
+                </FormGroup>
+              </Section>
 
               <ButtonGroup>
-                <Button type="button" variant="secondary" disabled={saving}>
-                  Cancelar
-                </Button>
+                {!isFirstAccess && (
+                  <Button type="button" variant="secondary" disabled={saving}>
+                    Cancelar
+                  </Button>
+                )}
                 <Button type="submit" variant="primary" disabled={saving || uploadingFile}>
-                  {uploadingFile ? 'Enviando arquivo...' : saving ? 'Salvando...' : 'Salvar Perfil'}
+                  {uploadingFile ? 'Enviando arquivo...' : saving ? 'Salvando...' : isFirstAccess ? 'Concluir Cadastro' : 'Salvar Perfil'}
                 </Button>
               </ButtonGroup>
             </Form>

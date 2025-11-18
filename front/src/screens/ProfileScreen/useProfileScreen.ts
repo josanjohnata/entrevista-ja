@@ -1,21 +1,37 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from '../../lib/firebase';
-import type { UserProfile } from './types';
+import type { UserProfile, Experience, Education, Language } from './types';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export function useProfileScreen() {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const isFirstAccess = location.state?.isFirstAccess || false;
+  
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  
   const [displayName, setDisplayName] = useState('');
-  const [about, setAbout] = useState('');
-  const [github, setGithub] = useState('');
+  const [professionalTitle, setProfessionalTitle] = useState('');
+  const [phone, setPhone] = useState('');
+  const [location_, setLocation] = useState('');
   const [linkedin, setLinkedin] = useState('');
+  const [github, setGithub] = useState('');
+  
+  const [about, setAbout] = useState('');
+  
+  const [experiences, setExperiences] = useState<Experience[]>([]);
+  const [education, setEducation] = useState<Education[]>([]);
+  const [languages, setLanguages] = useState<Language[]>([]);
+  
   const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   useEffect(() => {
@@ -40,26 +56,25 @@ export function useProfileScreen() {
           const profileData: UserProfile = {
             ...data,
             updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(),
+            profileCompleted: data.profileCompleted || false,
           } as UserProfile;
+          
           setProfile(profileData);
           setDisplayName(profileData.displayName || '');
-          setAbout(profileData.about || '');
-          setGithub(profileData.github || '');
+          setProfessionalTitle(profileData.professionalTitle || '');
+          setPhone(profileData.phone || '');
+          setLocation(profileData.location || '');
           setLinkedin(profileData.linkedin || '');
+          setGithub(profileData.github || '');
+          setAbout(profileData.about || '');
+          setExperiences(profileData.experiences || []);
+          setEducation(profileData.education || []);
+          setLanguages(profileData.languages || []);
         } else {
           setDisplayName(currentUser.displayName || '');
         }
       } catch (error) {
-        console.error('Erro ao carregar perfil:', error);
-        const errorMessage = error instanceof Error ? error.message : String(error);
-        
-        if (errorMessage.includes('permission') || errorMessage.includes('Permission') || errorMessage.includes('Missing or insufficient permissions')) {
-          setMessage({ type: 'error', text: 'Erro de permissão ao carregar perfil. Verifique as regras do Firestore.' });
-        } else if (errorMessage.includes('network') || errorMessage.includes('Network') || errorMessage.includes('Failed to fetch')) {
-          setMessage({ type: 'error', text: 'Erro de conexão. Verifique sua internet.' });
-        } else {
-          console.warn('Aviso ao carregar perfil (pode ser normal se o perfil ainda não existe):', error);
-        }
+        console.warn('Aviso ao carregar perfil (pode ser normal se o perfil ainda não existe):', error);
         
         setDisplayName(currentUser.displayName || '');
       } finally {
@@ -69,6 +84,71 @@ export function useProfileScreen() {
 
     fetchProfile();
   }, [currentUser]);
+
+  const addExperience = () => {
+    const newExperience: Experience = {
+      id: Date.now().toString(),
+      company: '',
+      position: '',
+      location: '',
+      startDate: '',
+      endDate: '',
+      isCurrent: false,
+      description: '',
+    };
+    setExperiences([...experiences, newExperience]);
+  };
+
+  const updateExperience = (id: string, field: keyof Experience, value: any) => {
+    setExperiences(experiences.map(exp => 
+      exp.id === id ? { ...exp, [field]: value } : exp
+    ));
+  };
+
+  const removeExperience = (id: string) => {
+    setExperiences(experiences.filter(exp => exp.id !== id));
+  };
+
+  const addEducation = () => {
+    const newEducation: Education = {
+      id: Date.now().toString(),
+      institution: '',
+      degree: '',
+      fieldOfStudy: '',
+      startDate: '',
+      endDate: '',
+    };
+    setEducation([...education, newEducation]);
+  };
+
+  const updateEducation = (id: string, field: keyof Education, value: any) => {
+    setEducation(education.map(edu => 
+      edu.id === id ? { ...edu, [field]: value } : edu
+    ));
+  };
+
+  const removeEducation = (id: string) => {
+    setEducation(education.filter(edu => edu.id !== id));
+  };
+
+  const addLanguage = () => {
+    const newLanguage: Language = {
+      id: Date.now().toString(),
+      language: '',
+      proficiency: 'basic',
+    };
+    setLanguages([...languages, newLanguage]);
+  };
+
+  const updateLanguage = (id: string, field: keyof Language, value: any) => {
+    setLanguages(languages.map(lang => 
+      lang.id === id ? { ...lang, [field]: value } : lang
+    ));
+  };
+
+  const removeLanguage = (id: string) => {
+    setLanguages(languages.filter(lang => lang.id !== id));
+  };
 
   const handleFileChange = (file: File | null) => {
     if (file) {
@@ -129,11 +209,58 @@ export function useProfileScreen() {
     }
   };
 
+  const validateForm = (): boolean => {
+    if (isFirstAccess) {
+      if (!displayName.trim()) {
+        setMessage({ type: 'error', text: 'Nome completo é obrigatório.' });
+        return false;
+      }
+      
+      if (!about.trim()) {
+        setMessage({ type: 'error', text: 'Resumo profissional é obrigatório.' });
+        return false;
+      }
+
+      const hasValidExperience = experiences.length > 0 && experiences.some(exp => 
+        exp.company.trim() && exp.position.trim() && exp.startDate.trim()
+      );
+      
+      if (!hasValidExperience) {
+        setMessage({ type: 'error', text: 'Adicione pelo menos uma experiência profissional com empresa, cargo e data de início.' });
+        return false;
+      }
+
+      const hasValidEducation = education.length > 0 && education.some(edu => 
+        edu.institution.trim()
+      );
+      
+      if (!hasValidEducation) {
+        setMessage({ type: 'error', text: 'Adicione pelo menos uma formação acadêmica com instituição.' });
+        return false;
+      }
+
+      const hasValidLanguage = languages.length > 0 && languages.some(lang => 
+        lang.language.trim()
+      );
+      
+      if (!hasValidLanguage) {
+        setMessage({ type: 'error', text: 'Adicione pelo menos um idioma.' });
+        return false;
+      }
+    }
+
+    return true;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!currentUser) {
       setMessage({ type: 'error', text: 'Usuário não autenticado.' });
+      return;
+    }
+
+    if (!validateForm()) {
       return;
     }
 
@@ -158,28 +285,25 @@ export function useProfileScreen() {
         setUploadingFile(false);
       }
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const profileData: Record<string, any> = {
         uid: currentUser.uid,
         displayName: displayName.trim() || currentUser.displayName || '',
         email: currentUser.email!,
+        professionalTitle: professionalTitle.trim(),
+        phone: phone.trim(),
+        location: location_.trim(),
+        linkedin: linkedin.trim(),
+        github: github.trim(),
+        about: about.trim(),
+        experiences: experiences.filter(exp => exp.company.trim() || exp.position.trim()),
+        education: education.filter(edu => edu.institution.trim()),
+        languages: languages.filter(lang => lang.language.trim()),
+        profileCompleted: true,
         updatedAt: Timestamp.now(),
       };
 
       if (currentUser.photoURL) {
         profileData.photoURL = currentUser.photoURL;
-      }
-
-      if (about.trim()) {
-        profileData.about = about.trim();
-      }
-
-      if (github.trim()) {
-        profileData.github = github.trim();
-      }
-
-      if (linkedin.trim()) {
-        profileData.linkedin = linkedin.trim();
       }
 
       if (resumeData.resumeURL) {
@@ -202,17 +326,30 @@ export function useProfileScreen() {
         displayName: profileData.displayName,
         email: profileData.email,
         photoURL: profileData.photoURL,
-        about: profileData.about,
-        github: profileData.github,
+        professionalTitle: profileData.professionalTitle,
+        phone: profileData.phone,
+        location: profileData.location,
         linkedin: profileData.linkedin,
+        github: profileData.github,
+        about: profileData.about,
+        experiences: profileData.experiences,
+        education: profileData.education,
+        languages: profileData.languages,
         resumeURL: profileData.resumeURL,
         resumeName: profileData.resumeName,
+        profileCompleted: true,
         updatedAt: new Date(),
       };
 
       setProfile(updatedProfile);
       setResumeFile(null);
       setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
+      
+      if (isFirstAccess) {
+        setTimeout(() => {
+          navigate('/home', { replace: true });
+        }, 2000);
+      }
     } catch (error) {
       console.error('Erro ao salvar perfil:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
@@ -265,14 +402,39 @@ export function useProfileScreen() {
     saving,
     uploadingFile,
     message,
+    isFirstAccess,
+    
     displayName,
     setDisplayName,
-    about,
-    setAbout,
-    github,
-    setGithub,
+    professionalTitle,
+    setProfessionalTitle,
+    phone,
+    setPhone,
+    location: location_,
+    setLocation,
     linkedin,
     setLinkedin,
+    github,
+    setGithub,
+    
+    about,
+    setAbout,
+    
+    experiences,
+    addExperience,
+    updateExperience,
+    removeExperience,
+    
+    education,
+    addEducation,
+    updateEducation,
+    removeEducation,
+    
+    languages,
+    addLanguage,
+    updateLanguage,
+    removeLanguage,
+    
     resumeFile,
     handleFileChange,
     handleSubmit,
@@ -280,4 +442,3 @@ export function useProfileScreen() {
     dismissMessage,
   };
 }
-
