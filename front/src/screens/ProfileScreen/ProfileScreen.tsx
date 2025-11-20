@@ -219,7 +219,7 @@ export const ProfileScreen: React.FC = () => {
                 <h3>🎉 Bem-vindo! Complete seu perfil</h3>
                 <p>
                   Para começar a usar a plataforma, precisamos que você preencha algumas informações importantes sobre sua carreira profissional.
-                  Todos os campos marcados com <RequiredBadge>*</RequiredBadge> são obrigatórios.
+                  Os campos marcados com <RequiredBadge>*</RequiredBadge> são obrigatórios.
                 </p>
               </FirstAccessBanner>
             )}
@@ -438,6 +438,7 @@ export const ProfileScreen: React.FC = () => {
                             value={exp.startDate}
                             onChange={(e) => updateExperience(exp.id, 'startDate', e.target.value)}
                             required={isFirstAccess}
+                            maxLength={7}
                           />
                           <HelpText>Formato: MM/AAAA (ex: 01/2020)</HelpText>
                         </FormGroup>
@@ -450,6 +451,7 @@ export const ProfileScreen: React.FC = () => {
                               placeholder="MM/AAAA"
                               value={exp.endDate || ''}
                               onChange={(e) => updateExperience(exp.id, 'endDate', e.target.value)}
+                              maxLength={7}
                             />
                             <HelpText>Formato: MM/AAAA (ex: 12/2023)</HelpText>
                           </FormGroup>
@@ -548,6 +550,7 @@ export const ProfileScreen: React.FC = () => {
                             placeholder="MM/AAAA"
                             value={edu.startDate || ''}
                             onChange={(e) => updateEducation(edu.id, 'startDate', e.target.value)}
+                            maxLength={7}
                           />
                           <HelpText>Formato: MM/AAAA (ex: 01/2016)</HelpText>
                         </FormGroup>
@@ -559,6 +562,7 @@ export const ProfileScreen: React.FC = () => {
                             placeholder="MM/AAAA"
                             value={edu.endDate || ''}
                             onChange={(e) => updateEducation(edu.id, 'endDate', e.target.value)}
+                            maxLength={7}
                           />
                           <HelpText>Formato: MM/AAAA (ex: 12/2020)</HelpText>
                         </FormGroup>
@@ -571,7 +575,7 @@ export const ProfileScreen: React.FC = () => {
               <Section>
                 <SectionHeader>
                   <SectionSubtitle>
-                    <FiGlobe /> Idiomas {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                    <FiGlobe /> Idiomas (Opcional)
                   </SectionSubtitle>
                   <AddButton type="button" onClick={addLanguage}>
                     <FiPlus /> Adicionar Idioma
@@ -595,14 +599,13 @@ export const ProfileScreen: React.FC = () => {
                       <FormRow>
                         <FormGroup>
                           <Label>
-                            Idioma {isFirstAccess && <RequiredBadge>*</RequiredBadge>}
+                            Idioma
                           </Label>
                           <Input
                             type="text"
                             placeholder="Ex: Inglês, Português, Espanhol"
                             value={lang.language}
                             onChange={(e) => updateLanguage(lang.id, 'language', e.target.value)}
-                            required={isFirstAccess}
                           />
                         </FormGroup>
 

@@ -6,6 +6,7 @@ import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage
 import { db, storage } from '../../lib/firebase';
 import type { UserProfile, Experience, Education, Language } from './types';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { formatMonthYear } from '../../utils/dateFormatter';
 
 export function useProfileScreen() {
   const { currentUser } = useAuth();
@@ -100,6 +101,10 @@ export function useProfileScreen() {
   };
 
   const updateExperience = (id: string, field: keyof Experience, value: any) => {
+    if ((field === 'startDate' || field === 'endDate') && typeof value === 'string') {
+      value = formatMonthYear(value);
+    }
+    
     setExperiences(experiences.map(exp => 
       exp.id === id ? { ...exp, [field]: value } : exp
     ));
@@ -122,6 +127,10 @@ export function useProfileScreen() {
   };
 
   const updateEducation = (id: string, field: keyof Education, value: any) => {
+    if ((field === 'startDate' || field === 'endDate') && typeof value === 'string') {
+      value = formatMonthYear(value);
+    }
+    
     setEducation(education.map(edu => 
       edu.id === id ? { ...edu, [field]: value } : edu
     ));
@@ -239,14 +248,7 @@ export function useProfileScreen() {
         return false;
       }
 
-      const hasValidLanguage = languages.length > 0 && languages.some(lang => 
-        lang.language.trim()
-      );
-      
-      if (!hasValidLanguage) {
-        setMessage({ type: 'error', text: 'Adicione pelo menos um idioma.' });
-        return false;
-      }
+      // Idiomas são opcionais - não precisa validar
     }
 
     return true;
