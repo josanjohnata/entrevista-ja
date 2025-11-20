@@ -91,7 +91,7 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/profile"
         element={
-          <ProtectedRoute requireAuth={true}>
+          <ProtectedRoute requireAuth={true} skipProfileCheck={true}>
             <ProfileScreen />
           </ProtectedRoute>
         }

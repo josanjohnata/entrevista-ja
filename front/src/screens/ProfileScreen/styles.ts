@@ -91,6 +91,7 @@ export const FormGroup = styled.div`
 
 export const Label = styled.label`
   font-size: 0.875rem;
+  margin-top: 0.5rem;
   font-weight: 600;
   color: ${colors.primary};
   display: flex;
@@ -516,7 +517,7 @@ export const RequiredBadge = styled.span`
 `;
 
 export const FirstAccessBanner = styled.div`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #0077B5;
   color: white;
   padding: 1.5rem;
   border-radius: 12px;

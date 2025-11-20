@@ -1,23 +1,61 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth, UserRole } from '../../contexts/AuthContext';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../lib/firebase';
 import { LoadingContainer, AccessDeniedContainer } from './styles';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredRole?: UserRole;
   requireAuth?: boolean;
+  skipProfileCheck?: boolean;
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
   children, 
   requiredRole,
-  requireAuth = true 
+  requireAuth = true,
+  skipProfileCheck = false
 }) => {
-  const { isAuthenticated, userData, loading } = useAuth();
+  const { isAuthenticated, userData, loading, currentUser } = useAuth();
   const location = useLocation();
+  const [checkingProfile, setCheckingProfile] = useState(!skipProfileCheck);
+  const [profileCompleted, setProfileCompleted] = useState(false);
 
-  if (loading) {
+  useEffect(() => {
+    const checkProfile = async () => {
+      if (skipProfileCheck || !currentUser || !db) {
+        setCheckingProfile(false);
+        return;
+      }
+
+      try {
+        const profileRef = doc(db, 'profiles', currentUser.uid);
+        const profileSnap = await getDoc(profileRef);
+
+        if (!profileSnap.exists()) {
+          setProfileCompleted(false);
+        } else {
+          const profileData = profileSnap.data();
+          setProfileCompleted(profileData.profileCompleted === true);
+        }
+      } catch (error) {
+        console.warn('Erro ao verificar perfil:', error);
+        setProfileCompleted(false);
+      } finally {
+        setCheckingProfile(false);
+      }
+    };
+
+    if (isAuthenticated && !loading && !skipProfileCheck) {
+      checkProfile();
+    } else if (skipProfileCheck) {
+      setCheckingProfile(false);
+    }
+  }, [isAuthenticated, currentUser, loading, skipProfileCheck]);
+
+  if (loading || checkingProfile) {
     return (
       <LoadingContainer>
         Carregando...
@@ -27,6 +65,10 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   if (requireAuth && !isAuthenticated) {
     return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (!skipProfileCheck && isAuthenticated && !profileCompleted && location.pathname !== '/profile') {
+    return <Navigate to="/profile" state={{ isFirstAccess: true }} replace />;
   }
 
   if (requiredRole && userData) {

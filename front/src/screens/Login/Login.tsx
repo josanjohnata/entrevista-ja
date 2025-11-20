@@ -24,9 +24,8 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthForm } from "../../hooks/useAuthForm";
 import { useAuth } from "../../contexts/AuthContext";
-import { auth, db } from "../../lib/firebase";
+import { auth } from "../../lib/firebase";
 import { useSignInWithEmailAndPassword } from "react-firebase-hooks/auth";
-import { doc, getDoc } from "firebase/firestore";
 
 export const LoginScreen: FC = () => {
   const [email, setEmail] = useState('');
@@ -34,50 +33,18 @@ export const LoginScreen: FC = () => {
   const [rememberMe, setRememberMe] = useState(false);
 
   const { loading, error, handleGoogleLogin } = useAuthForm();
-  const { firebaseConfigured, isAuthenticated, loading: authLoading, currentUser } = useAuth();
+  const { firebaseConfigured, isAuthenticated, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
   const [
     signInWithEmailAndPassword,
   ] = useSignInWithEmailAndPassword(auth);
 
-  const checkFirstAccess = async (userId: string) => {
-    try {
-      if (!db) return false;
-      
-      const profileRef = doc(db, 'profiles', userId);
-      const profileSnap = await getDoc(profileRef);
-      
-      if (!profileSnap.exists()) {
-        return true;
-      }
-      
-      const profileData = profileSnap.data();
-      return !profileData.profileCompleted;
-    } catch (error) {
-      console.error('Erro ao verificar perfil:', error);
-      return false;
-    }
-  };
-
   useEffect(() => {
-    const handleAuthRedirect = async () => {
-      if (!authLoading && isAuthenticated && currentUser) {
-        const isFirstAccess = await checkFirstAccess(currentUser.uid);
-        
-        if (isFirstAccess) {
-          navigate('/profile', { 
-            replace: true,
-            state: { isFirstAccess: true }
-          });
-        } else {
-          navigate('/home', { replace: true });
-        }
-      }
-    };
-
-    handleAuthRedirect();
-  }, [isAuthenticated, authLoading, currentUser, navigate]);
+    if (!authLoading && isAuthenticated) {
+      navigate('/home', { replace: true });
+    }
+  }, [isAuthenticated, authLoading, navigate]);
 
   const handleLoginSubmit = async (event: FormEvent) => {
     event.preventDefault();
