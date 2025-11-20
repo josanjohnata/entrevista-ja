@@ -12,7 +12,7 @@ export function useProfileScreen() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const isFirstAccess = location.state?.isFirstAccess || false;
+  const [isFirstAccess, setIsFirstAccess] = useState(location.state?.isFirstAccess || false);
   
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -347,17 +347,23 @@ export function useProfileScreen() {
       setResumeFile(null);
       setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
       
+      // Remove o banner de primeiro acesso após salvar
       if (isFirstAccess) {
+        setIsFirstAccess(false);
         setTimeout(() => {
           navigate('/home', { replace: true });
         }, 2000);
       }
     } catch (error) {
-      console.error('Erro ao salvar perfil:', error);
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      const errorCode = error && typeof error === 'object' && 'code' in error ? (error as any).code : '';
       
-      if (errorMessage.includes('permission') || errorMessage.includes('Permission')) {
-        setMessage({ type: 'error', text: 'Erro de permissão. Verifique se você está autenticado.' });
+      if (errorCode === 'permission-denied' || errorMessage.includes('Missing or insufficient permissions')) {
+        
+        setMessage({ 
+          type: 'error', 
+          text: 'Erro de permissão do Firestore. Você precisa configurar as regras de segurança no Firebase Console. Verifique o console do navegador (F12) para instruções.' 
+        });
       } else if (errorMessage.includes('network') || errorMessage.includes('Network')) {
         setMessage({ type: 'error', text: 'Erro de conexão. Verifique sua internet.' });
       } else {
