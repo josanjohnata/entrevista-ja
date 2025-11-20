@@ -1,7 +1,8 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Loader2, Sparkles, Target, TrendingUp, Upload } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { doc, getDoc } from 'firebase/firestore';
 
 import { Button } from '../../../presentation/components/Button';
 import { Card } from '../../../presentation/components/Card';
@@ -10,17 +11,127 @@ import { Textarea } from '../../../presentation/components/Textarea';
 import { Label } from '../../../presentation/components/Label';
 import { Container, Page } from '../../../presentation/components/Layout';
 import { supabase } from '../../../infrastructure/supabase/client';
+import { useAuth } from '../../../contexts/AuthContext';
+import { db } from '../../../lib/firebase';
+import type { UserProfile } from '../../../screens/ProfileScreen/types';
 
 import * as S from './Index.styles';
 
+const formatProfileAsResume = (profile: UserProfile): string => {
+  let resume = '';
+
+  resume += `${profile.displayName}\n`;
+  if (profile.professionalTitle) {
+    resume += `${profile.professionalTitle}\n`;
+  }
+  resume += `${profile.email}\n`;
+  if (profile.phone) {
+    resume += `${profile.phone}\n`;
+  }
+  if (profile.location) {
+    resume += `${profile.location}\n`;
+  }
+  if (profile.linkedin) {
+    resume += `LinkedIn: ${profile.linkedin}\n`;
+  }
+  if (profile.github) {
+    resume += `GitHub: ${profile.github}\n`;
+  }
+  resume += '\n';
+
+  if (profile.about) {
+    resume += `RESUMO PROFISSIONAL:\n${profile.about}\n\n`;
+  }
+
+  if (profile.experiences && profile.experiences.length > 0) {
+    resume += `EXPERIÊNCIA PROFISSIONAL:\n\n`;
+    profile.experiences.forEach((exp) => {
+      resume += `${exp.position} - ${exp.company}\n`;
+      if (exp.location) {
+        resume += `${exp.location}\n`;
+      }
+      const endDate = exp.isCurrent ? 'Atual' : (exp.endDate || '');
+      resume += `${exp.startDate} - ${endDate}\n`;
+      if (exp.description) {
+        resume += `${exp.description}\n`;
+      }
+      resume += '\n';
+    });
+  }
+
+  if (profile.education && profile.education.length > 0) {
+    resume += `FORMAÇÃO ACADÊMICA:\n\n`;
+    profile.education.forEach((edu) => {
+      resume += `${edu.institution}\n`;
+      if (edu.degree) {
+        resume += `${edu.degree}`;
+        if (edu.fieldOfStudy) {
+          resume += ` em ${edu.fieldOfStudy}`;
+        }
+        resume += '\n';
+      }
+      if (edu.startDate || edu.endDate) {
+        resume += `${edu.startDate || ''} - ${edu.endDate || ''}\n`;
+      }
+      resume += '\n';
+    });
+  }
+
+  if (profile.languages && profile.languages.length > 0) {
+    resume += `IDIOMAS:\n`;
+    const proficiencyMap: Record<string, string> = {
+      basic: 'Básico',
+      intermediate: 'Intermediário',
+      professional: 'Profissional',
+      native: 'Nativo',
+    };
+    profile.languages.forEach((lang) => {
+      const proficiency = proficiencyMap[lang.proficiency] || lang.proficiency;
+      resume += `- ${lang.language}: ${proficiency}\n`;
+    });
+  }
+
+  return resume.trim();
+};
+
 export const IndexPage: React.FC = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [curriculo, setCurriculo] = useState('');
   const [vaga, setVaga] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [fileName, setFileName] = useState<string>('');
+  const [loadingProfile, setLoadingProfile] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!currentUser || !db) {
+        setLoadingProfile(false);
+        return;
+      }
+
+      try {
+        const profileRef = doc(db, 'profiles', currentUser.uid);
+        const profileSnap = await getDoc(profileRef);
+
+        if (profileSnap.exists()) {
+          const profileData = profileSnap.data() as UserProfile;
+          
+          if (profileData.profileCompleted) {
+            const resumeText = formatProfileAsResume(profileData);
+            setCurriculo(resumeText);
+            toast.success('✨ Currículo preenchido automaticamente com base no seu perfil!');
+          }
+        }
+      } finally {
+        setLoadingProfile(false);
+      }
+    };
+
+    loadProfile();
+  }, [currentUser]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -222,17 +333,11 @@ export const IndexPage: React.FC = () => {
                 </S.FileUploadContainer>
                 <Textarea
                   id="curriculo"
-                  placeholder="Cole todo o texto do seu currículo aqui... 
-                    Exemplo:
-                    João Silva
-                    Desenvolvedor Full Stack
-                    contato@joao.com
-
-                    EXPERIÊNCIA:
-                    - Empresa X (2021-2023): Desenvolvedor Sênior..."
+                  placeholder={loadingProfile ? "Carregando seu perfil..." : "Cole todo o texto do seu currículo aqui... Ex: João Silva, Desenvolvedor Full Stack, contato@joao.com, EXPERIÊNCIA: Empresa X (2021-2023)..."}
                   value={curriculo}
                   onChange={(e) => setCurriculo(e.target.value)}
                   rows={10}
+                  disabled={loadingProfile}
                 />
               </S.FormGroup>
 
