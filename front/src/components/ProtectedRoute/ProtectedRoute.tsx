@@ -41,7 +41,6 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           setProfileCompleted(profileData.profileCompleted === true);
         }
       } catch (error) {
-        console.warn('Erro ao verificar perfil:', error);
         setProfileCompleted(false);
       } finally {
         setCheckingProfile(false);

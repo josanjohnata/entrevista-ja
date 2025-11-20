@@ -44,7 +44,6 @@ export function useProfileScreen() {
     const fetchProfile = async () => {
       try {
         if (!db) {
-          console.warn('Firestore não está configurado');
           setDisplayName(currentUser.displayName || '');
           return;
         }
@@ -75,8 +74,6 @@ export function useProfileScreen() {
           setDisplayName(currentUser.displayName || '');
         }
       } catch (error) {
-        console.warn('Aviso ao carregar perfil (pode ser normal se o perfil ainda não existe):', error);
-        
         setDisplayName(currentUser.displayName || '');
       } finally {
         setLoading(false);
@@ -195,26 +192,19 @@ export function useProfileScreen() {
   const deleteOldResume = async (resumeURL: string) => {
     try {
       if (!storage) {
-        console.warn('Storage não está configurado');
         return;
       }
       
-      try {
-        const url = new URL(resumeURL);
-        const pathMatch = url.pathname.match(/\/o\/(.+?)(?:\?|$)/);
-        const path = pathMatch ? decodeURIComponent(pathMatch[1]) : null;
-        
-        if (path) {
-          const oldResumeRef = ref(storage, path);
-          await deleteObject(oldResumeRef);
-        } else {
-          console.warn('Não foi possível extrair o path da URL do currículo:', resumeURL);
-        }
-      } catch (urlError) {
-        console.warn('Erro ao processar URL do currículo antigo, continuando sem deletar:', urlError);
+      const url = new URL(resumeURL);
+      const pathMatch = url.pathname.match(/\/o\/(.+?)(?:\?|$)/);
+      const path = pathMatch ? decodeURIComponent(pathMatch[1]) : null;
+      
+      if (path) {
+        const oldResumeRef = ref(storage, path);
+        await deleteObject(oldResumeRef);
       }
     } catch (error) {
-      console.error('Erro ao deletar currículo antigo (não crítico):', error);
+      // Silenciosamente ignora erros ao deletar arquivo antigo
     }
   };
 
@@ -347,7 +337,6 @@ export function useProfileScreen() {
       setResumeFile(null);
       setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
       
-      // Remove o banner de primeiro acesso após salvar
       if (isFirstAccess) {
         setIsFirstAccess(false);
         setTimeout(() => {
@@ -392,7 +381,6 @@ export function useProfileScreen() {
       setProfile({ ...profile, resumeURL: undefined, resumeName: undefined });
       setMessage({ type: 'success', text: 'Currículo removido com sucesso!' });
     } catch (error) {
-      console.error('Erro ao remover currículo:', error);
       setMessage({ type: 'error', text: 'Erro ao remover currículo.' });
     } finally {
       setSaving(false);
