@@ -88,9 +88,9 @@ export const Label = styled.label`
   color: ${colors.text};
 `;
 
-export const Input = styled.input`
+export const Input = styled.input<{ hasError?: boolean }>`
   background-color: ${colors.neutral[100]};
-  border: 1px solid #444;
+  border: 1px solid ${({ hasError }) => hasError ? '#dc3545' : '#444'};
   color: ${colors.text};
   padding: 0.875rem 1rem;
   border-radius: 6px;
@@ -99,7 +99,8 @@ export const Input = styled.input`
 
   &:focus {
     outline: none;
-    border-color: ${colors.primary};
+    border-color: ${({ hasError }) => hasError ? '#dc3545' : colors.primary};
+    box-shadow: ${({ hasError }) => hasError ? '0 0 0 0.2rem rgba(220, 53, 69, 0.25)' : 'none'};
   }
 `;
 
@@ -169,9 +170,20 @@ export const WarningBox = styled.div`
 `;
 
 export const ErrorMessage = styled.div`
-  color: red;
+  color: #dc3545;
   margin-bottom: 1rem;
   font-size: 0.9rem;
+  padding: 0.75rem 1rem;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+`;
+
+export const FieldErrorMessage = styled.span`
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+  display: block;
 `;
 
 export const Divider = styled.div`
