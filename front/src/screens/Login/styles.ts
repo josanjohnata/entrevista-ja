@@ -81,6 +81,50 @@ export const InputGroup = styled.div`
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative;
+`;
+
+export const PasswordInputWrapper = styled.div`
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+
+  input {
+    width: 100%;
+    padding-right: 45px;
+  }
+`;
+
+export const TogglePasswordButton = styled.button`
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: ${colors.text};
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  &:focus {
+    outline: none;
+    opacity: 1;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+  }
 `;
 
 export const Label = styled.label`

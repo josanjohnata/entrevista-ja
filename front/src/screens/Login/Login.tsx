@@ -20,8 +20,11 @@ import {
   FieldErrorMessage,
   Divider,
   DividerText,
-  GoogleButton
+  GoogleButton,
+  PasswordInputWrapper,
+  TogglePasswordButton
 } from "./styles";
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthForm } from "../../hooks/useAuthForm";
 import { useAuth } from "../../contexts/AuthContext";
@@ -35,6 +38,7 @@ export const LoginScreen: FC = () => {
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [generalError, setGeneralError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const { loading, error, handleGoogleLogin } = useAuthForm();
   const { firebaseConfigured, isAuthenticated, loading: authLoading } = useAuth();
@@ -159,19 +163,28 @@ export const LoginScreen: FC = () => {
 
               <InputGroup>
                 <Label htmlFor="password">Senha</Label>
-                <Input
-                  type="password"
-                  id="password"
-                  placeholder="********"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setPasswordError('');
-                    setGeneralError('');
-                  }}
-                  hasError={!!passwordError}
-                  required
-                />
+                <PasswordInputWrapper>
+                  <Input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    placeholder="********"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setPasswordError('');
+                      setGeneralError('');
+                    }}
+                    hasError={!!passwordError}
+                    required
+                  />
+                  <TogglePasswordButton
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                  >
+                    {showPassword ? <FiEyeOff /> : <FiEye />}
+                  </TogglePasswordButton>
+                </PasswordInputWrapper>
                 {passwordError && <FieldErrorMessage>{passwordError}</FieldErrorMessage>}
               </InputGroup>
 
