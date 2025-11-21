@@ -36,51 +36,116 @@ export function useProfileScreen() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const clearAllData = () => {
+      if (isMounted) {
+        setProfile(null);
+        setDisplayName('');
+        setProfessionalTitle('');
+        setPhone('');
+        setLocation('');
+        setLinkedin('');
+        setGithub('');
+        setAbout('');
+        setExperiences([]);
+        setEducation([]);
+        setLanguages([]);
+        setResumeFile(null);
+        setLoading(false);
+      }
+    };
+
     if (!currentUser) {
-      setLoading(false);
+      clearAllData();
       return;
     }
 
     const fetchProfile = async () => {
       try {
         if (!db) {
-          setDisplayName(currentUser.displayName || '');
+          if (isMounted) {
+            setDisplayName(currentUser.displayName || '');
+            setLoading(false);
+          }
           return;
         }
 
         const profileRef = doc(db, 'profiles', currentUser.uid);
         const profileSnap = await getDoc(profileRef);
 
-        if (profileSnap.exists()) {
-          const data = profileSnap.data();
-          const profileData: UserProfile = {
-            ...data,
-            updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(),
-            profileCompleted: data.profileCompleted || false,
-          } as UserProfile;
-          
-          setProfile(profileData);
-          setDisplayName(profileData.displayName || '');
-          setProfessionalTitle(profileData.professionalTitle || '');
-          setPhone(profileData.phone || '');
-          setLocation(profileData.location || '');
-          setLinkedin(profileData.linkedin || '');
-          setGithub(profileData.github || '');
-          setAbout(profileData.about || '');
-          setExperiences(profileData.experiences || []);
-          setEducation(profileData.education || []);
-          setLanguages(profileData.languages || []);
-        } else {
-          setDisplayName(currentUser.displayName || '');
+        if (isMounted) {
+          if (profileSnap.exists()) {
+            const data = profileSnap.data();
+            const profileData: UserProfile = {
+              ...data,
+              updatedAt: data.updatedAt?.toDate ? data.updatedAt.toDate() : new Date(),
+              profileCompleted: data.profileCompleted || false,
+            } as UserProfile;
+            
+            setProfile(profileData);
+            setDisplayName(profileData.displayName || '');
+            setProfessionalTitle(profileData.professionalTitle || '');
+            setPhone(profileData.phone || '');
+            setLocation(profileData.location || '');
+            setLinkedin(profileData.linkedin || '');
+            setGithub(profileData.github || '');
+            setAbout(profileData.about || '');
+            setExperiences(profileData.experiences || []);
+            setEducation(profileData.education || []);
+            setLanguages(profileData.languages || []);
+          } else {
+            setProfile(null);
+            setDisplayName(currentUser.displayName || '');
+            setProfessionalTitle('');
+            setPhone('');
+            setLocation('');
+            setLinkedin('');
+            setGithub('');
+            setAbout('');
+            setExperiences([]);
+            setEducation([]);
+            setLanguages([]);
+          }
         }
       } catch (error) {
-        setDisplayName(currentUser.displayName || '');
+        if (isMounted) {
+          setProfile(null);
+          setDisplayName(currentUser.displayName || '');
+          setProfessionalTitle('');
+          setPhone('');
+          setLocation('');
+          setLinkedin('');
+          setGithub('');
+          setAbout('');
+          setExperiences([]);
+          setEducation([]);
+          setLanguages([]);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     fetchProfile();
+
+    return () => {
+      isMounted = false;
+      setProfile(null);
+      setDisplayName('');
+      setProfessionalTitle('');
+      setPhone('');
+      setLocation('');
+      setLinkedin('');
+      setGithub('');
+      setAbout('');
+      setExperiences([]);
+      setEducation([]);
+      setLanguages([]);
+      setResumeFile(null);
+    };
   }, [currentUser]);
 
   const addExperience = () => {

@@ -41,6 +41,7 @@ class ErrorBoundary extends Component<
 import { IndexPage } from '../../presentation/pages/Index/Index';
 import { theme } from '../../styles/theme';
 import { GlobalStyles } from '../../styles/GlobalStyles';
+import { useAuth } from '../../contexts/AuthContext';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -52,6 +53,9 @@ const queryClient = new QueryClient({
 });
 
 export const HomeScreen: React.FC = () => {
+  const { currentUser } = useAuth();
+  const userKey = currentUser?.uid || 'no-user';
+
   return (
     <>
       <HeaderHome />
@@ -60,7 +64,7 @@ export const HomeScreen: React.FC = () => {
           <GlobalStyles />
           <ErrorBoundary>
             <div style={{ minHeight: '100vh', position: 'relative' }}>
-              <IndexPage />
+              <IndexPage key={userKey} />
             </div>
           </ErrorBoundary>
           <ToastContainer

@@ -6,7 +6,7 @@ import { LoginScreen } from '../screens/Login/Login';
 import { CheckoutScreen } from '../screens/CheckoutScreen/CheckoutScreen';
 import { HomeScreen } from '../screens/HomeScreen/HomeScreen';
 import { ProtectedRoute } from '../components/ProtectedRoute/ProtectedRoute';
-import { UserRole } from '../contexts/AuthContext';
+import { UserRole, useAuth } from '../contexts/AuthContext';
 import { AdminPanel } from '../components/AdminPanel/AdminPanel';
 import { LinkedInSearchScreen } from '../screens/LinkedInSearch/LinkedInSearch';
 import { CompaniesScreen } from '../screens/CompaniesScreen/CompaniesScreen';
@@ -55,6 +55,9 @@ const ResultadosPageWrapper: React.FC = () => {
 };
 
 export const AppRoutes: React.FC = () => {
+  const { currentUser } = useAuth();
+  const userKey = currentUser?.uid || 'no-user';
+
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
@@ -67,32 +70,32 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/home"
         element={
-          <ProtectedRoute requiredRole={UserRole.BASIC_PLAN}>
-            <HomeScreen />
+          <ProtectedRoute requiredRole={UserRole.BASIC_PLAN} key={`home-${userKey}`}>
+            <HomeScreen key={userKey} />
           </ProtectedRoute>
         }
       />
       <Route
         path="/admin"
         element={
-          <ProtectedRoute requireAuth={true}>
-            <AdminPanel />
+          <ProtectedRoute requireAuth={true} key={`admin-${userKey}`}>
+            <AdminPanel key={userKey} />
           </ProtectedRoute>
         }
       />
       <Route
         path="/linkedin-search"
-        element={<LinkedInSearchScreen />}
+        element={<LinkedInSearchScreen key={userKey} />}
       />
       <Route
         path="/empresas"
-        element={<CompaniesScreen />}
+        element={<CompaniesScreen key={userKey} />}
       />
       <Route
         path="/profile"
         element={
-          <ProtectedRoute requireAuth={true} skipProfileCheck={true}>
-            <ProfileScreen />
+          <ProtectedRoute requireAuth={true} skipProfileCheck={true} key={`profile-${userKey}`}>
+            <ProfileScreen key={userKey} />
           </ProtectedRoute>
         }
       />

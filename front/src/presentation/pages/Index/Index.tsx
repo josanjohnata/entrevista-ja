@@ -106,31 +106,57 @@ export const IndexPage: React.FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const loadProfile = async () => {
       if (!currentUser || !db) {
-        setLoadingProfile(false);
+        if (isMounted) {
+          setCurriculo('');
+          setVaga('');
+          setFileName('');
+          setLoadingProfile(false);
+        }
         return;
+      }
+
+      if (isMounted) {
+        setLoadingProfile(true);
       }
 
       try {
         const profileRef = doc(db, 'profiles', currentUser.uid);
         const profileSnap = await getDoc(profileRef);
 
-        if (profileSnap.exists()) {
-          const profileData = profileSnap.data() as UserProfile;
-          
-          if (profileData.profileCompleted) {
-            const resumeText = formatProfileAsResume(profileData);
-            setCurriculo(resumeText);
-            toast.success('✨ Currículo preenchido automaticamente com base no seu perfil!');
+        if (isMounted) {
+          if (profileSnap.exists()) {
+            const profileData = profileSnap.data() as UserProfile;
+            
+            if (profileData.profileCompleted) {
+              const resumeText = formatProfileAsResume(profileData);
+              setCurriculo(resumeText);
+              toast.success('✨ Currículo preenchido automaticamente com base no seu perfil!');
+            } else {
+              setCurriculo('');
+            }
+          } else {
+            setCurriculo('');
           }
         }
       } finally {
-        setLoadingProfile(false);
+        if (isMounted) {
+          setLoadingProfile(false);
+        }
       }
     };
 
     loadProfile();
+
+    return () => {
+      isMounted = false;
+      setCurriculo('');
+      setVaga('');
+      setFileName('');
+    };
   }, [currentUser]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
