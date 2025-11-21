@@ -398,7 +398,6 @@ export const IndexPage: React.FC = () => {
                   </>
                 ) : (
                   <>
-                    <Sparkles size={20} />
                     Analisar e Otimizar Agora
                   </>
                 )}

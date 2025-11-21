@@ -19,6 +19,7 @@ export function useProfileScreen() {
   const [saving, setSaving] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   
   const [displayName, setDisplayName] = useState('');
   const [professionalTitle, setProfessionalTitle] = useState('');
@@ -94,6 +95,12 @@ export function useProfileScreen() {
             setExperiences(profileData.experiences || []);
             setEducation(profileData.education || []);
             setLanguages(profileData.languages || []);
+            
+            if (profileData.profileCompleted) {
+              setIsEditing(false);
+            } else {
+              setIsEditing(true);
+            }
           } else {
             setProfile(null);
             setDisplayName(currentUser.displayName || '');
@@ -106,6 +113,7 @@ export function useProfileScreen() {
             setExperiences([]);
             setEducation([]);
             setLanguages([]);
+            setIsEditing(true);
           }
         }
       } catch (error) {
@@ -221,24 +229,6 @@ export function useProfileScreen() {
     setLanguages(languages.filter(lang => lang.id !== id));
   };
 
-  const handleFileChange = (file: File | null) => {
-    if (file) {
-      const validTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
-      if (!validTypes.includes(file.type)) {
-        setMessage({ type: 'error', text: 'Formato de arquivo inválido. Use PDF ou DOC/DOCX.' });
-        return;
-      }
-      
-      if (file.size > 5 * 1024 * 1024) {
-        setMessage({ type: 'error', text: 'Arquivo muito grande. Máximo 5MB.' });
-        return;
-      }
-      
-      setResumeFile(file);
-      setMessage(null);
-    }
-  };
-
   const uploadResume = async (file: File): Promise<{ url: string; name: string }> => {
     if (!storage) {
       throw new Error('Storage não está configurado');
@@ -269,7 +259,7 @@ export function useProfileScreen() {
         await deleteObject(oldResumeRef);
       }
     } catch (error) {
-      // Silenciosamente ignora erros ao deletar arquivo antigo
+      console.error('Erro ao deletar arquivo antigo:', error);
     }
   };
 
@@ -303,7 +293,6 @@ export function useProfileScreen() {
         return false;
       }
 
-      // Idiomas são opcionais - não precisa validar
     }
 
     return true;
@@ -407,6 +396,8 @@ export function useProfileScreen() {
         setTimeout(() => {
           navigate('/home', { replace: true });
         }, 2000);
+      } else {
+        setIsEditing(false);
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
@@ -429,31 +420,107 @@ export function useProfileScreen() {
     }
   };
 
-  const handleRemoveResume = async () => {
-    if (!currentUser || !profile?.resumeURL) return;
-
-    try {
-      setSaving(true);
-      await deleteOldResume(profile.resumeURL);
-
-      const profileRef = doc(db, 'profiles', currentUser.uid);
-      await setDoc(profileRef, {
-        resumeURL: null,
-        resumeName: null,
-        updatedAt: Timestamp.now(),
-      }, { merge: true });
-
-      setProfile({ ...profile, resumeURL: undefined, resumeName: undefined });
-      setMessage({ type: 'success', text: 'Currículo removido com sucesso!' });
-    } catch (error) {
-      setMessage({ type: 'error', text: 'Erro ao remover currículo.' });
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const dismissMessage = () => {
     setMessage(null);
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancelEdit = () => {
+    if (!profile?.profileCompleted) {
+      return;
+    }
+    
+    if (profile) {
+      setDisplayName(profile.displayName || '');
+      setProfessionalTitle(profile.professionalTitle || '');
+      setPhone(profile.phone || '');
+      setLocation(profile.location || '');
+      setLinkedin(profile.linkedin || '');
+      setGithub(profile.github || '');
+      setAbout(profile.about || '');
+      setExperiences(profile.experiences || []);
+      setEducation(profile.education || []);
+      setLanguages(profile.languages || []);
+      setResumeFile(null);
+    }
+    
+    setIsEditing(false);
+    setMessage(null);
+  };
+
+  const handleDownloadResume = () => {
+    if (!profile) return;
+
+    const resumeText = formatResumeText(profile);
+    
+    const blob = new Blob([resumeText], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `curriculo_${displayName.replace(/\s+/g, '_')}.txt`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    setMessage({ type: 'success', text: 'Currículo baixado com sucesso!' });
+  };
+
+  const formatResumeText = (profileData: UserProfile): string => {
+    let text = '';
+    
+    text += `${profileData.displayName}\n`;
+    if (profileData.professionalTitle) text += `${profileData.professionalTitle}\n`;
+    text += `\n`;
+    
+    if (currentUser?.email) text += `Email: ${currentUser.email}\n`;
+    if (profileData.phone) text += `Telefone: ${profileData.phone}\n`;
+    if (profileData.location) text += `Localização: ${profileData.location}\n`;
+    if (profileData.linkedin) text += `LinkedIn: ${profileData.linkedin}\n`;
+    if (profileData.github) text += `GitHub: ${profileData.github}\n`;
+    text += `\n`;
+    
+    if (profileData.about) {
+      text += `RESUMO PROFISSIONAL\n`;
+      text += `${'='.repeat(50)}\n`;
+      text += `${profileData.about}\n\n`;
+    }
+    
+    if (profileData.experiences && profileData.experiences.length > 0) {
+      text += `EXPERIÊNCIA PROFISSIONAL\n`;
+      text += `${'='.repeat(50)}\n`;
+      profileData.experiences.forEach((exp) => {
+        text += `\n${exp.position} - ${exp.company}\n`;
+        if (exp.location) text += `${exp.location}\n`;
+        const endDate = exp.isCurrent ? 'Atual' : exp.endDate;
+        text += `${exp.startDate} - ${endDate}\n`;
+        if (exp.description) text += `\n${exp.description}\n`;
+        text += `\n`;
+      });
+    }
+    
+    if (profileData.education && profileData.education.length > 0) {
+      text += `FORMAÇÃO ACADÊMICA\n`;
+      text += `${'='.repeat(50)}\n`;
+      profileData.education.forEach((edu) => {
+        text += `\n${edu.degree} - ${edu.fieldOfStudy}\n`;
+        text += `${edu.institution}\n`;
+        text += `${edu.startDate} - ${edu.endDate}\n\n`;
+      });
+    }
+    
+    if (profileData.languages && profileData.languages.length > 0) {
+      text += `IDIOMAS\n`;
+      text += `${'='.repeat(50)}\n`;
+      profileData.languages.forEach((lang) => {
+        text += `${lang.language}: ${lang.proficiency}\n`;
+      });
+    }
+    
+    return text;
   };
 
   return {
@@ -496,10 +563,12 @@ export function useProfileScreen() {
     updateLanguage,
     removeLanguage,
     
-    resumeFile,
-    handleFileChange,
     handleSubmit,
-    handleRemoveResume,
     dismissMessage,
+    
+    isEditing,
+    handleEdit,
+    handleCancelEdit,
+    handleDownloadResume,
   };
 }

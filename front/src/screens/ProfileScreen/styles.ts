@@ -138,75 +138,6 @@ export const TextArea = styled.textarea`
   }
 `;
 
-export const FileUploadArea = styled.div`
-  border: 2px dashed #d1d5db;
-  border-radius: 8px;
-  padding: 2rem;
-  text-align: center;
-  transition: all 0.2s;
-  cursor: pointer;
-  background-color: #f9fafb;
-  
-  &:hover {
-    border-color: ${colors.primary.main};
-    background-color: #f3f4f6;
-  }
-  
-  &.dragging {
-    border-color: ${colors.primary.main};
-    background-color: rgba(99, 102, 241, 0.05);
-  }
-`;
-
-export const FileInput = styled.input`
-  display: none;
-`;
-
-export const FileUploadIcon = styled.div`
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: ${colors.text};
-`;
-
-export const FileUploadText = styled.p`
-  font-size: 0.875rem;
-  color: ${colors.text};
-  margin: 0.5rem 0;
-`;
-
-export const CurrentFile = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1rem;
-  background-color: #f3f4f6;
-  border-radius: 8px;
-  margin-top: 0.5rem;
-`;
-
-export const FileName = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  color: ${colors.primary};
-`;
-
-export const RemoveButton = styled.button`
-  background: transparent;
-  border: none;
-  color: #ef4444;
-  cursor: pointer;
-  padding: 0.25rem;
-  display: flex;
-  align-items: center;
-  transition: color 0.2s;
-  
-  &:hover {
-    color: #dc2626;
-  }
-`;
-
 export const ButtonGroup = styled.div`
   display: flex;
   gap: 1rem;
@@ -330,29 +261,6 @@ export const CloseButton = styled.button`
 
   &:hover {
     color: ${colors.primary.light};
-  }
-`;
-
-export const SmallFileText = styled(FileUploadText)`
-  font-size: 0.75rem;
-`;
-
-export const NewBadge = styled.span`
-  color: #10b981;
-  margin-left: 0.5rem;
-`;
-
-export const ResumeActions = styled.div`
-  display: flex;
-  gap: 0.5rem;
-`;
-
-export const ResumeLink = styled.a`
-  color: #6366f1;
-  text-decoration: none;
-
-  &:hover {
-    text-decoration: underline;
   }
 `;
 
@@ -517,7 +425,7 @@ export const RequiredBadge = styled.span`
 `;
 
 export const FirstAccessBanner = styled.div`
-  background: #0077B5;
+  background: #fafafa;
   color: white;
   padding: 1.5rem;
   border-radius: 12px;

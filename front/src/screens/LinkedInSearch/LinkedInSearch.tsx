@@ -91,7 +91,6 @@ export const LinkedInSearchScreen: React.FC = () => {
         <S.Hero>
           <Container>
             <S.HeroBadge>
-              <Sparkles size={16} />
               <span>Filtro Inteligente</span>
             </S.HeroBadge>
             <S.HeroTitle>Filtrar Vagas no LinkedIn</S.HeroTitle>
