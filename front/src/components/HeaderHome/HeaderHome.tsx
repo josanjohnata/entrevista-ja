@@ -24,6 +24,7 @@ export const HeaderHome: React.FC = () => {
   const profileMenuRef = useRef<HTMLDivElement>(null);
   
   const isSearchScreen = location.pathname === '/linkedin-search';
+  const isProfileScreen = location.pathname === '/profile';
 
   const handleLogout = async () => {
     try {
@@ -81,9 +82,11 @@ export const HeaderHome: React.FC = () => {
               <NavLink as={Link} to="/home">
                 <FiFileText /> Currículo Turbo
               </NavLink>
-              <NavLink onClick={() => handleMenuClick('profile')}>
-                <FiUser /> Perfil
-              </NavLink>
+              {!isProfileScreen && (
+                <NavLink onClick={() => handleMenuClick('profile')}>
+                  <FiUser /> Perfil
+                </NavLink>
+              )}
               <LoginButton onClick={() => handleMenuClick('logout')}>
                 <FiLogOut /> Sair
               </LoginButton>
@@ -93,9 +96,11 @@ export const HeaderHome: React.FC = () => {
               <NavLink as={Link} to="/linkedin-search">
                 <FiSearch /> Filtrar Vagas no LinkedIn
               </NavLink>
-              <NavLink onClick={() => handleMenuClick('profile')}>
-                <FiUser /> Perfil
-              </NavLink>
+              {!isProfileScreen && (
+                <NavLink onClick={() => handleMenuClick('profile')}>
+                  <FiUser /> Perfil
+                </NavLink>
+              )}
               <LoginButton onClick={() => handleMenuClick('logout')}>
                 <FiLogOut /> Sair
               </LoginButton>
@@ -132,9 +137,11 @@ export const HeaderHome: React.FC = () => {
             <NavLink as={Link} to="/home" onClick={() => setIsMobileMenuOpen(false)}>
               <FiFileText /> Currículo Turbo
             </NavLink>
-            <MobileMenuItem onClick={() => handleMenuClick('profile')}>
-              <FiUser /> Perfil
-            </MobileMenuItem>
+            {!isProfileScreen && (
+              <MobileMenuItem onClick={() => handleMenuClick('profile')}>
+                <FiUser /> Perfil
+              </MobileMenuItem>
+            )}
             <LoginButton onClick={() => handleMenuClick('logout')}>
               <FiLogOut /> Sair
             </LoginButton>
@@ -144,9 +151,11 @@ export const HeaderHome: React.FC = () => {
             <NavLink as={Link} to="/linkedin-search" onClick={() => setIsMobileMenuOpen(false)}>
               <FiSearch /> Filtrar Vagas no LinkedIn
             </NavLink>
-            <MobileMenuItem onClick={() => handleMenuClick('profile')}>
-              <FiUser /> Perfil
-            </MobileMenuItem>
+            {!isProfileScreen && (
+              <MobileMenuItem onClick={() => handleMenuClick('profile')}>
+                <FiUser /> Perfil
+              </MobileMenuItem>
+            )}
             <LoginButton onClick={() => handleMenuClick('logout')}>
               <FiLogOut /> Sair
             </LoginButton>
