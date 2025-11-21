@@ -1,7 +1,6 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { PaymentPlans } from '../screens/PaymentPlans/PaymentPlans';
-import { ContactScreen } from '../screens/Contact/Contact';
 import { LoginScreen } from '../screens/Login/Login';
 import { CheckoutScreen } from '../screens/CheckoutScreen/CheckoutScreen';
 import { HomeScreen } from '../screens/HomeScreen/HomeScreen';
@@ -9,7 +8,6 @@ import { ProtectedRoute } from '../components/ProtectedRoute/ProtectedRoute';
 import { UserRole, useAuth } from '../contexts/AuthContext';
 import { AdminPanel } from '../components/AdminPanel/AdminPanel';
 import { LinkedInSearchScreen } from '../screens/LinkedInSearch/LinkedInSearch';
-import { CompaniesScreen } from '../screens/CompaniesScreen/CompaniesScreen';
 import { ProfileScreen } from '../screens/ProfileScreen/ProfileScreen';
 import LandingPage from '../screens/landing/App';
 
@@ -62,7 +60,6 @@ export const AppRoutes: React.FC = () => {
     <Routes>
       <Route path="/" element={<LandingPage />} />
       <Route path="/planos" element={<PaymentPlans />} />
-      <Route path="/contato" element={<ContactScreen />} />
       <Route path="/login" element={<LoginScreen />} />
       <Route path="/checkout" element={<CheckoutScreen />} />
       <Route path="/resultados" element={<ResultadosPageWrapper />} />
@@ -86,10 +83,6 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/linkedin-search"
         element={<LinkedInSearchScreen key={userKey} />}
-      />
-      <Route
-        path="/empresas"
-        element={<CompaniesScreen key={userKey} />}
       />
       <Route
         path="/profile"
