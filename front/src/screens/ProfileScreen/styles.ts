@@ -426,7 +426,7 @@ export const RequiredBadge = styled.span`
 
 export const FirstAccessBanner = styled.div`
   background: #fafafa;
-  color: white;
+  color: ${colors.primary.main};
   padding: 1.5rem;
   border-radius: 12px;
   margin-bottom: 2rem;
