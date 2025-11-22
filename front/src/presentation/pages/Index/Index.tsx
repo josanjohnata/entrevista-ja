@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Loader2, Sparkles, Target, TrendingUp, Upload } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { Loader2, Sparkles, Target, TrendingUp, Upload, RefreshCw } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -96,6 +96,7 @@ const formatProfileAsResume = (profile: UserProfile): string => {
 
 export const IndexPage: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { currentUser } = useAuth();
   const [curriculo, setCurriculo] = useState('');
   const [vaga, setVaga] = useState('');
@@ -103,12 +104,51 @@ export const IndexPage: React.FC = () => {
   const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [fileName, setFileName] = useState<string>('');
   const [loadingProfile, setLoadingProfile] = useState(true);
+  const [isReloading, setIsReloading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isFirstLoad = useRef(true);
+
+  const loadProfile = useCallback(async (showToast = true) => {
+    if (!currentUser || !db) {
+      setCurriculo('');
+      setVaga('');
+      setFileName('');
+      setLoadingProfile(false);
+      return;
+    }
+
+    setLoadingProfile(true);
+    setIsReloading(true);
+
+    try {
+      const profileRef = doc(db, 'profiles', currentUser.uid);
+      const profileSnap = await getDoc(profileRef);
+
+      if (profileSnap.exists()) {
+        const profileData = profileSnap.data() as UserProfile;
+        
+        if (profileData.profileCompleted) {
+          const resumeText = formatProfileAsResume(profileData);
+          setCurriculo(resumeText);
+          if (showToast) {
+            toast.success('✨ Currículo atualizado com base no seu perfil!');
+          }
+        } else {
+          setCurriculo('');
+        }
+      } else {
+        setCurriculo('');
+      }
+    } finally {
+      setLoadingProfile(false);
+      setIsReloading(false);
+    }
+  }, [currentUser]);
 
   useEffect(() => {
     let isMounted = true;
 
-    const loadProfile = async () => {
+    const initialLoad = async () => {
       if (!currentUser || !db) {
         if (isMounted) {
           setCurriculo('');
@@ -119,37 +159,11 @@ export const IndexPage: React.FC = () => {
         return;
       }
 
-      if (isMounted) {
-        setLoadingProfile(true);
-      }
-
-      try {
-        const profileRef = doc(db, 'profiles', currentUser.uid);
-        const profileSnap = await getDoc(profileRef);
-
-        if (isMounted) {
-          if (profileSnap.exists()) {
-            const profileData = profileSnap.data() as UserProfile;
-            
-            if (profileData.profileCompleted) {
-              const resumeText = formatProfileAsResume(profileData);
-              setCurriculo(resumeText);
-              toast.success('✨ Currículo preenchido automaticamente com base no seu perfil!');
-            } else {
-              setCurriculo('');
-            }
-          } else {
-            setCurriculo('');
-          }
-        }
-      } finally {
-        if (isMounted) {
-          setLoadingProfile(false);
-        }
-      }
+      await loadProfile(false);
+      isFirstLoad.current = false;
     };
 
-    loadProfile();
+    initialLoad();
 
     return () => {
       isMounted = false;
@@ -157,7 +171,15 @@ export const IndexPage: React.FC = () => {
       setVaga('');
       setFileName('');
     };
-  }, [currentUser]);
+  }, [currentUser, loadProfile]);
+
+  useEffect(() => {
+    const fromProfile = location.state?.fromProfile;
+    if (fromProfile && currentUser && db && !isFirstLoad.current) {
+      loadProfile(true);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, currentUser, loadProfile]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -365,6 +387,28 @@ export const IndexPage: React.FC = () => {
                   rows={10}
                   disabled={loadingProfile}
                 />
+                {currentUser && (
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => loadProfile(true)}
+                    disabled={isReloading || loadingProfile}
+                    style={{ marginTop: '0.5rem', width: 'fit-content' }}
+                  >
+                    {isReloading ? (
+                      <>
+                        <Loader2 size={16} className="animate-spin" />
+                        Recarregando...
+                      </>
+                    ) : (
+                      <>
+                        <RefreshCw size={16} />
+                        Recarregar do Perfil Atualizado
+                      </>
+                    )}
+                  </Button>
+                )}
               </S.FormGroup>
 
               <S.FormGroup>

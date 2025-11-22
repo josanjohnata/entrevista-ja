@@ -37,6 +37,126 @@ export function useProfileScreen() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   useEffect(() => {
+    const analysisData = location.state?.analysisData;
+    if (analysisData && analysisData.resumoOtimizado) {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      const updatedFields: string[] = [];
+      
+      setAbout(analysisData.resumoOtimizado);
+      updatedFields.push('Resumo Profissional');
+      
+      if (analysisData.palavrasChave && analysisData.palavrasChave.length > 0) {
+        const keywords = analysisData.palavrasChave;
+        
+        setExperiences(prevExperiences => {
+          if (prevExperiences.length > 0) {
+            updatedFields.push('Experiências');
+            return prevExperiences.map((exp, index) => {
+              if (exp.description) {
+                const relevantKeywords = keywords.slice(index * 3, (index + 1) * 3);
+                if (relevantKeywords.length > 0) {
+                  const keywordsText = `\n\n${relevantKeywords.join(', ')}`;
+                  return {
+                    ...exp,
+                    description: exp.description + keywordsText
+                  };
+                }
+              }
+              return exp;
+            });
+          }
+          return prevExperiences;
+        });
+      }
+      
+      if (analysisData.sugestoesMelhoriaTexto) {
+        const sugestoesTexto = analysisData.sugestoesMelhoriaTexto;
+        const sugestoesLower = sugestoesTexto.toLowerCase();
+        
+        const tituloPatterns = [
+          /título.*?:?\s*["']?([^"'\n.]{5,50})["']?/i,
+          /posição.*?:?\s*["']?([^"'\n.]{5,50})["']?/i,
+          /cargo.*?:?\s*["']?([^"'\n.]{5,50})["']?/i
+        ];
+        
+        for (const pattern of tituloPatterns) {
+          const match = sugestoesTexto.match(pattern);
+          if (match && match[1] && !professionalTitle.trim()) {
+            const titulo = match[1].trim();
+            if (titulo.length > 5 && titulo.length < 50) {
+              setProfessionalTitle(titulo);
+              updatedFields.push('Título Profissional');
+              break;
+            }
+          }
+        }
+        
+        const certificacoesPattern = /certificaç(?:ão|ões)|curso|formação/i;
+        if (certificacoesPattern.test(sugestoesTexto)) {
+          setEducation(prevEducation => {
+            if (prevEducation.length > 0) {
+              updatedFields.push('Formação (sugestões adicionadas)');
+              return prevEducation.map((edu, index) => {
+                if (index === prevEducation.length - 1) {
+                  return {
+                    ...edu,
+                    institution: edu.institution
+                  };
+                }
+                return edu;
+              });
+            }
+            return prevEducation;
+          });
+        }
+        
+        const idiomaPatterns = ['inglês', 'espanhol', 'francês', 'alemão', 'mandarim', 'japonês'];
+        const idiomasMencionados = idiomaPatterns.filter(idioma => 
+          sugestoesLower.includes(idioma)
+        );
+        
+        if (idiomasMencionados.length > 0 && languages.length === 0) {
+          const novosIdiomas: Language[] = idiomasMencionados.map((idioma, index) => ({
+            id: `analysis-${Date.now()}-${index}`,
+            language: idioma.charAt(0).toUpperCase() + idioma.slice(1),
+            proficiency: 'intermediate' as const
+          }));
+          setLanguages(novosIdiomas);
+          updatedFields.push('Idiomas');
+        }
+        
+        const locationPatterns = [
+          /localização.*?:?\s*["']?([^"'\n.]{3,40})["']?/i,
+          /cidade.*?:?\s*["']?([^"'\n.]{3,40})["']?/i,
+          /(?:em|de)\s+([A-Z][a-zà-ú]+(?:\s+[A-Z][a-zà-ú]+)?)\s*,?\s*([A-Z]{2})?/
+        ];
+        
+        for (const pattern of locationPatterns) {
+          const match = sugestoesTexto.match(pattern);
+          if (match && match[1] && !location_.trim()) {
+            const loc = match[1].trim();
+            if (loc.length > 3 && loc.length < 40) {
+              setLocation(loc);
+              updatedFields.push('Localização');
+              break;
+            }
+          }
+        }
+      }
+      
+      setIsEditing(true);
+      
+      setMessage({ 
+        type: 'success', 
+        text: `${updatedFields.length} campo(s) atualizado(s): ${updatedFields.join(', ')}. Revise todas as alterações antes de salvar!` 
+      });
+      
+      window.history.replaceState({}, document.title);
+    }
+  }, [languages.length, location.state, location_, professionalTitle]);
+
+  useEffect(() => {
     let isMounted = true;
 
     const clearAllData = () => {
@@ -389,15 +509,28 @@ export function useProfileScreen() {
 
       setProfile(updatedProfile);
       setResumeFile(null);
-      setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
+      
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      const wasUpdatedFromAnalysis = location.state?.analysisData;
       
       if (isFirstAccess) {
         setIsFirstAccess(false);
+        setMessage({ type: 'success', text: 'Perfil criado com sucesso! Redirecionando...' });
         setTimeout(() => {
           navigate('/home', { replace: true });
         }, 2000);
       } else {
         setIsEditing(false);
+        
+        if (wasUpdatedFromAnalysis) {
+          setMessage({ 
+            type: 'success', 
+            text: '✅ Perfil atualizado! Agora vá para Home e clique em "Recarregar do Perfil Atualizado" para fazer uma nova análise com as melhorias aplicadas.' 
+          });
+        } else {
+          setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });
+        }
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';

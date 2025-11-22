@@ -137,11 +137,25 @@ export const ResultadosPage: React.FC = () => {
             <S.ActionContainer>
               <Button onClick={() => navigate('/home')} size="lg" variant="outline">
                 <Home size={20} />
-                Voltar para Home
+                Analisar Outra Vaga
               </Button>
-              <Button onClick={() => navigate('/profile')} size="lg" variant="primary">
+              <Button 
+                onClick={() => navigate('/profile', { 
+                  state: { 
+                    analysisData: {
+                      resumoOtimizado: analysis.resumoOtimizado,
+                      palavrasChave: keywords,
+                      sugestoes: suggestions,
+                      sugestoesMelhoriaTexto: analysis.sugestoesMelhoria,
+                      placar: analysis.placar
+                    }
+                  } 
+                })} 
+                size="lg" 
+                variant="primary"
+              >
                 <User size={20} />
-                Atualizar Perfil
+                Atualizar Perfil com Sugestões
               </Button>
             </S.ActionContainer>
           </S.ResultsContainer>

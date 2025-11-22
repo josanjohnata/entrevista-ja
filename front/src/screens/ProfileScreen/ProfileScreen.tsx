@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   FiUser, 
   FiGithub, 
@@ -15,7 +16,8 @@ import {
   FiPhone,
   FiMapPin,
   FiEdit,
-  FiDownload
+  FiDownload,
+  FiInfo
 } from 'react-icons/fi';
 import { HeaderHome } from '../../components/HeaderHome/HeaderHome';
 import { useProfileScreen } from './useProfileScreen';
@@ -57,10 +59,18 @@ import {
   Select,
   EmptyState,
   RequiredBadge,
-  FirstAccessBanner
+  FirstAccessBanner,
+  AnalysisInfoCard
 } from './styles';
 
 export const ProfileScreen: React.FC = () => {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [analysisInfo, setAnalysisInfo] = useState<{
+    palavrasChave?: string[];
+    sugestoes?: string[];
+  } | null>(null);
+
   const {
     currentUser,
     profile,
@@ -76,7 +86,7 @@ export const ProfileScreen: React.FC = () => {
     setProfessionalTitle,
     phone,
     setPhone,
-    location,
+    location: userLocation,
     setLocation,
     linkedin,
     setLinkedin,
@@ -109,6 +119,16 @@ export const ProfileScreen: React.FC = () => {
     handleCancelEdit,
     handleDownloadResume,
   } = useProfileScreen();
+
+  useEffect(() => {
+    const analysisData = location.state?.analysisData;
+    if (analysisData) {
+      setAnalysisInfo({
+        palavrasChave: analysisData.palavrasChave,
+        sugestoes: analysisData.sugestoes
+      });
+    }
+  }, [location.state]);
 
 
   if (loading) {
@@ -193,11 +213,76 @@ export const ProfileScreen: React.FC = () => {
             {message && (
               <Alert type={message.type}>
                 {message.type === 'success' ? <FiCheckCircle /> : <FiAlertCircle />}
-                {message.text}
+                <div style={{ flex: 1 }}>
+                  {message.text}
+                  {message.text.includes('Recarregar do Perfil Atualizado') && (
+                    <Button
+                      type="button"
+                      onClick={() => navigate('/home', { state: { fromProfile: true } })}
+                      variant="primary"
+                      style={{ marginTop: '0.75rem', padding: '0.5rem 1rem', fontSize: '0.9rem' }}
+                    >
+                      Ir para Home e Analisar Novamente
+                    </Button>
+                  )}
+                </div>
                 <CloseButton onClick={dismissMessage}>
                   <FiX />
                 </CloseButton>
               </Alert>
+            )}
+
+            {analysisInfo && (analysisInfo.palavrasChave || analysisInfo.sugestoes) && (
+              <AnalysisInfoCard>
+                <button 
+                  className="close-btn" 
+                  onClick={() => setAnalysisInfo(null)}
+                  type="button"
+                >
+                  <FiX size={20} />
+                </button>
+                <h4>
+                  <FiInfo /> Sugestões Aplicadas Automaticamente
+                </h4>
+                
+                <div className="auto-applied" style={{ marginBottom: '1rem', padding: '0.75rem', background: 'rgba(255,255,255,0.15)', borderRadius: '8px' }}>
+                  <strong>✅ Campos atualizados automaticamente:</strong>
+                  <ul style={{ margin: '0.5rem 0 0 0', paddingLeft: '1.25rem', fontSize: '0.9rem' }}>
+                    <li><strong>Resumo Profissional</strong> - substituído pela versão otimizada</li>
+                    {analysisInfo.palavrasChave && analysisInfo.palavrasChave.length > 0 && (
+                      <li><strong>Experiências</strong> - palavras-chave distribuídas nas descrições</li>
+                    )}
+                    <li><strong>Título/Localização/Formação/Idiomas</strong> - verificados e atualizados quando sugeridos</li>
+                  </ul>
+                  <p style={{ margin: '0.75rem 0 0 0', fontSize: '0.85rem', opacity: 0.9 }}>
+                    ⚠️ <strong>Importante:</strong> Revise TODAS as seções antes de salvar. As sugestões foram aplicadas automaticamente mas você deve ajustar conforme necessário.
+                  </p>
+                </div>
+                
+                {analysisInfo.palavrasChave && analysisInfo.palavrasChave.length > 0 && (
+                  <div className="keywords">
+                    <strong>📌 Palavras-chave incorporadas:</strong>
+                    <div className="keyword-list">
+                      {analysisInfo.palavrasChave.map((keyword, index) => (
+                        <span key={index} className="keyword-tag">
+                          {keyword}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {analysisInfo.sugestoes && analysisInfo.sugestoes.length > 0 && (
+                  <div className="suggestions">
+                    <strong>💡 Outras sugestões para revisar:</strong>
+                    <ul>
+                      {analysisInfo.sugestoes.slice(0, 5).map((sugestao, index) => (
+                        <li key={index}>{sugestao}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </AnalysisInfoCard>
             )}
 
             <Form onSubmit={handleSubmit}>
@@ -275,7 +360,7 @@ export const ProfileScreen: React.FC = () => {
                       id="location"
                       type="text"
                       placeholder="Ex: São Paulo, Brasil"
-                      value={location}
+                      value={userLocation}
                       onChange={(e) => setLocation(e.target.value)}
                       disabled={!isEditing}
                     />

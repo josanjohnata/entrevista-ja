@@ -443,3 +443,77 @@ export const FirstAccessBanner = styled.div`
     font-size: 0.875rem;
   }
 `;
+
+export const AnalysisInfoCard = styled.div`
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+
+  h4 {
+    margin: 0 0 1rem 0;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .keywords {
+    margin-bottom: 1rem;
+    
+    strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    .keyword-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+    
+    .keyword-tag {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+    }
+  }
+
+  .suggestions {
+    strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+    }
+    
+    ul {
+      margin: 0;
+      padding-left: 1.25rem;
+      
+      li {
+        font-size: 0.85rem;
+        margin-bottom: 0.5rem;
+        opacity: 0.95;
+      }
+    }
+  }
+
+  .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: 0.5rem;
+    float: right;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+    
+    &:hover {
+      opacity: 1;
+    }
+  }
+`;
