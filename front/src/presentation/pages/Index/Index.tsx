@@ -246,6 +246,17 @@ export const IndexPage: React.FC = () => {
     }
   };
 
+  const generateJobHash = (jobDescription: string): string => {
+    const normalized = jobDescription.trim().toLowerCase().replace(/\s+/g, ' ').substring(0, 200);
+    let hash = 0;
+    for (let i = 0; i < normalized.length; i++) {
+      const char = normalized.charCodeAt(i);
+      hash = ((hash << 5) - hash) + char;
+      hash = hash & hash;
+    }
+    return hash.toString(36);
+  };
+
   const handleAnalyze = async () => {
     if (!curriculo.trim() || !vaga.trim()) {
       toast.error('Por favor, preencha ambos os campos: currículo e descrição da vaga.');
@@ -287,7 +298,44 @@ export const IndexPage: React.FC = () => {
         return;
       }
 
-      navigate('/resultados', { state: { analysis: data } });
+      const jobHash = generateJobHash(vaga);
+      
+      const analysisHistory = localStorage.getItem('analysisHistory');
+      const history = analysisHistory ? JSON.parse(analysisHistory) : {};
+      
+      const previousAnalysis = history[jobHash];
+      const currentScore = data.placar;
+      
+      let improvementData = null;
+      
+      if (previousAnalysis) {
+        const scoreImprovement = currentScore - previousAnalysis.score;
+        const isSignificantImprovement = scoreImprovement >= 10;
+        
+        if (isSignificantImprovement && currentScore >= 75) {
+          improvementData = {
+            previousScore: previousAnalysis.score,
+            currentScore: currentScore,
+            improvement: scoreImprovement,
+            analysisCount: (previousAnalysis.analysisCount || 1) + 1
+          };
+        }
+      }
+      
+      history[jobHash] = {
+        score: currentScore,
+        date: new Date().toISOString(),
+        analysisCount: previousAnalysis ? (previousAnalysis.analysisCount || 1) + 1 : 1
+      };
+      localStorage.setItem('analysisHistory', JSON.stringify(history));
+
+      navigate('/resultados', { 
+        state: { 
+          analysis: data,
+          jobHash: jobHash,
+          improvementData: improvementData
+        } 
+      });
     } catch (error) {
       console.error('Erro ao analisar currículo:', error);
         toast.error('Ocorreu um erro ao processar sua análise. Tente novamente.');
