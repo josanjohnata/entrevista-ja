@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { ArrowLeft, TrendingUp, AlertCircle, Lightbulb, FileText } from 'lucide-react';
+import { TrendingUp, AlertCircle, Lightbulb, FileText, Home, User } from 'lucide-react';
 
 import { Button } from '../../../presentation/components/Button';
 import { Badge } from '../../../presentation/components/Badge';
@@ -135,9 +135,13 @@ export const ResultadosPage: React.FC = () => {
             </S.ContentCard>
 
             <S.ActionContainer>
-              <Button onClick={() => navigate(-1)} size="lg" variant="outline">
-                <ArrowLeft size={20} />
-                Otimizar Outro Currículo
+              <Button onClick={() => navigate('/home')} size="lg" variant="outline">
+                <Home size={20} />
+                Voltar para Home
+              </Button>
+              <Button onClick={() => navigate('/profile')} size="lg" variant="primary">
+                <User size={20} />
+                Atualizar Perfil
               </Button>
             </S.ActionContainer>
           </S.ResultsContainer>

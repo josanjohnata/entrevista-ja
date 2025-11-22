@@ -263,6 +263,16 @@ export const SuggestionText = styled.p`
 export const ActionContainer = styled.div`
   display: flex;
   justify-content: center;
+  gap: ${({ theme }) => theme.spacing.md};
   padding-top: ${({ theme }) => theme.spacing.md};
+  flex-wrap: wrap;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
 `;
 
