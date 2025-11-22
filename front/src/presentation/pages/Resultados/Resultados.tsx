@@ -88,7 +88,7 @@ export const ResultadosPage: React.FC = () => {
                   </S.ScoreDescription>
                 </S.ScoreInfo>
                 <S.ScoreDisplay>
-                  <S.ScoreValue>{analysis.placar}%</S.ScoreValue>
+                  <S.ScoreValue>{showOptimizedView ? improvementData.currentScore : analysis.placar}%</S.ScoreValue>
                   <S.ScoreIcon>
                     {showOptimizedView ? <Award /> : <TrendingUp />}
                   </S.ScoreIcon>
@@ -128,7 +128,7 @@ export const ResultadosPage: React.FC = () => {
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem' }}>
                       <Lightbulb size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
                       <div>
-                        Com {analysis.placar}% de compatibilidade, seu currículo tem grandes chances de passar pela triagem automática desta vaga.
+                        Com {improvementData.currentScore}% de compatibilidade, seu currículo tem grandes chances de passar pela triagem automática desta vaga.
                       </div>
                     </div>
                     

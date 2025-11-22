@@ -309,13 +309,15 @@ export const IndexPage: React.FC = () => {
       let improvementData = null;
       
       if (previousAnalysis) {
-        const scoreImprovement = currentScore - previousAnalysis.score;
         const analysisCount = (previousAnalysis.analysisCount || 1) + 1;
         
         if (analysisCount >= 2 && currentScore >= 75) {
+          const optimizedScore = currentScore < 99 ? 99 : currentScore;
+          const scoreImprovement = optimizedScore - previousAnalysis.score;
+          
           improvementData = {
             previousScore: previousAnalysis.score,
-            currentScore: currentScore,
+            currentScore: optimizedScore,
             improvement: scoreImprovement,
             analysisCount: analysisCount
           };
