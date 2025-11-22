@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
-import { FiUser, FiLogOut, FiFileText } from 'react-icons/fi';
+import { FiUser, FiLogOut, FiFileText, FiSearch } from 'react-icons/fi';
 import {
   HeaderContainer,
   Nav,
@@ -93,8 +93,8 @@ export const HeaderHome: React.FC = () => {
             </>
           ) : (
             <>
-              <NavLink as={Link} to="/home">
-                <FiFileText /> Currículo Turbo
+              <NavLink as={Link} to="/linkedin-search">
+                <FiSearch /> Filtrar Vagas no LinkedIn
               </NavLink>
               {!isProfileScreen && (
                 <NavLink onClick={() => handleMenuClick('profile')}>
@@ -148,8 +148,8 @@ export const HeaderHome: React.FC = () => {
           </>
         ) : (
           <>
-            <NavLink as={Link} to="/home" onClick={() => setIsMobileMenuOpen(false)}>
-              <FiFileText /> Currículo Turbo
+            <NavLink as={Link} to="/linkedin-search" onClick={() => setIsMobileMenuOpen(false)}>
+              <FiSearch /> Filtrar Vagas no LinkedIn
             </NavLink>
             {!isProfileScreen && (
               <MobileMenuItem onClick={() => handleMenuClick('profile')}>
