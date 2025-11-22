@@ -526,7 +526,7 @@ export function useProfileScreen() {
         if (wasUpdatedFromAnalysis) {
           setMessage({ 
             type: 'success', 
-            text: '✅ Perfil atualizado! Agora vá para Home e clique em "Recarregar do Perfil Atualizado" para fazer uma nova análise com as melhorias aplicadas.' 
+            text: 'Perfil atualizado! Agora vá para Home e clique em "Recarregar do Perfil Atualizado" para fazer uma nova análise com as melhorias aplicadas.' 
           });
         } else {
           setMessage({ type: 'success', text: 'Perfil atualizado com sucesso!' });

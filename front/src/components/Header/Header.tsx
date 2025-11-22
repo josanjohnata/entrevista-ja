@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { AlertTriangle } from 'lucide-react';
 import {
   HeaderContainer,
   Nav,
@@ -99,7 +100,7 @@ export const Header: React.FC = () => {
               to="/login"
               title={!firebaseConfigured ? 'Configure o Firebase para fazer login' : 'Fazer login'}
             >
-              Login {!firebaseConfigured && '⚠️'}
+              Login {!firebaseConfigured && <AlertTriangle size={16} style={{ marginLeft: '0.25rem' }} />}
             </LoginButton>
           )}
         </NavLinks>
@@ -170,7 +171,7 @@ export const Header: React.FC = () => {
             to="/login"
             title={!firebaseConfigured ? 'Configure o Firebase para fazer login' : 'Fazer login'}
           >
-            Login {!firebaseConfigured && '⚠️'}
+            Login {!firebaseConfigured && <AlertTriangle size={16} style={{ marginLeft: '0.25rem' }} />}
           </LoginButton>
         )}
       </MobileMenu>

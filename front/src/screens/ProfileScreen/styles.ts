@@ -445,8 +445,8 @@ export const FirstAccessBanner = styled.div`
 `;
 
 export const AnalysisInfoCard = styled.div`
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: #fafafa;
+  color: ${colors.primary.main};
   padding: 1.5rem;
   border-radius: 12px;
   margin-bottom: 2rem;

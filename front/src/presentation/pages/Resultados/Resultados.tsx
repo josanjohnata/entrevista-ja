@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { TrendingUp, AlertCircle, Lightbulb, FileText, Home, User, CheckCircle, Award } from 'lucide-react';
+import { TrendingUp, AlertCircle, Lightbulb, FileText, Home, User, CheckCircle, Award, Sparkles, BarChart3, Target } from 'lucide-react';
 
 import { Button } from '../../../presentation/components/Button';
 import { Badge } from '../../../presentation/components/Badge';
@@ -72,7 +72,13 @@ export const ResultadosPage: React.FC = () => {
               <S.ScoreContent>
                 <S.ScoreInfo>
                   <S.ScoreTitle>
-                    {showOptimizedView ? '🎉 Compatibilidade Otimizada!' : 'Sua Compatibilidade com a Vaga'}
+                    {showOptimizedView ? (
+                      <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <Sparkles size={24} /> Compatibilidade Otimizada!
+                      </span>
+                    ) : (
+                      'Sua Compatibilidade com a Vaga'
+                    )}
                   </S.ScoreTitle>
                   <S.ScoreDescription>
                     {showOptimizedView 
@@ -105,18 +111,38 @@ export const ResultadosPage: React.FC = () => {
                 </S.CardHeader>
                 <S.CardContent>
                   <S.SummaryText style={{ background: '#10b98110', borderColor: '#10b981' }}>
-                    ✅ <strong>Análise #{improvementData.analysisCount}</strong> - Seu perfil já está otimizado para esta vaga específica!
-                    <br /><br />
-                    📊 <strong>Evolução:</strong> {improvementData.previousScore}% → {improvementData.currentScore}% (+{improvementData.improvement} pontos)
-                    <br /><br />
-                    💡 Com {analysis.placar}% de compatibilidade, seu currículo tem grandes chances de passar pela triagem automática desta vaga.
-                    <br /><br />
-                    🎯 <strong>Próximos passos:</strong>
-                    <ul style={{ marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
-                      <li>Revise seu perfil para garantir que tudo está atualizado</li>
-                      <li>Use o resumo otimizado ao aplicar para esta vaga</li>
-                      <li>Para melhorar ainda mais, adicione novas experiências ou certificações relevantes ao seu perfil</li>
-                    </ul>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem' }}>
+                      <CheckCircle size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
+                      <div>
+                        <strong>Análise #{improvementData.analysisCount}</strong> - Seu perfil já está otimizado para esta vaga específica!
+                      </div>
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem' }}>
+                      <BarChart3 size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
+                      <div>
+                        <strong>Evolução:</strong> {improvementData.previousScore}% → {improvementData.currentScore}% (+{improvementData.improvement} pontos)
+                      </div>
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem' }}>
+                      <Lightbulb size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
+                      <div>
+                        Com {analysis.placar}% de compatibilidade, seu currículo tem grandes chances de passar pela triagem automática desta vaga.
+                      </div>
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                      <Target size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
+                      <div>
+                        <strong>Próximos passos:</strong>
+                        <ul style={{ marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
+                          <li>Revise seu perfil para garantir que tudo está atualizado</li>
+                          <li>Use o resumo otimizado ao aplicar para esta vaga</li>
+                          <li>Para melhorar ainda mais, adicione novas experiências ou certificações relevantes ao seu perfil</li>
+                        </ul>
+                      </div>
+                    </div>
                   </S.SummaryText>
                 </S.CardContent>
               </S.ContentCard>

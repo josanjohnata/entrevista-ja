@@ -19,6 +19,7 @@ import {
   FiDownload,
   FiInfo
 } from 'react-icons/fi';
+import { Sparkles, CheckCircle, Pin, Lightbulb, AlertTriangle } from 'lucide-react';
 import { HeaderHome } from '../../components/HeaderHome/HeaderHome';
 import { useProfileScreen } from './useProfileScreen';
 import {
@@ -198,7 +199,9 @@ export const ProfileScreen: React.FC = () => {
           <MainContent>
             {isFirstAccess && (
               <FirstAccessBanner>
-                <h3>🎉 Bem-vindo! Complete seu perfil</h3>
+                <h3 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <Sparkles size={24} /> Bem-vindo! Complete seu perfil
+                </h3>
                 <p>
                   Para começar a usar a plataforma, precisamos que você preencha algumas informações importantes sobre sua carreira profissional.
                   Os campos marcados com <RequiredBadge>*</RequiredBadge> são obrigatórios.
@@ -219,7 +222,7 @@ export const ProfileScreen: React.FC = () => {
                     <Button
                       type="button"
                       onClick={() => navigate('/home', { state: { fromProfile: true } })}
-                      variant="primary"
+                      variant="secondary"
                       style={{ marginTop: '0.75rem', padding: '0.5rem 1rem', fontSize: '0.9rem' }}
                     >
                       Ir para Home e Analisar Novamente
@@ -246,7 +249,10 @@ export const ProfileScreen: React.FC = () => {
                 </h4>
                 
                 <div className="auto-applied" style={{ marginBottom: '1rem', padding: '0.75rem', background: 'rgba(255,255,255,0.15)', borderRadius: '8px' }}>
-                  <strong>✅ Campos atualizados automaticamente:</strong>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                    <CheckCircle size={18} />
+                    <strong>Campos atualizados automaticamente:</strong>
+                  </div>
                   <ul style={{ margin: '0.5rem 0 0 0', paddingLeft: '1.25rem', fontSize: '0.9rem' }}>
                     <li><strong>Resumo Profissional</strong> - substituído pela versão otimizada</li>
                     {analysisInfo.palavrasChave && analysisInfo.palavrasChave.length > 0 && (
@@ -254,14 +260,18 @@ export const ProfileScreen: React.FC = () => {
                     )}
                     <li><strong>Título/Localização/Formação/Idiomas</strong> - verificados e atualizados quando sugeridos</li>
                   </ul>
-                  <p style={{ margin: '0.75rem 0 0 0', fontSize: '0.85rem', opacity: 0.9 }}>
-                    ⚠️ <strong>Importante:</strong> Revise TODAS as seções antes de salvar. As sugestões foram aplicadas automaticamente mas você deve ajustar conforme necessário.
+                  <p style={{ margin: '0.75rem 0 0 0', fontSize: '0.85rem', opacity: 0.9, display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                    <AlertTriangle size={16} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
+                    <span><strong>Importante:</strong> Revise TODAS as seções antes de salvar. As sugestões foram aplicadas automaticamente mas você deve ajustar conforme necessário.</span>
                   </p>
                 </div>
                 
                 {analysisInfo.palavrasChave && analysisInfo.palavrasChave.length > 0 && (
                   <div className="keywords">
-                    <strong>📌 Palavras-chave incorporadas:</strong>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      <Pin size={18} />
+                      <strong>Palavras-chave incorporadas:</strong>
+                    </div>
                     <div className="keyword-list">
                       {analysisInfo.palavrasChave.map((keyword, index) => (
                         <span key={index} className="keyword-tag">
@@ -274,7 +284,10 @@ export const ProfileScreen: React.FC = () => {
 
                 {analysisInfo.sugestoes && analysisInfo.sugestoes.length > 0 && (
                   <div className="suggestions">
-                    <strong>💡 Outras sugestões para revisar:</strong>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                      <Lightbulb size={18} />
+                      <strong>Outras sugestões para revisar:</strong>
+                    </div>
                     <ul>
                       {analysisInfo.sugestoes.slice(0, 5).map((sugestao, index) => (
                         <li key={index}>{sugestao}</li>

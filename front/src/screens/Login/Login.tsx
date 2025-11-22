@@ -25,6 +25,7 @@ import {
   TogglePasswordButton
 } from "./styles";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from "react-router-dom";
 import { useAuthForm } from "../../hooks/useAuthForm";
 import { useAuth } from "../../contexts/AuthContext";
@@ -138,8 +139,13 @@ export const LoginScreen: FC = () => {
             <Subheading>Entrar</Subheading>
             {!firebaseConfigured && (
               <WarningBox>
-                ⚠️ <strong>Firebase não configurado:</strong> Para usar o login, configure as variáveis de ambiente do Firebase.
-                Consulte o arquivo <code>FIREBASE_AUTH_SETUP.md</code> para instruções.
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                  <AlertTriangle size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
+                  <div>
+                    <strong>Firebase não configurado:</strong> Para usar o login, configure as variáveis de ambiente do Firebase.
+                    Consulte o arquivo <code>FIREBASE_AUTH_SETUP.md</code> para instruções.
+                  </div>
+                </div>
               </WarningBox>
             )}
             <LoginForm onSubmit={handleLoginSubmit}>

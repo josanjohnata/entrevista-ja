@@ -131,7 +131,7 @@ export const IndexPage: React.FC = () => {
           const resumeText = formatProfileAsResume(profileData);
           setCurriculo(resumeText);
           if (showToast) {
-            toast.success('✨ Currículo atualizado com base no seu perfil!');
+            toast.success('Currículo atualizado com base no seu perfil!');
           }
         } else {
           setCurriculo('');
