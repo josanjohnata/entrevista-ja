@@ -310,14 +310,14 @@ export const IndexPage: React.FC = () => {
       
       if (previousAnalysis) {
         const scoreImprovement = currentScore - previousAnalysis.score;
-        const isSignificantImprovement = scoreImprovement >= 10;
+        const analysisCount = (previousAnalysis.analysisCount || 1) + 1;
         
-        if (isSignificantImprovement && currentScore >= 75) {
+        if (analysisCount >= 2 && currentScore >= 75) {
           improvementData = {
             previousScore: previousAnalysis.score,
             currentScore: currentScore,
             improvement: scoreImprovement,
-            analysisCount: (previousAnalysis.analysisCount || 1) + 1
+            analysisCount: analysisCount
           };
         }
       }
