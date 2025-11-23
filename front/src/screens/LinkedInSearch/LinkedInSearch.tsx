@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Sparkles } from 'lucide-react';
 import { toast } from 'react-toastify';
 
 import { Button } from '../../presentation/components/Button';
@@ -24,11 +23,32 @@ interface DeveloperFormValues {
   exclude?: string;
 }
 
-const seniorityMap: Record<string, string> = {
+const reverseSeniorityMap: Record<string, string> = {
   'Estágio': '1',
   'Junior': '2',
   'Pleno': '3,4',
   'Senior': '5,6',
+};
+
+const buildQuery = (data: DeveloperFormValues, isJobsTab: boolean) => {
+  let query = data.tech;
+  
+  if (data.exclude && data.exclude.trim()) {
+    const excludeTerms = data.exclude
+      .split(',')
+      .map(term => term.trim())
+      .filter(Boolean);
+    
+    if (isJobsTab) {
+      const notClauses = excludeTerms.map(term => `NOT "${term}"`).join(' ');
+      query = `${data.tech} ${notClauses}`;
+    } else {
+      const notClauses = excludeTerms.map(term => `NOT (${term})`).join(' ');
+      query = `${data.tech} ${notClauses}`;
+    }
+  }
+  
+  return query;
 };
 
 export const LinkedInSearchScreen: React.FC = () => {
@@ -37,50 +57,60 @@ export const LinkedInSearchScreen: React.FC = () => {
       tab: 'jobs',
       tech: '',
       seniority: 'Junior',
-      skip: 0,
+      skip: 1,
       exclude: '',
     },
   });
 
   const values = watch();
 
-  const onSubmit = (data: DeveloperFormValues) => {
+  const onSubmit = useCallback((data: DeveloperFormValues) => {
+    const isJobsTab = data.tab === 'jobs';
+    const keywords = buildQuery(data, isJobsTab);
+    
+    const pageNumber = data.skip || 1;
+    const startIndex = (pageNumber - 1) * 25;
+    
     let url = '';
     
-    if (data.tab === 'jobs') {
-      const keywords = data.exclude 
-        ? `${data.tech} NOT (${data.exclude})`
-        : data.tech;
-      
-      const experienceLevel = data.seniority ? seniorityMap[data.seniority] : '';
-      const skipValue = data.skip || 0;
-      
-      url = `https://www.linkedin.com/jobs/search/?keywords=${encodeURIComponent(keywords)}&location=Brasil&f_AL=true${
+    if (isJobsTab) {
+      const experienceLevel = data.seniority ? reverseSeniorityMap[data.seniority] : '';
+      url = `https://www.linkedin.com/jobs/search/?geoId=92000000&keywords=${encodeURIComponent(keywords)}&origin=JOB_SEARCH_PAGE_SEARCH_BUTTON&refresh=true${
         experienceLevel ? `&f_E=${experienceLevel}` : ''
-      }&start=${skipValue}`;
+      }&start=${startIndex}`;
     } else {
-      const keywords = data.exclude 
-        ? `${data.tech} NOT (${data.exclude})`
-        : data.tech;
-      
-      url = `https://www.linkedin.com/search/results/content/?keywords=${encodeURIComponent(keywords)}`;
+      url = `https://www.linkedin.com/search/results/CONTENT/?keywords=${encodeURIComponent(keywords)}&origin=JOB_SEARCH_PAGE_SEARCH_BUTTON&refresh=true`;
     }
 
     window.open(url, '_blank');
     toast.success('Pesquisa aberta em nova aba do LinkedIn!');
-  };
+  }, []);
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     reset({
       tab: values.tab,
       tech: '',
       seniority: 'Junior',
-      skip: 0,
+      skip: 1,
       exclude: '',
     });
-  };
+  }, [reset, values.tab]);
 
-  const isFormFilled = values.tab && values.tech?.trim() && values.skip !== undefined;
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.ctrlKey && e.key === 'Enter') {
+        handleSubmit(onSubmit)();
+      }
+      if (e.ctrlKey && e.key.toLowerCase() === 'l') {
+        e.preventDefault();
+        handleClear();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleSubmit, handleClear, onSubmit]);
+
+  const isFormFilled = values.tab && values.tech?.trim() && values.skip !== undefined && values.skip >= 1;
 
   return (
     <>
@@ -105,7 +135,21 @@ export const LinkedInSearchScreen: React.FC = () => {
             <Card>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <S.FormGroup>
-                  <Label htmlFor="tech">Palavras Chave *</Label>
+                  <Label htmlFor="tab">Buscar em:</Label>
+                  <Controller
+                    name="tab"
+                    control={control}
+                    render={({ field }) => (
+                      <S.Select {...field} id="tab">
+                        <option value="jobs">Vagas</option>
+                        <option value="content">Publicações</option>
+                      </S.Select>
+                    )}
+                  />
+                </S.FormGroup>
+
+                <S.FormGroup>
+                  <Label htmlFor="tech">Palavras Chave (separadas por vírgula):</Label>
                   <Controller
                     name="tech"
                     control={control}
@@ -121,7 +165,7 @@ export const LinkedInSearchScreen: React.FC = () => {
                 </S.FormGroup>
 
                 <S.FormGroup>
-                  <Label htmlFor="exclude">Excluir palavras chave</Label>
+                  <Label htmlFor="exclude">Excluir palavras chave (separadas por vírgula):</Label>
                   <Controller
                     name="exclude"
                     control={control}
@@ -129,7 +173,7 @@ export const LinkedInSearchScreen: React.FC = () => {
                       <Input
                         {...field}
                         id="exclude"
-                        placeholder="Ex: estágio, júnior, 5 anos de experiência, etc."
+                        placeholder="Ex: senior, estágio, 5 anos de experiência"
                       />
                     )}
                   />
@@ -163,8 +207,12 @@ export const LinkedInSearchScreen: React.FC = () => {
                             {...field}
                             id="skip"
                             type="number"
-                            placeholder="0"
-                            onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                            min="1"
+                            placeholder="1"
+                            onChange={(e) => {
+                              const value = parseInt(e.target.value) || 1;
+                              field.onChange(value < 1 ? 1 : value);
+                            }}
                           />
                         )}
                       />
