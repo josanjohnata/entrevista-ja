@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Loader2, Sparkles, Target, TrendingUp, Upload, RefreshCw } from 'lucide-react';
+import { Loader2, Sparkles, Target, TrendingUp } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { doc, getDoc } from 'firebase/firestore';
 
 import { Button } from '../../../presentation/components/Button';
 import { Card } from '../../../presentation/components/Card';
-// import { Input } from '@/presentation/components/Input';
 import { Textarea } from '../../../presentation/components/Textarea';
 import { Label } from '../../../presentation/components/Label';
 import { Container, Page } from '../../../presentation/components/Layout';
@@ -16,6 +15,7 @@ import { db } from '../../../lib/firebase';
 import type { UserProfile } from '../../../screens/ProfileScreen/types';
 
 import * as S from './Index.styles';
+import { FiDownload } from 'react-icons/fi';
 
 const formatProfileAsResume = (profile: UserProfile): string => {
   let resume = '';
@@ -102,7 +102,6 @@ export const IndexPage: React.FC = () => {
   const [vaga, setVaga] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isProcessingFile, setIsProcessingFile] = useState(false);
-  const [fileName, setFileName] = useState<string>('');
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [isReloading, setIsReloading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -112,7 +111,6 @@ export const IndexPage: React.FC = () => {
     if (!currentUser || !db) {
       setCurriculo('');
       setVaga('');
-      setFileName('');
       setLoadingProfile(false);
       return;
     }
@@ -153,7 +151,6 @@ export const IndexPage: React.FC = () => {
         if (isMounted) {
           setCurriculo('');
           setVaga('');
-          setFileName('');
           setLoadingProfile(false);
         }
         return;
@@ -169,7 +166,6 @@ export const IndexPage: React.FC = () => {
       isMounted = false;
       setCurriculo('');
       setVaga('');
-      setFileName('');
     };
   }, [currentUser, loadProfile]);
 
@@ -180,6 +176,17 @@ export const IndexPage: React.FC = () => {
       window.history.replaceState({}, document.title);
     }
   }, [location.state, currentUser, loadProfile]);
+
+  useEffect(() => {
+    const optimizedResume = location.state?.optimizedResume;
+    const fromResults = location.state?.fromResults;
+    
+    if (fromResults && optimizedResume) {
+      setCurriculo(optimizedResume);
+      toast.success('✨ Currículo atualizado com as sugestões!');
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -197,7 +204,6 @@ export const IndexPage: React.FC = () => {
       return;
     }
 
-    setFileName(file.name);
     setIsProcessingFile(true);
 
     try {
@@ -239,7 +245,6 @@ export const IndexPage: React.FC = () => {
     } catch (error) {
       console.error('Erro ao carregar arquivo:', error);
       toast.error('Erro ao carregar arquivo');
-      setFileName('');
     } finally {
       setIsProcessingFile(false);
       e.target.value = '';
@@ -395,7 +400,7 @@ export const IndexPage: React.FC = () => {
             <Card>
               <S.FormGroup>
                 <Label htmlFor="curriculo">
-                  1. Cole seu currículo ou faça upload do arquivo
+                  1. Cole seu currículo
                 </Label>
                 <S.FileUploadContainer>
                   <input
@@ -406,28 +411,6 @@ export const IndexPage: React.FC = () => {
                     disabled={isProcessingFile}
                     style={{ display: 'none' }}
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    // disabled={isProcessingFile}
-                    disabled={true}
-                  >
-                    {isProcessingFile ? (
-                      <>
-                        <S.LoadingIcon>
-                          <Loader2 size={16} />
-                        </S.LoadingIcon>
-                        Processando...
-                      </>
-                    ) : (
-                      <>
-                        <Upload size={16} />
-                        {fileName || 'Escolher Arquivo'}
-                      </>
-                    )}
-                  </Button>
                 </S.FileUploadContainer>
                 <Textarea
                   id="curriculo"
@@ -453,8 +436,8 @@ export const IndexPage: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <RefreshCw size={16} />
-                        Recarregar do Perfil Atualizado
+                        <FiDownload size={16} />
+                        Baixar Currículo Atualizado
                       </>
                     )}
                   </Button>

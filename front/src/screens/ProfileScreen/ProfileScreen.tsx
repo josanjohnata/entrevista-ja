@@ -36,7 +36,6 @@ import {
   SocialLink,
   CenteredMessage,
   CloseButton,
-  RequiredBadge,
   FirstAccessBanner,
   AnalysisInfoCard
 } from './styles';
@@ -295,7 +294,7 @@ export const ProfileScreen: React.FC = () => {
                     )}
                     <Button 
                       type="button" 
-                      variant="outline" 
+                      variant="secondary"
                       onClick={handleDownloadPDFClick}
                       disabled={isGeneratingPDF || saving}
                       style={{ marginLeft: 'auto' }}

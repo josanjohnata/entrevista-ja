@@ -27,6 +27,7 @@ interface ImprovementData {
 
 interface UserProfile {
   displayName?: string;
+  professionalTitle?: string;
   about?: string;
   experiences?: Array<{
     company: string;
@@ -95,10 +96,50 @@ export const ResultadosPage: React.FC = () => {
     .map((keyword) => keyword.trim())
     .filter(Boolean);
 
-  const suggestions = analysis.sugestoesMelhoria
-    .split('\n')
-    .map((suggestion) => suggestion.replace(/^[-•]\s*/, '').trim())
-    .filter(Boolean);
+  const generateOptimizedResume = (): string => {
+    if (!userProfile) return '';
+
+    let resume = `${userProfile.displayName || 'Nome'}\n`;
+    resume += `${userProfile.professionalTitle || 'Título Profissional'}\n\n`;
+    
+    resume += `RESUMO PROFISSIONAL\n`;
+    resume += `${analysis.resumoOtimizado}\n\n`;
+    
+    if (userProfile.experiences && userProfile.experiences.length > 0) {
+      resume += `EXPERIÊNCIA PROFISSIONAL\n\n`;
+      userProfile.experiences.forEach((exp) => {
+        resume += `${exp.company} - ${exp.position}\n`;
+        resume += `${exp.startDate} - ${exp.isCurrent ? 'Atual' : exp.endDate || ''}\n`;
+        
+        // Incorpora palavras-chave na descrição
+        let description = exp.description || '';
+        if (keywords.length > 0 && description) {
+          const keywordsToAdd = keywords.filter(kw => 
+            !description.toLowerCase().includes(kw.toLowerCase())
+          ).slice(0, 3);
+          
+          if (keywordsToAdd.length > 0) {
+            description += `\n\nPalavras-chave relevantes: ${keywordsToAdd.join(', ')}`;
+          }
+        }
+        resume += `${description}\n\n`;
+      });
+    }
+    
+    if (userProfile.education && userProfile.education.length > 0) {
+      resume += `FORMAÇÃO ACADÊMICA\n\n`;
+      userProfile.education.forEach((edu) => {
+        resume += `${edu.institution}\n`;
+        resume += `${edu.degree}${edu.fieldOfStudy ? ` - ${edu.fieldOfStudy}` : ''}\n`;
+        if (edu.description) {
+          resume += `${edu.description}\n`;
+        }
+        resume += `\n`;
+      });
+    }
+    
+    return resume;
+  };
 
   return (
     <Page>
@@ -299,22 +340,17 @@ export const ResultadosPage: React.FC = () => {
               </Button>
               {!showOptimizedView && (
                 <Button 
-                  onClick={() => navigate('/profile', { 
+                  onClick={() => navigate('/home', { 
                     state: { 
-                      analysisData: {
-                        resumoOtimizado: analysis.resumoOtimizado,
-                        palavrasChave: keywords,
-                        sugestoes: suggestions,
-                        sugestoesMelhoriaTexto: analysis.sugestoesMelhoria,
-                        placar: analysis.placar
-                      }
+                      optimizedResume: generateOptimizedResume(),
+                      fromResults: true
                     } 
                   })} 
                   size="lg" 
                   variant="primary"
                 >
-                  <User size={20} />
-                  Atualizar Perfil com Sugestões
+                  <FileText size={20} />
+                  Aplicar Sugestões no Currículo
                 </Button>
               )}
             </S.ActionContainer>
