@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Loader2, Sparkles, Target, TrendingUp } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { doc, getDoc } from 'firebase/firestore';
+import { pdf, Document, Page as PDFPage, Text, View, StyleSheet } from '@react-pdf/renderer';
 
 import { Button } from '../../../presentation/components/Button';
 import { Card } from '../../../presentation/components/Card';
@@ -16,6 +17,149 @@ import type { UserProfile } from '../../../screens/ProfileScreen/types';
 
 import * as S from './Index.styles';
 import { FiDownload } from 'react-icons/fi';
+
+const pdfStyles = StyleSheet.create({
+  page: {
+    padding: 40,
+    fontSize: 10,
+    fontFamily: 'Helvetica',
+    backgroundColor: '#ffffff',
+  },
+  header: {
+    marginBottom: 20,
+    borderBottom: '2 solid #0A66C2',
+    paddingBottom: 15,
+  },
+  name: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#000000',
+    marginBottom: 5,
+  },
+  subtitle: {
+    fontSize: 12,
+    color: '#666666',
+    marginBottom: 5,
+  },
+  sectionTitle: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    color: '#0A66C2',
+    marginTop: 15,
+    marginBottom: 8,
+    borderBottom: '1 solid #E0E0E0',
+    paddingBottom: 3,
+  },
+  text: {
+    fontSize: 10,
+    lineHeight: 1.5,
+    color: '#333333',
+    marginBottom: 5,
+    textAlign: 'justify',
+  },
+  bold: {
+    fontSize: 11,
+    fontWeight: 'bold',
+    color: '#000000',
+    marginBottom: 3,
+  },
+  item: {
+    fontSize: 9,
+    color: '#333333',
+    marginBottom: 8,
+    lineHeight: 1.4,
+  },
+  contactInfo: {
+    fontSize: 9,
+    color: '#666666',
+    marginBottom: 3,
+  },
+});
+
+const ResumePDFDocument = ({ content }: { content: string }) => {
+  const lines = content.split('\n');
+  const sections: Array<{ title?: string; content: string[] }> = [];
+  let currentSection: { title?: string; content: string[] } = { content: [] };
+
+  lines.forEach((line, index) => {
+    const trimmed = line.trim();
+    
+    if (!trimmed) {
+      if (currentSection.content.length > 0) {
+        sections.push(currentSection);
+        currentSection = { content: [] };
+      }
+      return;
+    }
+
+    const isTitle = trimmed === trimmed.toUpperCase() && 
+                    trimmed.length < 50 && 
+                    trimmed.length > 2 &&
+                    !trimmed.match(/^\d/) &&
+                    currentSection.content.length === 0;
+
+    if (isTitle) {
+      if (currentSection.content.length > 0) {
+        sections.push(currentSection);
+      }
+      currentSection = { title: trimmed, content: [] };
+    } else {
+      currentSection.content.push(line);
+    }
+  });
+
+  if (currentSection.content.length > 0 || currentSection.title) {
+    sections.push(currentSection);
+  }
+
+  return (
+    <Document>
+      <PDFPage size="A4" style={pdfStyles.page}>
+        {sections.map((section, sectionIndex) => {
+          const isHeader = sectionIndex === 0 && !section.title;
+          
+          if (isHeader) {
+            return (
+              <View key={sectionIndex} style={pdfStyles.header}>
+                {section.content.slice(0, 3).map((line, i) => (
+                  <Text key={i} style={i === 0 ? pdfStyles.name : pdfStyles.subtitle}>
+                    {line}
+                  </Text>
+                ))}
+                {section.content.slice(3).map((line, i) => (
+                  <Text key={`contact-${i}`} style={pdfStyles.contactInfo}>
+                    {line}
+                  </Text>
+                ))}
+              </View>
+            );
+          }
+
+          return (
+            <View key={sectionIndex} style={{ marginBottom: 12 }}>
+              {section.title && (
+                <Text style={pdfStyles.sectionTitle}>{section.title}</Text>
+              )}
+              {section.content.map((line, lineIndex) => {
+                const isBold = line.match(/^[A-Z][^-•\n]{10,60}$/) || 
+                              line.includes(' - ') && !line.startsWith('-') && !line.startsWith('•');
+                
+                return (
+                  <Text 
+                    key={lineIndex} 
+                    style={isBold ? pdfStyles.bold : pdfStyles.text}
+                  >
+                    {line}
+                  </Text>
+                );
+              })}
+            </View>
+          );
+        })}
+      </PDFPage>
+    </Document>
+  );
+};
 
 const formatProfileAsResume = (profile: UserProfile): string => {
   let resume = '';
@@ -99,12 +243,13 @@ export const IndexPage: React.FC = () => {
   const location = useLocation();
   const { currentUser } = useAuth();
   const [curriculo, setCurriculo] = useState('');
-  const [vaga, setVaga] = useState('');
+  const [vaga, setVaga] = useState(() => {
+    const savedVaga = localStorage.getItem('lastJobDescription');
+    return savedVaga || '';
+  });
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [isProcessingFile, setIsProcessingFile] = useState(false);
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [isReloading, setIsReloading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const isFirstLoad = useRef(true);
 
   const loadProfile = useCallback(async (showToast = true) => {
@@ -178,78 +323,23 @@ export const IndexPage: React.FC = () => {
   }, [location.state, currentUser, loadProfile]);
 
   useEffect(() => {
-    const optimizedResume = location.state?.optimizedResume;
-    const fromResults = location.state?.fromResults;
+    const state = location.state as { optimizedResume?: string; fromResults?: boolean } | null;
     
-    if (fromResults && optimizedResume) {
-      setCurriculo(optimizedResume);
+    if (state?.fromResults && state?.optimizedResume) {
+      console.log('Aplicando currículo otimizado:', state.optimizedResume.substring(0, 100));
+      setCurriculo(state.optimizedResume);
       toast.success('✨ Currículo atualizado com as sugestões!');
-      window.history.replaceState({}, document.title);
+      
+      navigate(location.pathname, { replace: true, state: {} });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state]);
 
-  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const validTypes = [
-      'application/pdf',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/msword',
-      'text/plain',
-    ];
-
-    if (!validTypes.includes(file.type)) {
-      toast.error('Formato não suportado. Por favor, envie um arquivo PDF, DOCX ou TXT.');
-      return;
+  useEffect(() => {
+    if (vaga.trim()) {
+      localStorage.setItem('lastJobDescription', vaga);
     }
-
-    setIsProcessingFile(true);
-
-    try {
-      if (file.type === 'text/plain') {
-        const text = await file.text();
-        setCurriculo(text);
-        toast.success('Arquivo carregado com sucesso!');
-      } else {
-        const reader = new FileReader();
-        reader.onload = async (event) => {
-          const arrayBuffer = event.target?.result as ArrayBuffer;
-          const uint8Array = new Uint8Array(arrayBuffer);
-          const binaryString = uint8Array.reduce(
-            (acc, byte) => acc + String.fromCharCode(byte),
-            ''
-          );
-          const base64 = btoa(binaryString);
-
-          try {
-            const { data, error } = await supabase.functions.invoke('parse-document', {
-              body: { file: base64, filename: file.name },
-            });
-
-            if (error) throw error;
-
-            if (data?.text) {
-              setCurriculo(data.text);
-              toast.success('Currículo extraído com sucesso!');
-            } else {
-              throw new Error('Não foi possível extrair o texto do arquivo');
-            }
-          } catch (err) {
-            console.error('Erro ao processar arquivo:', err);
-            toast.error('Erro ao processar arquivo. Tente colar o texto manualmente.');
-          }
-        };
-        reader.readAsArrayBuffer(file);
-      }
-    } catch (error) {
-      console.error('Erro ao carregar arquivo:', error);
-      toast.error('Erro ao carregar arquivo');
-    } finally {
-      setIsProcessingFile(false);
-      e.target.value = '';
-    }
-  };
+  }, [vaga]);
 
   const generateJobHash = (jobDescription: string): string => {
     const normalized = jobDescription.trim().toLowerCase().replace(/\s+/g, ' ').substring(0, 200);
@@ -260,6 +350,37 @@ export const IndexPage: React.FC = () => {
       hash = hash & hash;
     }
     return hash.toString(36);
+  };
+
+  const handleDownloadResume = async () => {
+    if (!curriculo.trim()) {
+      toast.error('Não há currículo para baixar');
+      return;
+    }
+
+    try {
+      const blob = await pdf(<ResumePDFDocument content={curriculo} />).toBlob();
+      
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `curriculo_atualizado_${new Date().getTime()}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      
+      toast.success('Currículo PDF baixado com sucesso!');
+    } catch (error) {
+      console.error('Erro ao baixar currículo:', error);
+      toast.error('Erro ao gerar PDF. Tente novamente.');
+    }
+  };
+
+  const handleClearVaga = () => {
+    setVaga('');
+    localStorage.removeItem('lastJobDescription');
+    toast.success('Descrição da vaga limpa!');
   };
 
   const handleAnalyze = async () => {
@@ -402,16 +523,6 @@ export const IndexPage: React.FC = () => {
                 <Label htmlFor="curriculo">
                   1. Cole seu currículo
                 </Label>
-                <S.FileUploadContainer>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.doc,.docx,.txt"
-                    onChange={handleFileUpload}
-                    disabled={isProcessingFile}
-                    style={{ display: 'none' }}
-                  />
-                </S.FileUploadContainer>
                 <Textarea
                   id="curriculo"
                   placeholder={loadingProfile ? "Carregando seu perfil..." : "Cole todo o texto do seu currículo aqui... Ex: João Silva, Desenvolvedor Full Stack, contato@joao.com, EXPERIÊNCIA: Empresa X (2021-2023)..."}
@@ -421,26 +532,37 @@ export const IndexPage: React.FC = () => {
                   disabled={loadingProfile}
                 />
                 {currentUser && (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => loadProfile(true)}
-                    disabled={isReloading || loadingProfile}
-                    style={{ marginTop: '0.5rem', width: 'fit-content' }}
-                  >
-                    {isReloading ? (
-                      <>
-                        <Loader2 size={16} className="animate-spin" />
-                        Recarregando...
-                      </>
-                    ) : (
-                      <>
-                        <FiDownload size={16} />
-                        Baixar Currículo Atualizado
-                      </>
-                    )}
-                  </Button>
+                  <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => loadProfile(true)}
+                      disabled={isReloading || loadingProfile}
+                    >
+                      {isReloading ? (
+                        <>
+                          <Loader2 size={16} className="animate-spin" />
+                          Recarregando...
+                        </>
+                      ) : (
+                        <>
+                          <Loader2 size={16} />
+                          Recarregar do Perfil
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="primary"
+                      size="sm"
+                      onClick={handleDownloadResume}
+                      disabled={!curriculo.trim()}
+                    >
+                      <FiDownload size={16} />
+                      Baixar Currículo (PDF)
+                    </Button>
+                  </div>
                 )}
               </S.FormGroup>
 
@@ -460,25 +582,38 @@ export const IndexPage: React.FC = () => {
                   onChange={(e) => setVaga(e.target.value)}
                   rows={10}
                 />
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
+                  <Button
+                    type="button"
+                    onClick={handleAnalyze}
+                    disabled={isAnalyzing}
+                    size="lg"
+                    variant="primary"
+                    style={{ flex: 1 }}
+                  >
+                    {isAnalyzing ? (
+                      <>
+                        <Loader2 size={20} className="spin" />
+                        Analisando...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles size={20} />
+                        Analisar e Otimizar Agora
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={handleClearVaga}
+                    disabled={!vaga.trim()}
+                    size="lg"
+                    variant="outline"
+                  >
+                    Limpar Vaga
+                  </Button>
+                </div>
               </S.FormGroup>
-
-              <Button
-                onClick={handleAnalyze}
-                disabled={isAnalyzing}
-                size="lg"
-                fullWidth
-              >
-                {isAnalyzing ? (
-                  <>
-                    <Loader2 size={20} className="spin" />
-                    Analisando...
-                  </>
-                ) : (
-                  <>
-                    Analisar e Otimizar Agora
-                  </>
-                )}
-              </Button>
             </Card>
           </S.FormContainer>
         </Container>
