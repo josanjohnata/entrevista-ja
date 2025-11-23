@@ -59,6 +59,7 @@ export class ProfileToResumeAdapter {
       field: edu.fieldOfStudy || '',
       startDate: convertDateFormat(edu.startDate || ''),
       endDate: convertDateFormat(edu.endDate || ''),
+      description: edu.description || '',
     }));
 
     const skills: ResumeSkill[] = (profile.skills || []).map((skill) => ({
@@ -109,6 +110,7 @@ export class ProfileToResumeAdapter {
       fieldOfStudy: edu.field,
       startDate: this.convertToDisplayFormat(edu.startDate),
       endDate: this.convertToDisplayFormat(edu.endDate),
+      description: edu.description,
     }));
 
     const skills = resumeData.skills.map((skill) => skill.name);

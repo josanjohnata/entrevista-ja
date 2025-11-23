@@ -271,6 +271,9 @@ export const PDFDocument = ({ data }: PDFDocumentProps) => {
                     {edu.degree}{edu.field ? `, ${edu.field}` : ''}{(edu.startDate || edu.endDate) ? ` · (${formatDate(edu.startDate)} - ${formatDate(edu.endDate)})` : ''}
                   </Text>
                 )}
+                {edu.description?.trim() && (
+                  <Text style={styles.description}>{edu.description}</Text>
+                )}
               </View>
             ))}
           </View>

@@ -105,6 +105,7 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({ data, onChange, disabled
       field: '',
       startDate: '',
       endDate: '',
+      description: '',
     };
     onChange({ ...data, education: [...data.education, newEdu] });
     toast.success('Nova formação adicionada');
@@ -578,6 +579,16 @@ export const ResumeForm: React.FC<ResumeFormProps> = ({ data, onChange, disabled
                       disabled={disabled}
                     />
                   </S.FormField>
+                  <S.FormFieldFullWidth>
+                    <Label>Descrição do Curso</Label>
+                    <Textarea
+                      value={edu.description}
+                      onChange={(e) => updateEducation(edu.id, 'description', e.target.value)}
+                      placeholder="Descreva o que você aprendeu, projetos desenvolvidos, disciplinas relevantes..."
+                      rows={3}
+                      disabled={disabled}
+                    />
+                  </S.FormFieldFullWidth>
                 </S.FormGrid>
               </S.ExperienceItem>
             ))}
