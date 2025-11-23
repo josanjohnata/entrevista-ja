@@ -323,14 +323,26 @@ export const IndexPage: React.FC = () => {
   }, [location.state, currentUser, loadProfile]);
 
   useEffect(() => {
+    console.log('useEffect [location.state] executado', { state: location.state });
     const state = location.state as { optimizedResume?: string; fromResults?: boolean } | null;
     
     if (state?.fromResults && state?.optimizedResume) {
-      console.log('Aplicando currículo otimizado:', state.optimizedResume.substring(0, 100));
+      console.log('✅ Aplicando currículo otimizado');
+      console.log('📝 Primeiras 200 chars:', state.optimizedResume.substring(0, 200));
+      console.log('📏 Tamanho total:', state.optimizedResume.length);
+      
       setCurriculo(state.optimizedResume);
       toast.success('✨ Currículo atualizado com as sugestões!');
       
-      navigate(location.pathname, { replace: true, state: {} });
+      setTimeout(() => {
+        navigate(location.pathname, { replace: true, state: {} });
+      }, 100);
+    } else {
+      console.log('❌ Condições não atendidas:', {
+        fromResults: state?.fromResults,
+        hasOptimizedResume: !!state?.optimizedResume,
+        optimizedResumeLength: state?.optimizedResume?.length
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.state]);

@@ -97,7 +97,13 @@ export const ResultadosPage: React.FC = () => {
     .filter(Boolean);
 
   const generateOptimizedResume = (): string => {
-    if (!userProfile) return '';
+    console.log('🔧 generateOptimizedResume chamado');
+    console.log('👤 userProfile:', userProfile ? 'existe' : 'null');
+    
+    if (!userProfile) {
+      console.log('❌ userProfile é null, retornando string vazia');
+      return '';
+    }
 
     let resume = `${userProfile.displayName || 'Nome'}\n`;
     resume += `${userProfile.professionalTitle || 'Título Profissional'}\n\n`;
@@ -137,6 +143,9 @@ export const ResultadosPage: React.FC = () => {
         resume += `\n`;
       });
     }
+    
+    console.log('✅ Currículo gerado com', resume.length, 'caracteres');
+    console.log('📝 Primeiras 200 chars:', resume.substring(0, 200));
     
     return resume;
   };
@@ -340,12 +349,21 @@ export const ResultadosPage: React.FC = () => {
               </Button>
               {!showOptimizedView && (
                 <Button 
-                  onClick={() => navigate('/home', { 
-                    state: { 
-                      optimizedResume: generateOptimizedResume(),
-                      fromResults: true
-                    } 
-                  })} 
+                  onClick={() => {
+                    console.log('🚀 Botão "Aplicar Sugestões" clicado');
+                    const optimizedResume = generateOptimizedResume();
+                    console.log('📦 State sendo enviado:', {
+                      optimizedResume: optimizedResume.substring(0, 100),
+                      fromResults: true,
+                      length: optimizedResume.length
+                    });
+                    navigate('/home', { 
+                      state: { 
+                        optimizedResume,
+                        fromResults: true
+                      } 
+                    });
+                  }} 
                   size="lg" 
                   variant="primary"
                 >
