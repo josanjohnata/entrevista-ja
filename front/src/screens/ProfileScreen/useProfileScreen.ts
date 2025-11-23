@@ -2,11 +2,11 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { db, storage } from '../../lib/firebase';
+import { db } from '../../lib/firebase';
 import type { UserProfile, Experience, Education, Language } from './types';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { formatMonthYear } from '../../utils/dateFormatter';
+import { ProfileToResumeAdapter } from '../../infrastructure/adapters/ProfileToResumeAdapter';
 
 export function useProfileScreen() {
   const { currentUser } = useAuth();
@@ -17,7 +17,6 @@ export function useProfileScreen() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [uploadingFile, setUploadingFile] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   
@@ -33,8 +32,6 @@ export function useProfileScreen() {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [education, setEducation] = useState<Education[]>([]);
   const [languages, setLanguages] = useState<Language[]>([]);
-  
-  const [resumeFile, setResumeFile] = useState<File | null>(null);
 
   useEffect(() => {
     const analysisData = location.state?.analysisData;
@@ -172,7 +169,6 @@ export function useProfileScreen() {
         setExperiences([]);
         setEducation([]);
         setLanguages([]);
-        setResumeFile(null);
         setLoading(false);
       }
     };
@@ -272,7 +268,6 @@ export function useProfileScreen() {
       setExperiences([]);
       setEducation([]);
       setLanguages([]);
-      setResumeFile(null);
     };
   }, [currentUser]);
 
@@ -349,40 +344,6 @@ export function useProfileScreen() {
     setLanguages(languages.filter(lang => lang.id !== id));
   };
 
-  const uploadResume = async (file: File): Promise<{ url: string; name: string }> => {
-    if (!storage) {
-      throw new Error('Storage não está configurado');
-    }
-    
-    const fileExtension = file.name.split('.').pop();
-    const fileName = `resume_${currentUser!.uid}_${Date.now()}.${fileExtension}`;
-    const storageRef = ref(storage, `resumes/${currentUser!.uid}/${fileName}`);
-
-    await uploadBytes(storageRef, file);
-    const downloadURL = await getDownloadURL(storageRef);
-
-    return { url: downloadURL, name: file.name };
-  };
-
-  const deleteOldResume = async (resumeURL: string) => {
-    try {
-      if (!storage) {
-        return;
-      }
-      
-      const url = new URL(resumeURL);
-      const pathMatch = url.pathname.match(/\/o\/(.+?)(?:\?|$)/);
-      const path = pathMatch ? decodeURIComponent(pathMatch[1]) : null;
-      
-      if (path) {
-        const oldResumeRef = ref(storage, path);
-        await deleteObject(oldResumeRef);
-      }
-    } catch (error) {
-      console.error('Erro ao deletar arquivo antigo:', error);
-    }
-  };
-
   const validateForm = (): boolean => {
     if (isFirstAccess) {
       if (!displayName.trim()) {
@@ -434,23 +395,6 @@ export function useProfileScreen() {
     setMessage(null);
 
     try {
-      let resumeData = {
-        resumeURL: profile?.resumeURL,
-        resumeName: profile?.resumeName,
-      };
-
-      if (resumeFile) {
-        setUploadingFile(true);
-        
-        if (profile?.resumeURL) {
-          await deleteOldResume(profile.resumeURL);
-        }
-        
-        const { url, name } = await uploadResume(resumeFile);
-        resumeData = { resumeURL: url, resumeName: name };
-        setUploadingFile(false);
-      }
-
       const profileData: Record<string, any> = {
         uid: currentUser.uid,
         displayName: displayName.trim() || currentUser.displayName || '',
@@ -470,14 +414,6 @@ export function useProfileScreen() {
 
       if (currentUser.photoURL) {
         profileData.photoURL = currentUser.photoURL;
-      }
-
-      if (resumeData.resumeURL) {
-        profileData.resumeURL = resumeData.resumeURL;
-      }
-
-      if (resumeData.resumeName) {
-        profileData.resumeName = resumeData.resumeName;
       }
 
       if (!db) {
@@ -501,14 +437,11 @@ export function useProfileScreen() {
         experiences: profileData.experiences,
         education: profileData.education,
         languages: profileData.languages,
-        resumeURL: profileData.resumeURL,
-        resumeName: profileData.resumeName,
         profileCompleted: true,
         updatedAt: new Date(),
       };
 
       setProfile(updatedProfile);
-      setResumeFile(null);
       
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
@@ -549,7 +482,6 @@ export function useProfileScreen() {
       }
     } finally {
       setSaving(false);
-      setUploadingFile(false);
     }
   };
 
@@ -577,7 +509,6 @@ export function useProfileScreen() {
       setExperiences(profile.experiences || []);
       setEducation(profile.education || []);
       setLanguages(profile.languages || []);
-      setResumeFile(null);
     }
     
     setIsEditing(false);
@@ -656,12 +587,70 @@ export function useProfileScreen() {
     return text;
   };
 
+  const handleSubmitResumeData = async (resumeData: any) => {
+    if (!currentUser || !db) return;
+
+    setSaving(true);
+    setMessage(null);
+
+    try {
+      const convertedProfile = ProfileToResumeAdapter.convertBack(resumeData);
+      
+      const profileData: UserProfile = {
+        displayName: convertedProfile.displayName || '',
+        professionalTitle: convertedProfile.professionalTitle || '',
+        phone: convertedProfile.phone || '',
+        location: convertedProfile.location || '',
+        linkedin: convertedProfile.linkedin || '',
+        github: convertedProfile.github || '',
+        about: convertedProfile.about || '',
+        experiences: convertedProfile.experiences || [],
+        education: convertedProfile.education || [],
+        languages: convertedProfile.languages || [],
+        skills: convertedProfile.skills || [],
+        certifications: convertedProfile.certifications || [],
+        profileCompleted: true,
+        createdAt: profile?.createdAt || Timestamp.now(),
+        updatedAt: Timestamp.now(),
+      };
+
+      const profileRef = doc(db, 'profiles', currentUser.uid);
+      await setDoc(profileRef, profileData);
+
+      setProfile(profileData);
+      setIsEditing(false);
+      
+      if (isFirstAccess) {
+        setIsFirstAccess(false);
+        setMessage({ type: 'success', text: 'Perfil criado com sucesso! Redirecionando...' });
+        setTimeout(() => {
+          navigate('/home', { replace: true });
+        }, 1500);
+      } else {
+        setMessage({ type: 'success', text: 'Currículo salvo com sucesso!' });
+        
+        if (location.state?.fromProfile) {
+          navigate('/home', { 
+            state: { fromProfile: true }, 
+            replace: true 
+          });
+        }
+      }
+    } catch (error: any) {
+      setMessage({
+        type: 'error',
+        text: error.message || 'Erro ao salvar currículo',
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   return {
     currentUser,
     profile,
     loading,
     saving,
-    uploadingFile,
     message,
     isFirstAccess,
     
@@ -697,6 +686,7 @@ export function useProfileScreen() {
     removeLanguage,
     
     handleSubmit,
+    handleSubmitResumeData,
     dismissMessage,
     
     isEditing,

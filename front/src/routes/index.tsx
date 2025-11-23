@@ -9,6 +9,7 @@ import { UserRole, useAuth } from '../contexts/AuthContext';
 import { AdminPanel } from '../components/AdminPanel/AdminPanel';
 import { LinkedInSearchScreen } from '../screens/LinkedInSearch/LinkedInSearch';
 import { ProfileScreen } from '../screens/ProfileScreen/ProfileScreen';
+import { ErrorBoundary } from '../components/ErrorBoundary';
 import LandingPage from '../screens/landing/App';
 
 import { ResultadosPage } from '../presentation/pages/Resultados/Resultados';
@@ -87,9 +88,11 @@ export const AppRoutes: React.FC = () => {
       <Route
         path="/profile"
         element={
-          <ProtectedRoute requireAuth={true} skipProfileCheck={true} key={`profile-${userKey}`}>
-            <ProfileScreen key={userKey} />
-          </ProtectedRoute>
+          <ErrorBoundary>
+            <ProtectedRoute requireAuth={true} skipProfileCheck={true} key={`profile-${userKey}`}>
+              <ProfileScreen key={userKey} />
+            </ProtectedRoute>
+          </ErrorBoundary>
         }
       />
     </Routes>
