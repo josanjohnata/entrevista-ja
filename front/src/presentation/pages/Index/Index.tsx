@@ -315,16 +315,7 @@ export const IndexPage: React.FC = () => {
   }, [currentUser, loadProfile]);
 
   useEffect(() => {
-    const fromProfile = location.state?.fromProfile;
-    if (fromProfile && currentUser && db && !isFirstLoad.current) {
-      loadProfile(true);
-      window.history.replaceState({}, document.title);
-    }
-  }, [location.state, currentUser, loadProfile]);
-
-  useEffect(() => {
-    console.log('useEffect [location.state] executado', { state: location.state });
-    const state = location.state as { optimizedResume?: string; fromResults?: boolean } | null;
+    const state = location.state as { optimizedResume?: string; fromResults?: boolean; fromProfile?: boolean } | null;
     
     if (state?.fromResults && state?.optimizedResume) {
       console.log('✅ Aplicando currículo otimizado');
@@ -334,18 +325,16 @@ export const IndexPage: React.FC = () => {
       setCurriculo(state.optimizedResume);
       toast.success('✨ Currículo atualizado com as sugestões!');
       
-      setTimeout(() => {
-        navigate(location.pathname, { replace: true, state: {} });
-      }, 100);
-    } else {
-      console.log('❌ Condições não atendidas:', {
-        fromResults: state?.fromResults,
-        hasOptimizedResume: !!state?.optimizedResume,
-        optimizedResumeLength: state?.optimizedResume?.length
-      });
+      window.history.replaceState({}, document.title);
+      return;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.state]);
+    
+    const fromProfile = state?.fromProfile;
+    if (fromProfile && currentUser && db && !isFirstLoad.current) {
+      loadProfile(true);
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state, currentUser, loadProfile]);
 
   useEffect(() => {
     if (vaga.trim()) {
