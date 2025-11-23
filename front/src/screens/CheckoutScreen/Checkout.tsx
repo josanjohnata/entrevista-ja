@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 
-const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!);
-
 type Props = {
   email: string;
 }
@@ -28,7 +26,7 @@ function Checkout({ email }: Props) {
 
   return (
     <EmbeddedCheckoutProvider
-      stripe={stripePromise}
+      stripe={loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!)}
       options={{ clientSecret: token }}
     >
       <EmbeddedCheckout />

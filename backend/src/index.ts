@@ -1,5 +1,5 @@
 // 1. Importações (agora usando 'import' do ES6)
-import express, { Request, Response, NextFunction } from "express";
+import express, { Request, Response } from "express";
 import Stripe from "stripe";
 import cors from 'cors';
 
@@ -57,6 +57,10 @@ app.post("/create-checkout-session", async (req: Request, res: Response) => {
     payment_method_types: ["card"],
   })
   res.json(session);
+});
+
+app.post("/webhook", (req: Request, res: Response) => {
+  return {}
 });
 
 // 5. Inicia o servidor

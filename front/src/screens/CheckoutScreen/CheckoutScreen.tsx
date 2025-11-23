@@ -1,5 +1,5 @@
 "use client"
-import { useState } from "react";
+import { FormEvent } from "react";
 import { useCreateUserWithEmailAndPassword } from 'react-firebase-hooks/auth';
 import {
   CheckoutGrid,
@@ -20,18 +20,16 @@ import {
   TermsLabel
 } from "./styles";
 import { FiCheck, FiUser } from "react-icons/fi";
-import { auth } from "../../lib/firebase";
+import { auth, db } from "../../lib/firebase";
 import { FeaturesList, FeatureItem } from "../../components/sections/Features/styles";
 import { useSearchParams } from "react-router-dom";
 import Checkout from "./Checkout";
+import { doc, setDoc } from "firebase/firestore";
 
 
 export const CheckoutScreen: React.FC = () => {
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
   const [params, setParams] = useSearchParams();
-
-  const isRegisterPlan = params.get("registerPlan");
+  const isRegisterPlan = params.get("email");
 
   const [
     createUserWithEmailAndPassword,
@@ -49,10 +47,26 @@ export const CheckoutScreen: React.FC = () => {
     'Cancele quando quiser',
   ];
 
-  const handleSignIn = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    await createUserWithEmailAndPassword(email, password);
-    setParams("?registerPlan=true");
+  const handleSignIn = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const form = new FormData(event.currentTarget);
+    const formData = Object.fromEntries(form.entries()) as Record<string, string>;
+
+    const userCredential = await createUserWithEmailAndPassword(
+      formData.email,
+      formData.password
+    );
+
+    if (userCredential) {
+      await setDoc(doc(db, "users", userCredential.user.uid), {
+        nome: formData.name,
+        cpf: formData.doc || null,
+        email: formData.email,
+        criadoEm: new Date(),
+        planId: null,
+      });
+      setParams(`?email=${formData.email}&userid=${userCredential.user.uid}`);
+    }
   }
 
   return (
@@ -62,25 +76,25 @@ export const CheckoutScreen: React.FC = () => {
           <MainTitle>Assine o Plano</MainTitle>
           <CheckoutGrid>
             <FormColumn>
-              {isRegisterPlan ? <Checkout email={email} /> :
+              {isRegisterPlan ? <Checkout email={isRegisterPlan} /> :
                 <form onSubmit={handleSignIn}>
                   <FormSection>
                     <SectionHeader><FiUser /> Dados</SectionHeader>
                     <InputGroup>
                       <label htmlFor="name">Nome Completo</label>
-                      <Input id="name" type="text" placeholder="João da Silva" required />
+                      <Input id="name" type="text" placeholder="João da Silva" name="name" required />
                     </InputGroup>
                     <InputGroup>
                       <label htmlFor="email">Email</label>
-                      <Input id="email" type="email" placeholder="joao@email.com" onChange={(e) => setEmail(e.target.value)} required />
+                      <Input id="email" type="email" placeholder="joao@email.com" name="email" required />
                     </InputGroup>
                     <InputGroup>
                       <label htmlFor="password">Senha</label>
-                      <Input id="password" type="password" placeholder="********" onChange={(e) => setPassword(e.target.value)} required />
+                      <Input id="password" type="password" placeholder="********" name="password" required />
                     </InputGroup>
                     <InputGroup>
                       <label htmlFor="document">CPF (Opcional)</label>
-                      <Input id="document" type="text" placeholder="123.456.789-00" />
+                      <Input id="document" type="text" placeholder="123.456.789-00" name="doc" />
                     </InputGroup>
                   </FormSection>
                   <FormSection>
