@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { TrendingUp, AlertCircle, Lightbulb, FileText, Home, User, CheckCircle, Award, Sparkles, BarChart3, Target } from 'lucide-react';
-import { useAuth } from '../../../contexts/AuthContext';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../../../lib/firebase';
 
 import { Button } from '../../../presentation/components/Button';
 import { Badge } from '../../../presentation/components/Badge';
@@ -25,36 +22,14 @@ interface ImprovementData {
   analysisCount: number;
 }
 
-interface UserProfile {
-  displayName?: string;
-  professionalTitle?: string;
-  about?: string;
-  experiences?: Array<{
-    company: string;
-    position: string;
-    description: string;
-    startDate: string;
-    endDate?: string;
-    isCurrent: boolean;
-  }>;
-  education?: Array<{
-    institution: string;
-    degree: string;
-    fieldOfStudy: string;
-    description?: string;
-  }>;
-}
-
 export const ResultadosPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
   const analysis = location.state?.analysis as AnalysisResult;
   const improvementData = location.state?.improvementData as ImprovementData | undefined;
   const currentResume = location.state?.currentResume as string | undefined;
   const showOptimizedView = improvementData && improvementData.currentScore >= 75;
   const isLowCompatibility = analysis?.placar < 40;
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -63,25 +38,6 @@ export const ResultadosPage: React.FC = () => {
       navigate('/');
     }
   }, [analysis, navigate]);
-
-  useEffect(() => {
-    const loadProfile = async () => {
-      if (!currentUser || !db) return;
-      
-      try {
-        const profileRef = doc(db, 'profiles', currentUser.uid);
-        const profileSnap = await getDoc(profileRef);
-        
-        if (profileSnap.exists()) {
-          setUserProfile(profileSnap.data() as UserProfile);
-        }
-      } catch (error) {
-        console.error('Erro ao carregar perfil:', error);
-      }
-    };
-    
-    loadProfile();
-  }, [currentUser]);
 
   if (!analysis) {
     return null;
@@ -134,49 +90,40 @@ export const ResultadosPage: React.FC = () => {
   };
 
   const generateOptimizedResume = (): string => {
-    if (!userProfile) {
+    if (!currentResume) {
       return '';
     }
 
-    let resume = `${userProfile.displayName || 'Nome'}\n`;
-    resume += `${userProfile.professionalTitle || 'Título Profissional'}\n\n`;
+    let optimizedResume = currentResume.replace(
+      /RESUMO PROFISSIONAL\s*\n([\s\S]*?)(?=\n\n[A-Z]|\n\nEXPERIÊNCIA|$)/i,
+      `RESUMO PROFISSIONAL\n${analysis.resumoOtimizado}`
+    );
     
-    resume += `RESUMO PROFISSIONAL\n`;
-    resume += `${analysis.resumoOtimizado}\n\n`;
-    
-    if (userProfile.experiences && userProfile.experiences.length > 0) {
-      resume += `EXPERIÊNCIA PROFISSIONAL\n\n`;
-      userProfile.experiences.forEach((exp) => {
-        resume += `${exp.company} - ${exp.position}\n`;
-        resume += `${exp.startDate} - ${exp.isCurrent ? 'Atual' : exp.endDate || ''}\n`;
+    if (keywords.length > 0) {
+      const expSection = optimizedResume.match(/EXPERIÊNCIA PROFISSIONAL\s*\n([\s\S]*?)(?=\n\n[A-Z]|$)/i);
+      if (expSection) {
+        let updatedExpSection = expSection[0];
+
+        const missingKeywords = keywords.filter(kw => 
+          !updatedExpSection.toLowerCase().includes(kw.toLowerCase())
+        ).slice(0, 5);
         
-        let description = exp.description || '';
-        if (keywords.length > 0 && description) {
-          const keywordsToAdd = keywords.filter(kw => 
-            !description.toLowerCase().includes(kw.toLowerCase())
-          ).slice(0, 3);
-          
-          if (keywordsToAdd.length > 0) {
-            description += `\n\nPalavras-chave relevantes: ${keywordsToAdd.join(', ')}`;
+        if (missingKeywords.length > 0) {
+          const expBlocks = updatedExpSection.split(/\n\n(?=[A-Z])/);
+          if (expBlocks.length > 1) {
+            expBlocks[1] += `\n\n✨ Habilidades relevantes demonstradas: ${missingKeywords.join(', ')}`;
+            updatedExpSection = expBlocks.join('\n\n');
           }
         }
-        resume += `${description}\n\n`;
-      });
+        
+        optimizedResume = optimizedResume.replace(
+          /EXPERIÊNCIA PROFISSIONAL\s*\n([\s\S]*?)(?=\n\n[A-Z]|$)/i,
+          updatedExpSection
+        );
+      }
     }
     
-    if (userProfile.education && userProfile.education.length > 0) {
-      resume += `FORMAÇÃO ACADÊMICA\n\n`;
-      userProfile.education.forEach((edu) => {
-        resume += `${edu.institution}\n`;
-        resume += `${edu.degree}${edu.fieldOfStudy ? ` - ${edu.fieldOfStudy}` : ''}\n`;
-        if (edu.description) {
-          resume += `${edu.description}\n`;
-        }
-        resume += `\n`;
-      });
-    }
-    
-    return resume;
+    return optimizedResume;
   };
 
   return (
@@ -406,11 +353,17 @@ export const ResultadosPage: React.FC = () => {
             )}
 
             <S.ActionContainer>
-              <Button onClick={() => navigate('/home')} size="lg" variant={showOptimizedView ? "primary" : "outline"}>
+              <Button 
+                onClick={() => navigate('/home', { 
+                  state: isLowCompatibility ? { clearJobDescription: true } : undefined 
+                })} 
+                size="lg" 
+                variant={showOptimizedView || isLowCompatibility ? "primary" : "outline"}
+              >
                 <Home size={20} />
-                {showOptimizedView ? 'Analisar Nova Vaga' : 'Analisar Outra Vaga'}
+                {showOptimizedView || isLowCompatibility ? 'Analisar Nova Vaga' : 'Analisar Outra Vaga'}
               </Button>
-              {!showOptimizedView && (
+              {!showOptimizedView && !isLowCompatibility && (
                 <Button 
                   onClick={() => {
                     const optimizedResume = generateOptimizedResume();

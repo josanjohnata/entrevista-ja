@@ -251,6 +251,7 @@ export const IndexPage: React.FC = () => {
   const [loadingProfile, setLoadingProfile] = useState(true);
   const [isReloading, setIsReloading] = useState(false);
   const isFirstLoad = useRef(true);
+  const preventAutoLoad = useRef(false);
 
   const loadProfile = useCallback(async (showToast = true) => {
     if (!currentUser || !db) {
@@ -301,6 +302,12 @@ export const IndexPage: React.FC = () => {
         return;
       }
 
+      // Não carregar automaticamente se houver uma ação do usuário pendente
+      if (preventAutoLoad.current) {
+        setLoadingProfile(false);
+        return;
+      }
+
       await loadProfile(false);
       isFirstLoad.current = false;
     };
@@ -309,15 +316,23 @@ export const IndexPage: React.FC = () => {
 
     return () => {
       isMounted = false;
-      setCurriculo('');
-      setVaga('');
     };
   }, [currentUser, loadProfile]);
 
   useEffect(() => {
-    const state = location.state as { optimizedResume?: string; fromResults?: boolean; fromProfile?: boolean } | null;
+    const state = location.state as { optimizedResume?: string; fromResults?: boolean; fromProfile?: boolean; clearJobDescription?: boolean } | null;
+    
+    if (state?.clearJobDescription) {
+      preventAutoLoad.current = true;
+      setVaga('');
+      localStorage.removeItem('lastJobDescription');
+      toast.info('Campo de vaga limpo. Analise uma nova vaga!');
+      window.history.replaceState({}, document.title);
+      return;
+    }
     
     if (state?.fromResults && state?.optimizedResume) {
+      preventAutoLoad.current = true;
       setCurriculo(state.optimizedResume);
       toast.success('✨ Currículo atualizado com as sugestões!');
       
@@ -327,6 +342,7 @@ export const IndexPage: React.FC = () => {
     
     const fromProfile = state?.fromProfile;
     if (fromProfile && currentUser && db && !isFirstLoad.current) {
+      preventAutoLoad.current = false;
       loadProfile(true);
       window.history.replaceState({}, document.title);
     }
@@ -533,7 +549,10 @@ export const IndexPage: React.FC = () => {
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => loadProfile(true)}
+                      onClick={() => {
+                        preventAutoLoad.current = false;
+                        loadProfile(true);
+                      }}
                       disabled={isReloading || loadingProfile}
                     >
                       {isReloading ? (
