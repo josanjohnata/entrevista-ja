@@ -51,7 +51,9 @@ export const ResultadosPage: React.FC = () => {
   const { currentUser } = useAuth();
   const analysis = location.state?.analysis as AnalysisResult;
   const improvementData = location.state?.improvementData as ImprovementData | undefined;
+  const currentResume = location.state?.currentResume as string | undefined;
   const showOptimizedView = improvementData && improvementData.currentScore >= 75;
+  const isLowCompatibility = analysis?.placar < 40;
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -96,12 +98,43 @@ export const ResultadosPage: React.FC = () => {
     .map((keyword) => keyword.trim())
     .filter(Boolean);
 
-  const generateOptimizedResume = (): string => {
-    console.log('🔧 generateOptimizedResume chamado');
-    console.log('👤 userProfile:', userProfile ? 'existe' : 'null');
+  const extractCurrentSummary = (): string => {
+    if (!currentResume) return 'Nenhum resumo cadastrado ainda.';
     
+    const resumoMatch = currentResume.match(/RESUMO PROFISSIONAL\s*\n([\s\S]*?)(?=\n\n[A-Z]|\n\nEXPERIÊNCIA|$)/i);
+    return resumoMatch ? resumoMatch[1].trim() : 'Nenhum resumo cadastrado ainda.';
+  };
+
+  const extractCurrentExperiences = (): Array<{ company: string; position: string; description: string }> => {
+    if (!currentResume) return [];
+    
+    const expSection = currentResume.match(/EXPERIÊNCIA PROFISSIONAL\s*\n([\s\S]*?)(?=\n\n[A-Z]|$)/i);
+    if (!expSection) return [];
+    
+    const experiences: Array<{ company: string; position: string; description: string }> = [];
+    const expBlocks = expSection[1].split(/\n\n(?=[A-Z])/);
+    
+    for (const block of expBlocks.slice(0, 2)) {
+      const lines = block.trim().split('\n');
+      if (lines.length >= 2) {
+        const firstLine = lines[0];
+        const companyPosition = firstLine.split(' - ');
+        
+        if (companyPosition.length >= 2) {
+          const company = companyPosition[0].trim();
+          const position = companyPosition[1].trim();
+          const description = lines.slice(2).join('\n').trim();
+          
+          experiences.push({ company, position, description });
+        }
+      }
+    }
+    
+    return experiences;
+  };
+
+  const generateOptimizedResume = (): string => {
     if (!userProfile) {
-      console.log('❌ userProfile é null, retornando string vazia');
       return '';
     }
 
@@ -117,7 +150,6 @@ export const ResultadosPage: React.FC = () => {
         resume += `${exp.company} - ${exp.position}\n`;
         resume += `${exp.startDate} - ${exp.isCurrent ? 'Atual' : exp.endDate || ''}\n`;
         
-        // Incorpora palavras-chave na descrição
         let description = exp.description || '';
         if (keywords.length > 0 && description) {
           const keywordsToAdd = keywords.filter(kw => 
@@ -143,9 +175,6 @@ export const ResultadosPage: React.FC = () => {
         resume += `\n`;
       });
     }
-    
-    console.log('✅ Currículo gerado com', resume.length, 'caracteres');
-    console.log('📝 Primeiras 200 chars:', resume.substring(0, 200));
     
     return resume;
   };
@@ -188,6 +217,40 @@ export const ResultadosPage: React.FC = () => {
                 </S.ScoreDisplay>
               </S.ScoreContent>
             </S.ScoreCard>
+
+            {isLowCompatibility && (
+              <S.ContentCard>
+                <S.CardHeader>
+                  <S.CardIcon style={{ backgroundColor: '#ef444415', color: '#ef4444' }}>
+                    <AlertCircle />
+                  </S.CardIcon>
+                  <S.CardHeaderContent>
+                    <S.CardTitle>Baixa Compatibilidade com a Vaga</S.CardTitle>
+                    <S.CardSubtitle>
+                      Esta vaga não está alinhada com sua experiência profissional atual
+                    </S.CardSubtitle>
+                  </S.CardHeaderContent>
+                </S.CardHeader>
+                <S.CardContent>
+                  <S.SummaryText style={{ background: '#ef444410', borderColor: '#ef4444' }}>
+                    <p style={{ marginBottom: '1rem' }}>
+                      ⚠️ <strong>Não recomendamos aplicar para esta vaga.</strong>
+                    </p>
+                    <p style={{ marginBottom: '1rem' }}>
+                      Com apenas {analysis.placar}% de compatibilidade, seu currículo pode não passar pelos sistemas ATS (Applicant Tracking Systems) que filtram candidatos automaticamente.
+                    </p>
+                    <p style={{ marginBottom: '1rem' }}>
+                      <strong>Sugestões:</strong>
+                    </p>
+                    <ul style={{ paddingLeft: '1.5rem', marginBottom: '0' }}>
+                      <li>Busque vagas mais alinhadas com suas experiências em: {keywords.slice(0, 3).join(', ')}</li>
+                      <li>Desenvolva as habilidades requeridas antes de aplicar</li>
+                      <li>Considere posições de nível mais adequado ao seu perfil</li>
+                    </ul>
+                  </S.SummaryText>
+                </S.CardContent>
+              </S.ContentCard>
+            )}
 
             {showOptimizedView && (
               <S.ContentCard>
@@ -301,7 +364,7 @@ export const ResultadosPage: React.FC = () => {
                         <S.ComparisonCard variant="before">
                           <S.ComparisonTitle>Versão Atual</S.ComparisonTitle>
                           <S.ComparisonContent>
-                            {userProfile?.about || 'Nenhum resumo cadastrado ainda.'}
+                            {extractCurrentSummary()}
                           </S.ComparisonContent>
                         </S.ComparisonCard>
                         <S.ComparisonCard variant="after">
@@ -313,13 +376,13 @@ export const ResultadosPage: React.FC = () => {
                       </S.ComparisonContainer>
                     </div>
 
-                    {userProfile?.experiences && userProfile.experiences.length > 0 && (
+                    {extractCurrentExperiences().length > 0 && (
                       <div style={{ marginBottom: '2rem' }}>
                         <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                           <User size={20} />
-                          Experiências Profissionais
+                          Experiências Profissionais (Primeiras 2)
                         </h3>
-                        {userProfile.experiences.slice(0, 2).map((exp, index) => (
+                        {extractCurrentExperiences().map((exp, index) => (
                           <S.ComparisonContainer key={index} style={{ marginBottom: '1rem' }}>
                             <S.ComparisonCard variant="before">
                               <S.ComparisonTitle>{exp.company} - {exp.position}</S.ComparisonTitle>
@@ -330,7 +393,7 @@ export const ResultadosPage: React.FC = () => {
                             <S.ComparisonCard variant="after">
                               <S.ComparisonTitle>{exp.company} - {exp.position}</S.ComparisonTitle>
                               <S.ComparisonContent>
-                                {exp.description ? `${exp.description}\n\n✨ Palavras-chave incorporadas: ${keywords.slice(0, 3).join(', ')}` : 'Adicione as palavras-chave relevantes na descrição'}
+                                {exp.description ? `${exp.description}\n\n✨ Palavras-chave sugeridas para incorporar: ${keywords.slice(0, 3).join(', ')}` : `Adicione as palavras-chave relevantes na descrição: ${keywords.slice(0, 3).join(', ')}`}
                               </S.ComparisonContent>
                             </S.ComparisonCard>
                           </S.ComparisonContainer>
@@ -350,13 +413,7 @@ export const ResultadosPage: React.FC = () => {
               {!showOptimizedView && (
                 <Button 
                   onClick={() => {
-                    console.log('🚀 Botão "Aplicar Sugestões" clicado');
                     const optimizedResume = generateOptimizedResume();
-                    console.log('📦 State sendo enviado:', {
-                      optimizedResume: optimizedResume.substring(0, 100),
-                      fromResults: true,
-                      length: optimizedResume.length
-                    });
                     navigate('/home', { 
                       state: { 
                         optimizedResume,

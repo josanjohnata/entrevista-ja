@@ -81,7 +81,7 @@ const ResumePDFDocument = ({ content }: { content: string }) => {
   const sections: Array<{ title?: string; content: string[] }> = [];
   let currentSection: { title?: string; content: string[] } = { content: [] };
 
-  lines.forEach((line, index) => {
+  lines.forEach((line) => {
     const trimmed = line.trim();
     
     if (!trimmed) {
@@ -318,10 +318,6 @@ export const IndexPage: React.FC = () => {
     const state = location.state as { optimizedResume?: string; fromResults?: boolean; fromProfile?: boolean } | null;
     
     if (state?.fromResults && state?.optimizedResume) {
-      console.log('✅ Aplicando currículo otimizado');
-      console.log('📝 Primeiras 200 chars:', state.optimizedResume.substring(0, 200));
-      console.log('📏 Tamanho total:', state.optimizedResume.length);
-      
       setCurriculo(state.optimizedResume);
       toast.success('✨ Currículo atualizado com as sugestões!');
       
@@ -373,7 +369,6 @@ export const IndexPage: React.FC = () => {
       
       toast.success('Currículo PDF baixado com sucesso!');
     } catch (error) {
-      console.error('Erro ao baixar currículo:', error);
       toast.error('Erro ao gerar PDF. Tente novamente.');
     }
   };
@@ -438,8 +433,8 @@ export const IndexPage: React.FC = () => {
       if (previousAnalysis) {
         const analysisCount = (previousAnalysis.analysisCount || 1) + 1;
         
-        if (analysisCount >= 2 && currentScore >= 75) {
-          const optimizedScore = currentScore < 99 ? 99 : currentScore;
+        if (analysisCount >= 2 && (currentScore > previousAnalysis.score || currentScore >= 70)) {
+          const optimizedScore = currentScore >= 70 && currentScore < 99 ? 99 : currentScore;
           const scoreImprovement = optimizedScore - previousAnalysis.score;
           
           improvementData = {
@@ -462,12 +457,12 @@ export const IndexPage: React.FC = () => {
         state: { 
           analysis: data,
           jobHash: jobHash,
-          improvementData: improvementData
+          improvementData: improvementData,
+          currentResume: curriculo
         } 
       });
     } catch (error) {
-      console.error('Erro ao analisar currículo:', error);
-        toast.error('Ocorreu um erro ao processar sua análise. Tente novamente.');
+      toast.error('Ocorreu um erro ao processar sua análise. Tente novamente.');
     } finally {
       setIsAnalyzing(false);
     }
