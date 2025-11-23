@@ -1,6 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { TrendingUp, AlertCircle, Lightbulb, FileText, Home, User, CheckCircle, Award, Sparkles, BarChart3, Target } from 'lucide-react';
+import { useAuth } from '../../../contexts/AuthContext';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../../lib/firebase';
 
 import { Button } from '../../../presentation/components/Button';
 import { Badge } from '../../../presentation/components/Badge';
@@ -22,12 +25,33 @@ interface ImprovementData {
   analysisCount: number;
 }
 
+interface UserProfile {
+  displayName?: string;
+  about?: string;
+  experiences?: Array<{
+    company: string;
+    position: string;
+    description: string;
+    startDate: string;
+    endDate?: string;
+    isCurrent: boolean;
+  }>;
+  education?: Array<{
+    institution: string;
+    degree: string;
+    fieldOfStudy: string;
+    description?: string;
+  }>;
+}
+
 export const ResultadosPage: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const analysis = location.state?.analysis as AnalysisResult;
   const improvementData = location.state?.improvementData as ImprovementData | undefined;
   const showOptimizedView = improvementData && improvementData.currentScore >= 75;
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,6 +60,25 @@ export const ResultadosPage: React.FC = () => {
       navigate('/');
     }
   }, [analysis, navigate]);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      if (!currentUser || !db) return;
+      
+      try {
+        const profileRef = doc(db, 'profiles', currentUser.uid);
+        const profileSnap = await getDoc(profileRef);
+        
+        if (profileSnap.exists()) {
+          setUserProfile(profileSnap.data() as UserProfile);
+        }
+      } catch (error) {
+        console.error('Erro ao carregar perfil:', error);
+      }
+    };
+    
+    loadProfile();
+  }, [currentUser]);
 
   if (!analysis) {
     return null;
@@ -194,19 +237,56 @@ export const ResultadosPage: React.FC = () => {
                     <S.CardHeaderContent>
                       <S.CardTitle>Sugestões de Melhoria</S.CardTitle>
                       <S.CardSubtitle>
-                        Como reformular suas experiências para dar match com a vaga
+                        Compare seu perfil atual com as melhorias sugeridas
                       </S.CardSubtitle>
                     </S.CardHeaderContent>
                   </S.CardHeader>
                   <S.CardContent>
-                    <S.SuggestionsList>
-                      {suggestions.map((suggestion, index) => (
-                        <S.SuggestionItem key={index}>
-                          <S.SuggestionNumber>{index + 1}</S.SuggestionNumber>
-                          <S.SuggestionText>{suggestion}</S.SuggestionText>
-                        </S.SuggestionItem>
-                      ))}
-                    </S.SuggestionsList>
+                    <div style={{ marginBottom: '2rem' }}>
+                      <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <FileText size={20} />
+                        Resumo Profissional
+                      </h3>
+                      <S.ComparisonContainer>
+                        <S.ComparisonCard variant="before">
+                          <S.ComparisonTitle>Versão Atual</S.ComparisonTitle>
+                          <S.ComparisonContent>
+                            {userProfile?.about || 'Nenhum resumo cadastrado ainda.'}
+                          </S.ComparisonContent>
+                        </S.ComparisonCard>
+                        <S.ComparisonCard variant="after">
+                          <S.ComparisonTitle>Versão Otimizada</S.ComparisonTitle>
+                          <S.ComparisonContent>
+                            {analysis.resumoOtimizado}
+                          </S.ComparisonContent>
+                        </S.ComparisonCard>
+                      </S.ComparisonContainer>
+                    </div>
+
+                    {userProfile?.experiences && userProfile.experiences.length > 0 && (
+                      <div style={{ marginBottom: '2rem' }}>
+                        <h3 style={{ fontSize: '1.125rem', fontWeight: '600', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <User size={20} />
+                          Experiências Profissionais
+                        </h3>
+                        {userProfile.experiences.slice(0, 2).map((exp, index) => (
+                          <S.ComparisonContainer key={index} style={{ marginBottom: '1rem' }}>
+                            <S.ComparisonCard variant="before">
+                              <S.ComparisonTitle>{exp.company} - {exp.position}</S.ComparisonTitle>
+                              <S.ComparisonContent>
+                                {exp.description || 'Sem descrição'}
+                              </S.ComparisonContent>
+                            </S.ComparisonCard>
+                            <S.ComparisonCard variant="after">
+                              <S.ComparisonTitle>{exp.company} - {exp.position}</S.ComparisonTitle>
+                              <S.ComparisonContent>
+                                {exp.description ? `${exp.description}\n\n✨ Palavras-chave incorporadas: ${keywords.slice(0, 3).join(', ')}` : 'Adicione as palavras-chave relevantes na descrição'}
+                              </S.ComparisonContent>
+                            </S.ComparisonCard>
+                          </S.ComparisonContainer>
+                        ))}
+                      </div>
+                      )}
                   </S.CardContent>
                 </S.ContentCard>
               </>

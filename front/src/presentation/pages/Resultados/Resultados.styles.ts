@@ -276,3 +276,70 @@ export const ActionContainer = styled.div`
   }
 `;
 
+export const ComparisonContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: ${({ theme }) => theme.spacing.lg};
+  margin-top: ${({ theme }) => theme.spacing.md};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+export const ComparisonCard = styled.div<{ variant?: 'before' | 'after' }>`
+  background: ${({ theme, variant }) => 
+    variant === 'before' 
+      ? `${theme.colors.error.main}05` 
+      : `${theme.colors.success.main}05`
+  };
+  border: 2px solid ${({ theme, variant }) => 
+    variant === 'before' 
+      ? `${theme.colors.error.main}20` 
+      : `${theme.colors.success.main}20`
+  };
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: ${({ variant }) => variant === 'before' ? '"ANTES"' : '"DEPOIS"'};
+    position: absolute;
+    top: ${({ theme }) => theme.spacing.sm};
+    right: ${({ theme }) => theme.spacing.sm};
+    font-size: ${({ theme }) => theme.typography.fontSize.xs};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.bold};
+    padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
+    border-radius: ${({ theme }) => theme.borderRadius.md};
+    background: ${({ theme, variant }) => 
+      variant === 'before' 
+        ? theme.colors.error.main 
+        : theme.colors.success.main
+    };
+    color: white;
+  }
+`;
+
+export const ComparisonTitle = styled.h4`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+`;
+
+export const ComparisonContent = styled.div`
+  font-size: ${({ theme }) => theme.typography.fontSize.sm};
+  line-height: ${({ theme }) => theme.typography.lineHeight.relaxed};
+  color: ${({ theme }) => theme.colors.text.primary};
+  white-space: pre-wrap;
+  min-height: 100px;
+  
+  strong {
+    color: ${({ theme }) => theme.colors.text.primary};
+    font-weight: ${({ theme }) => theme.typography.fontWeight.semibold};
+  }
+`;
+
