@@ -21,6 +21,7 @@ interface DeveloperFormValues {
   seniority?: string;
   skip?: number;
   exclude?: string;
+  location?: string;
 }
 
 const reverseSeniorityMap: Record<string, string> = {
@@ -59,6 +60,7 @@ export const LinkedInSearchScreen: React.FC = () => {
       seniority: 'Junior',
       skip: 1,
       exclude: '',
+      location: '',
     },
   });
 
@@ -75,9 +77,10 @@ export const LinkedInSearchScreen: React.FC = () => {
     
     if (isJobsTab) {
       const experienceLevel = data.seniority ? reverseSeniorityMap[data.seniority] : '';
+      const locationParam = data.location && data.location.trim() ? `&location=${encodeURIComponent(data.location)}` : '';
       url = `https://www.linkedin.com/jobs/search/?geoId=92000000&keywords=${encodeURIComponent(keywords)}&origin=JOB_SEARCH_PAGE_SEARCH_BUTTON&refresh=true${
         experienceLevel ? `&f_E=${experienceLevel}` : ''
-      }&start=${startIndex}`;
+      }${locationParam}&start=${startIndex}`;
     } else {
       url = `https://www.linkedin.com/search/results/CONTENT/?keywords=${encodeURIComponent(keywords)}&origin=JOB_SEARCH_PAGE_SEARCH_BUTTON&refresh=true`;
     }
@@ -93,6 +96,7 @@ export const LinkedInSearchScreen: React.FC = () => {
       seniority: 'Junior',
       skip: 1,
       exclude: '',
+      location: '',
     });
   }, [reset, values.tab]);
 
@@ -181,6 +185,21 @@ export const LinkedInSearchScreen: React.FC = () => {
 
                 {values.tab === 'jobs' && (
                   <>
+                    <S.FormGroup>
+                      <Label htmlFor="location">Localização:</Label>
+                      <Controller
+                        name="location"
+                        control={control}
+                        render={({ field }) => (
+                          <Input
+                            {...field}
+                            id="location"
+                            placeholder="Ex: Brasil, São Paulo, Remoto, etc."
+                          />
+                        )}
+                      />
+                    </S.FormGroup>
+
                     <S.FormGroup>
                       <Label htmlFor="seniority">Senioridade:</Label>
                       <Controller
