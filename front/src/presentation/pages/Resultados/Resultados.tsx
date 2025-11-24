@@ -57,35 +57,81 @@ export const ResultadosPage: React.FC = () => {
   const extractCurrentSummary = (): string => {
     if (!currentResume) return 'Nenhum resumo cadastrado ainda.';
     
-    const resumoMatch = currentResume.match(/RESUMO PROFISSIONAL\s*\n([\s\S]*?)(?=\n\n[A-Z]|\n\nEXPERIÊNCIA|$)/i);
+    console.log('🔍 CurrentResume:', currentResume.substring(0, 500));
+    
+    // Tentar diferentes padrões
+    let resumoMatch = currentResume.match(/RESUMO PROFISSIONAL\s*\n([\s\S]*?)(?=\n\n[A-Z]{2,}|\n\nEXPERIÊNCIA|$)/i);
+    
+    if (!resumoMatch) {
+      // Tentar sem exigir quebra dupla
+      resumoMatch = currentResume.match(/RESUMO PROFISSIONAL\s*\n([\s\S]*?)(?=\nEXPERIÊNCIA|$)/i);
+    }
+    
+    if (!resumoMatch) {
+      // Tentar pegar tudo até encontrar uma seção em maiúsculas
+      resumoMatch = currentResume.match(/RESUMO PROFISSIONAL[:\s]*\n(.*?)(?=\n[A-Z\s]{10,}|$)/is);
+    }
+    
+    console.log('📝 Match encontrado:', resumoMatch ? 'SIM' : 'NÃO');
+    if (resumoMatch) {
+      console.log('✅ Conteúdo extraído:', resumoMatch[1].substring(0, 200));
+    }
+    
     return resumoMatch ? resumoMatch[1].trim() : 'Nenhum resumo cadastrado ainda.';
   };
 
   const extractCurrentExperiences = (): Array<{ company: string; position: string; description: string }> => {
-    if (!currentResume) return [];
+    if (!currentResume) {
+      console.log('❌ currentResume vazio');
+      return [];
+    }
     
-    const expSection = currentResume.match(/EXPERIÊNCIA PROFISSIONAL\s*\n([\s\S]*?)(?=\n\n[A-Z]|$)/i);
-    if (!expSection) return [];
+    console.log('🔍 Procurando experiências no currículo...');
+    
+    // Tentar diferentes padrões
+    let expSection = currentResume.match(/EXPERIÊNCIA PROFISSIONAL\s*\n([\s\S]*?)(?=\n\n[A-Z]{10,}|FORMAÇÃO|HABILIDADES|IDIOMAS|$)/i);
+    
+    if (!expSection) {
+      expSection = currentResume.match(/EXPERIÊNCIA PROFISSIONAL[:\s]*\n([\s\S]*?)(?=\n[A-Z\s]{10,}|$)/i);
+    }
+    
+    if (!expSection) {
+      console.log('❌ Seção de experiência não encontrada');
+      return [];
+    }
+    
+    console.log('✅ Seção encontrada. Primeiros 300 chars:', expSection[1].substring(0, 300));
     
     const experiences: Array<{ company: string; position: string; description: string }> = [];
-    const expBlocks = expSection[1].split(/\n\n(?=[A-Z])/);
     
-    for (const block of expBlocks.slice(0, 2)) {
-      const lines = block.trim().split('\n');
-      if (lines.length >= 2) {
-        const firstLine = lines[0];
-        const companyPosition = firstLine.split(' - ');
+    // Dividir por empresas (linhas que começam com letra maiúscula e tem " - ")
+    const expText = expSection[1];
+    const blocks = expText.split(/\n(?=[A-Z])/);
+    
+    console.log('📦 Blocos encontrados:', blocks.length);
+    
+    for (const block of blocks.slice(0, 2)) {
+      const lines = block.trim().split('\n').filter(l => l.trim());
+      
+      if (lines.length === 0) continue;
+      
+      const firstLine = lines[0];
+      console.log('🏢 Processando linha:', firstLine);
+      
+      // Procurar por padrão "Empresa - Cargo"
+      const match = firstLine.match(/(.+?)\s*-\s*(.+)/);
+      
+      if (match) {
+        const company = match[1].trim();
+        const position = match[2].trim();
+        const description = lines.slice(2).join('\n').trim();
         
-        if (companyPosition.length >= 2) {
-          const company = companyPosition[0].trim();
-          const position = companyPosition[1].trim();
-          const description = lines.slice(2).join('\n').trim();
-          
-          experiences.push({ company, position, description });
-        }
+        console.log('✅ Experiência encontrada:', { company, position });
+        experiences.push({ company, position, description });
       }
     }
     
+    console.log('📊 Total de experiências extraídas:', experiences.length);
     return experiences;
   };
 
@@ -289,15 +335,36 @@ export const ResultadosPage: React.FC = () => {
                   </S.CardContent>
                 </S.ContentCard>
 
+                {analysis.sugestoesMelhoria && (
+                  <S.ContentCard>
+                    <S.CardHeader>
+                      <S.CardIcon style={{ backgroundColor: '#8b5cf615', color: '#8b5cf6' }}>
+                        <Sparkles />
+                      </S.CardIcon>
+                      <S.CardHeaderContent>
+                        <S.CardTitle>Sugestões da IA</S.CardTitle>
+                        <S.CardSubtitle>
+                          Como reescrever seu currículo para esta vaga específica
+                        </S.CardSubtitle>
+                      </S.CardHeaderContent>
+                    </S.CardHeader>
+                    <S.CardContent>
+                      <S.SummaryText style={{ whiteSpace: 'pre-line', lineHeight: '1.8' }}>
+                        {analysis.sugestoesMelhoria}
+                      </S.SummaryText>
+                    </S.CardContent>
+                  </S.ContentCard>
+                )}
+
                 <S.ContentCard>
                   <S.CardHeader>
                     <S.CardIcon>
                       <Lightbulb />
                     </S.CardIcon>
                     <S.CardHeaderContent>
-                      <S.CardTitle>Sugestões de Melhoria</S.CardTitle>
+                      <S.CardTitle>Comparação Detalhada</S.CardTitle>
                       <S.CardSubtitle>
-                        Compare seu perfil atual com as melhorias sugeridas
+                        Veja como seu perfil atual se compara com o otimizado
                       </S.CardSubtitle>
                     </S.CardHeaderContent>
                   </S.CardHeader>

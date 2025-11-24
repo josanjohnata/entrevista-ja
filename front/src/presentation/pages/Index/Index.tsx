@@ -431,8 +431,13 @@ export const IndexPage: React.FC = () => {
         } else if (error.message?.includes('402')) {
           toast.error('Créditos insuficientes. Adicione créditos em Settings → Workspace → Usage.');
         } else {
-          throw error;
+          toast.error(`Erro ao processar análise: ${error.message || 'Erro desconhecido'}`);
         }
+        return;
+      }
+
+      if (!data) {
+        toast.error('Resposta vazia do servidor. Tente novamente.');
         return;
       }
 
