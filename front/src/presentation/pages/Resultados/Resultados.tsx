@@ -1,6 +1,18 @@
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { TrendingUp, AlertCircle, Lightbulb, FileText, Home, User, CheckCircle, Award, Sparkles, BarChart3, Target } from 'lucide-react';
+import {
+  TrendingUp,
+  AlertCircle,
+  Lightbulb,
+  FileText,
+  Home,
+  User,
+  CheckCircle,
+  Award,
+  Sparkles,
+  BarChart3,
+  Target
+} from 'lucide-react';
 
 import { Button } from '../../../presentation/components/Button';
 import { Badge } from '../../../presentation/components/Badge';
@@ -54,64 +66,64 @@ export const ResultadosPage: React.FC = () => {
     .map((keyword) => keyword.trim())
     .filter(Boolean);
 
-  const extractCurrentSummary = (): string => {
-    if (!currentResume) return 'Nenhum resumo cadastrado ainda.';
+  // const extractCurrentSummary = (): string => {
+  //   if (!currentResume) return 'Nenhum resumo cadastrado ainda.';
     
-    let resumoMatch = currentResume.match(/RESUMO PROFISSIONAL[:\s]*\n([\s\S]*?)(?=\n\n[A-Z\s]{10,}|EXPERIÊNCIA|FORMAÇÃO|$)/i);
+  //   let resumoMatch = currentResume.match(/RESUMO PROFISSIONAL[:\s]*\n([\s\S]*?)(?=\n\n[A-Z\s]{10,}|EXPERIÊNCIA|FORMAÇÃO|$)/i);
     
-    if (!resumoMatch) {
-      resumoMatch = currentResume.match(/RESUMO PROFISSIONAL[:\s]*\n(.*?)(?=\nEXPERIÊNCIA|$)/is);
-    }
+  //   if (!resumoMatch) {
+  //     resumoMatch = currentResume.match(/RESUMO PROFISSIONAL[:\s]*\n(.*?)(?=\nEXPERIÊNCIA|$)/is);
+  //   }
     
-    return resumoMatch ? resumoMatch[1].trim() : currentResume.split('\n\n')[2] || 'Nenhum resumo cadastrado ainda.';
-  };
+  //   return resumoMatch ? resumoMatch[1].trim() : currentResume.split('\n\n')[2] || 'Nenhum resumo cadastrado ainda.';
+  // };
 
-  const extractCurrentExperiences = (): Array<{ company: string; position: string; description: string }> => {
-    if (!currentResume) return [];
+  // const extractCurrentExperiences = (): Array<{ company: string; position: string; description: string }> => {
+  //   if (!currentResume) return [];
     
-    const expSection = currentResume.match(/EXPERIÊNCIA PROFISSIONAL[:\s]*\n([\s\S]*?)(?=\n\n[A-Z\s]{10,}|FORMAÇÃO|HABILIDADES|IDIOMAS|$)/i);
+  //   const expSection = currentResume.match(/EXPERIÊNCIA PROFISSIONAL[:\s]*\n([\s\S]*?)(?=\n\n[A-Z\s]{10,}|FORMAÇÃO|HABILIDADES|IDIOMAS|$)/i);
     
-    if (!expSection) return [];
+  //   if (!expSection) return [];
     
-    const experiences: Array<{ company: string; position: string; description: string }> = [];
-    const expText = expSection[1].trim();
+  //   const experiences: Array<{ company: string; position: string; description: string }> = [];
+  //   const expText = expSection[1].trim();
     
-    const lines = expText.split('\n');
-    let currentExp: { position: string; company: string; description: string } | null = null;
+  //   const lines = expText.split('\n');
+  //   let currentExp: { position: string; company: string; description: string } | null = null;
     
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i].trim();
-      if (!line) continue;
+  //   for (let i = 0; i < lines.length; i++) {
+  //     const line = lines[i].trim();
+  //     if (!line) continue;
       
-      const titleMatch = line.match(/^([^-\d]+?)\s*-\s*([^-]+)$/);
+  //     const titleMatch = line.match(/^([^-\d]+?)\s*-\s*([^-]+)$/);
       
-      if (titleMatch && !line.match(/\d{2}\/\d{4}/)) {
-        if (currentExp && experiences.length < 2) {
-          experiences.push(currentExp);
-        }
+  //     if (titleMatch && !line.match(/\d{2}\/\d{4}/)) {
+  //       if (currentExp && experiences.length < 2) {
+  //         experiences.push(currentExp);
+  //       }
         
-        currentExp = {
-          position: titleMatch[1].trim(),
-          company: titleMatch[2].trim(),
-          description: ''
-        };
-      } else if (currentExp) {
-        if (!line.match(/\d{2}\/\d{4}/) && !line.match(/^[A-Z][a-z]+,?\s*[A-Z]/)) {
-          if (currentExp.description) {
-            currentExp.description += '\n' + line;
-          } else {
-            currentExp.description = line;
-          }
-        }
-      }
-    }
+  //       currentExp = {
+  //         position: titleMatch[1].trim(),
+  //         company: titleMatch[2].trim(),
+  //         description: ''
+  //       };
+  //     } else if (currentExp) {
+  //       if (!line.match(/\d{2}\/\d{4}/) && !line.match(/^[A-Z][a-z]+,?\s*[A-Z]/)) {
+  //         if (currentExp.description) {
+  //           currentExp.description += '\n' + line;
+  //         } else {
+  //           currentExp.description = line;
+  //         }
+  //       }
+  //     }
+  //   }
     
-    if (currentExp && experiences.length < 2) {
-      experiences.push(currentExp);
-    }
+  //   if (currentExp && experiences.length < 2) {
+  //     experiences.push(currentExp);
+  //   }
     
-    return experiences;
-  };
+  //   return experiences;
+  // };
 
   const generateOptimizedResume = (): string => {
     if (!currentResume) {
@@ -329,10 +341,10 @@ export const ResultadosPage: React.FC = () => {
                   <S.ContentCard>
                     <S.CardHeader>
                       <S.CardIcon style={{ backgroundColor: '#8b5cf615', color: '#8b5cf6' }}>
-                        <Sparkles />
+                        <Lightbulb />
                       </S.CardIcon>
                       <S.CardHeaderContent>
-                        <S.CardTitle>Sugestões da IA</S.CardTitle>
+                        <S.CardTitle>Comparação Detalhada</S.CardTitle>
                         <S.CardSubtitle>
                           Como reescrever seu currículo para esta vaga específica
                         </S.CardSubtitle>
@@ -346,7 +358,7 @@ export const ResultadosPage: React.FC = () => {
                   </S.ContentCard>
                 )}
 
-                <S.ContentCard>
+                {/* <S.ContentCard>
                   <S.CardHeader>
                     <S.CardIcon>
                       <Lightbulb />
@@ -405,7 +417,7 @@ export const ResultadosPage: React.FC = () => {
                       </div>
                       )}
                   </S.CardContent>
-                </S.ContentCard>
+                </S.ContentCard> */}
               </>
             )}
 
