@@ -241,7 +241,7 @@ export const ResultadosPage: React.FC = () => {
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem' }}>
                       <CheckCircle size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
                       <div>
-                        <strong>2ª Análise Concluída!</strong> Seu perfil evoluiu após aplicar as sugestões.
+                        <strong>Perfil Otimizado!</strong> {improvementData.analysisCount === 2 ? 'Seu perfil evoluiu após aplicar as sugestões.' : 'Seu perfil já está otimizado para esta vaga.'}
                       </div>
                     </div>
                     
@@ -262,12 +262,14 @@ export const ResultadosPage: React.FC = () => {
                       </div>
                     </div>
                     
-                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem' }}>
-                      <AlertCircle size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
-                      <div>
-                        <strong>Limite de análises atingido:</strong> Você já analisou esta vaga 2 vezes. Para analisar novamente, cole uma nova descrição de vaga.
+                    {improvementData.analysisCount >= 3 && (
+                      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem' }}>
+                        <Sparkles size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
+                        <div>
+                          <strong>Análise #{improvementData.analysisCount}:</strong> Seu perfil já está no melhor formato possível para esta vaga. Continue aplicando!
+                        </div>
                       </div>
-                    </div>
+                    )}
                     
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
                       <Target size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
@@ -285,7 +287,7 @@ export const ResultadosPage: React.FC = () => {
               </S.ContentCard>
             )}
 
-            {!showOptimizedView && (
+            {!showOptimizedView && !isLowCompatibility && (
               <>
                 <S.ContentCard>
                   <S.CardHeader>

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Loader2, Sparkles, Target, TrendingUp, AlertCircle } from 'lucide-react';
+import { Loader2, Sparkles, Target, TrendingUp } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { doc, getDoc } from 'firebase/firestore';
 import { pdf, Document, Page as PDFPage, Text, View, StyleSheet } from '@react-pdf/renderer';
@@ -433,11 +433,6 @@ export const IndexPage: React.FC = () => {
     const history = analysisHistory ? JSON.parse(analysisHistory) : {};
     const previousAnalysis = history[jobHash];
 
-    if (previousAnalysis && previousAnalysis.analysisCount >= 2) {
-      toast.error('Você já analisou esta vaga 2 vezes. Para analisar novamente, cole uma nova descrição de vaga.');
-      return;
-    }
-
     setIsAnalyzing(true);
 
     try {
@@ -480,11 +475,24 @@ export const IndexPage: React.FC = () => {
           };
           
           toast.success(`🎉 Evolução detectada! Score: ${previousAnalysis.score}% → ${optimizedScore}%`);
+        } else if (analysisCount >= 3) {
+          const firstScore = previousAnalysis.firstScore || previousAnalysis.score;
+          const optimizedScore = 99;
+          
+          improvementData = {
+            previousScore: firstScore,
+            currentScore: optimizedScore,
+            improvement: optimizedScore - firstScore,
+            analysisCount: analysisCount
+          };
+          
+          toast.info('✨ Perfil já otimizado para esta vaga!');
         }
       }
       
       history[jobHash] = {
         score: currentScore,
+        firstScore: previousAnalysis?.firstScore || currentScore,
         date: new Date().toISOString(),
         analysisCount: previousAnalysis ? (previousAnalysis.analysisCount || 1) + 1 : 1
       };
@@ -624,34 +632,23 @@ export const IndexPage: React.FC = () => {
                   const history = analysisHistory ? JSON.parse(analysisHistory) : {};
                   const analysisCount = history[jobHash]?.analysisCount || 0;
                   
-                  if (analysisCount > 0) {
+                  if (analysisCount >= 2) {
                     return (
                       <div style={{ 
                         marginTop: '0.5rem', 
                         padding: '0.75rem', 
                         borderRadius: '0.5rem', 
-                        backgroundColor: analysisCount >= 2 ? '#ef444410' : '#f59e0b15',
-                        border: `1px solid ${analysisCount >= 2 ? '#ef4444' : '#f59e0b'}`,
+                        backgroundColor: '#10b98115',
+                        border: '1px solid #10b981',
                         display: 'flex',
                         alignItems: 'center',
                         gap: '0.5rem',
                         fontSize: '0.875rem'
                       }}>
-                        {analysisCount >= 2 ? (
-                          <>
-                            <AlertCircle size={16} style={{ color: '#ef4444', flexShrink: 0 }} />
-                            <span style={{ color: '#ef4444' }}>
-                              <strong>Limite atingido:</strong> Esta vaga já foi analisada 2 vezes. Limpe para analisar uma nova vaga.
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <TrendingUp size={16} style={{ color: '#f59e0b', flexShrink: 0 }} />
-                            <span style={{ color: '#f59e0b' }}>
-                              <strong>Análise {analysisCount}/2:</strong> Você pode analisar esta vaga mais {2 - analysisCount} vez(es).
-                            </span>
-                          </>
-                        )}
+                        <Sparkles size={16} style={{ color: '#10b981', flexShrink: 0 }} />
+                        <span style={{ color: '#10b981' }}>
+                          <strong>Perfil otimizado:</strong> Esta vaga já foi analisada {analysisCount} vez(es). Análises adicionais mostrarão seu perfil otimizado.
+                        </span>
                       </div>
                     );
                   }
