@@ -57,81 +57,59 @@ export const ResultadosPage: React.FC = () => {
   const extractCurrentSummary = (): string => {
     if (!currentResume) return 'Nenhum resumo cadastrado ainda.';
     
-    console.log('🔍 CurrentResume:', currentResume.substring(0, 500));
-    
-    // Tentar diferentes padrões
-    let resumoMatch = currentResume.match(/RESUMO PROFISSIONAL\s*\n([\s\S]*?)(?=\n\n[A-Z]{2,}|\n\nEXPERIÊNCIA|$)/i);
+    let resumoMatch = currentResume.match(/RESUMO PROFISSIONAL[:\s]*\n([\s\S]*?)(?=\n\n[A-Z\s]{10,}|EXPERIÊNCIA|FORMAÇÃO|$)/i);
     
     if (!resumoMatch) {
-      // Tentar sem exigir quebra dupla
-      resumoMatch = currentResume.match(/RESUMO PROFISSIONAL\s*\n([\s\S]*?)(?=\nEXPERIÊNCIA|$)/i);
+      resumoMatch = currentResume.match(/RESUMO PROFISSIONAL[:\s]*\n(.*?)(?=\nEXPERIÊNCIA|$)/is);
     }
     
-    if (!resumoMatch) {
-      // Tentar pegar tudo até encontrar uma seção em maiúsculas
-      resumoMatch = currentResume.match(/RESUMO PROFISSIONAL[:\s]*\n(.*?)(?=\n[A-Z\s]{10,}|$)/is);
-    }
-    
-    console.log('📝 Match encontrado:', resumoMatch ? 'SIM' : 'NÃO');
-    if (resumoMatch) {
-      console.log('✅ Conteúdo extraído:', resumoMatch[1].substring(0, 200));
-    }
-    
-    return resumoMatch ? resumoMatch[1].trim() : 'Nenhum resumo cadastrado ainda.';
+    return resumoMatch ? resumoMatch[1].trim() : currentResume.split('\n\n')[2] || 'Nenhum resumo cadastrado ainda.';
   };
 
   const extractCurrentExperiences = (): Array<{ company: string; position: string; description: string }> => {
-    if (!currentResume) {
-      console.log('❌ currentResume vazio');
-      return [];
-    }
+    if (!currentResume) return [];
     
-    console.log('🔍 Procurando experiências no currículo...');
+    const expSection = currentResume.match(/EXPERIÊNCIA PROFISSIONAL[:\s]*\n([\s\S]*?)(?=\n\n[A-Z\s]{10,}|FORMAÇÃO|HABILIDADES|IDIOMAS|$)/i);
     
-    // Tentar diferentes padrões
-    let expSection = currentResume.match(/EXPERIÊNCIA PROFISSIONAL\s*\n([\s\S]*?)(?=\n\n[A-Z]{10,}|FORMAÇÃO|HABILIDADES|IDIOMAS|$)/i);
-    
-    if (!expSection) {
-      expSection = currentResume.match(/EXPERIÊNCIA PROFISSIONAL[:\s]*\n([\s\S]*?)(?=\n[A-Z\s]{10,}|$)/i);
-    }
-    
-    if (!expSection) {
-      console.log('❌ Seção de experiência não encontrada');
-      return [];
-    }
-    
-    console.log('✅ Seção encontrada. Primeiros 300 chars:', expSection[1].substring(0, 300));
+    if (!expSection) return [];
     
     const experiences: Array<{ company: string; position: string; description: string }> = [];
+    const expText = expSection[1].trim();
     
-    // Dividir por empresas (linhas que começam com letra maiúscula e tem " - ")
-    const expText = expSection[1];
-    const blocks = expText.split(/\n(?=[A-Z])/);
+    const lines = expText.split('\n');
+    let currentExp: { position: string; company: string; description: string } | null = null;
     
-    console.log('📦 Blocos encontrados:', blocks.length);
-    
-    for (const block of blocks.slice(0, 2)) {
-      const lines = block.trim().split('\n').filter(l => l.trim());
+    for (let i = 0; i < lines.length; i++) {
+      const line = lines[i].trim();
+      if (!line) continue;
       
-      if (lines.length === 0) continue;
+      const titleMatch = line.match(/^([^-\d]+?)\s*-\s*([^-]+)$/);
       
-      const firstLine = lines[0];
-      console.log('🏢 Processando linha:', firstLine);
-      
-      // Procurar por padrão "Empresa - Cargo"
-      const match = firstLine.match(/(.+?)\s*-\s*(.+)/);
-      
-      if (match) {
-        const company = match[1].trim();
-        const position = match[2].trim();
-        const description = lines.slice(2).join('\n').trim();
+      if (titleMatch && !line.match(/\d{2}\/\d{4}/)) {
+        if (currentExp && experiences.length < 2) {
+          experiences.push(currentExp);
+        }
         
-        console.log('✅ Experiência encontrada:', { company, position });
-        experiences.push({ company, position, description });
+        currentExp = {
+          position: titleMatch[1].trim(),
+          company: titleMatch[2].trim(),
+          description: ''
+        };
+      } else if (currentExp) {
+        if (!line.match(/\d{2}\/\d{4}/) && !line.match(/^[A-Z][a-z]+,?\s*[A-Z]/)) {
+          if (currentExp.description) {
+            currentExp.description += '\n' + line;
+          } else {
+            currentExp.description = line;
+          }
+        }
       }
     }
     
-    console.log('📊 Total de experiências extraídas:', experiences.length);
+    if (currentExp && experiences.length < 2) {
+      experiences.push(currentExp);
+    }
+    
     return experiences;
   };
 
@@ -263,21 +241,31 @@ export const ResultadosPage: React.FC = () => {
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem' }}>
                       <CheckCircle size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
                       <div>
-                        <strong>Análise #{improvementData.analysisCount}</strong> - Seu perfil já está otimizado para esta vaga específica!
+                        <strong>2ª Análise Concluída!</strong> Seu perfil evoluiu após aplicar as sugestões.
                       </div>
                     </div>
                     
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem' }}>
                       <BarChart3 size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
                       <div>
-                        <strong>Evolução:</strong> {improvementData.previousScore}% → {improvementData.currentScore}% (+{improvementData.improvement} pontos)
+                        <strong>Evolução do Score:</strong> {improvementData.previousScore}% → {improvementData.currentScore}% ({improvementData.improvement > 0 ? '+' : ''}{improvementData.improvement} pontos)
                       </div>
                     </div>
                     
                     <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem' }}>
                       <Lightbulb size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
                       <div>
-                        Com {improvementData.currentScore}% de compatibilidade, seu currículo tem grandes chances de passar pela triagem automática desta vaga.
+                        {improvementData.currentScore >= 70 
+                          ? `Com ${improvementData.currentScore}% de compatibilidade, seu currículo tem excelentes chances de passar pela triagem automática desta vaga!`
+                          : `Você melhorou ${improvementData.improvement} pontos! Continue otimizando seu perfil para aumentar ainda mais suas chances.`
+                        }
+                      </div>
+                    </div>
+                    
+                    <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', marginBottom: '1rem' }}>
+                      <AlertCircle size={20} style={{ flexShrink: 0, marginTop: '0.125rem' }} />
+                      <div>
+                        <strong>Limite de análises atingido:</strong> Você já analisou esta vaga 2 vezes. Para analisar novamente, cole uma nova descrição de vaga.
                       </div>
                     </div>
                     
@@ -286,9 +274,9 @@ export const ResultadosPage: React.FC = () => {
                       <div>
                         <strong>Próximos passos:</strong>
                         <ul style={{ marginTop: '0.5rem', paddingLeft: '1.5rem' }}>
-                          <li>Revise seu perfil para garantir que tudo está atualizado</li>
-                          <li>Use o resumo otimizado ao aplicar para esta vaga</li>
-                          <li>Para melhorar ainda mais, adicione novas experiências ou certificações relevantes ao seu perfil</li>
+                          <li>Baixe seu currículo otimizado usando o botão abaixo</li>
+                          <li>Use-o ao aplicar para esta vaga</li>
+                          <li>Continue aprimorando seu perfil com novas experiências e certificações</li>
                         </ul>
                       </div>
                     </div>
@@ -399,13 +387,13 @@ export const ResultadosPage: React.FC = () => {
                         {extractCurrentExperiences().map((exp, index) => (
                           <S.ComparisonContainer key={index} style={{ marginBottom: '1rem' }}>
                             <S.ComparisonCard variant="before">
-                              <S.ComparisonTitle>{exp.company} - {exp.position}</S.ComparisonTitle>
+                              <S.ComparisonTitle>{exp.position} - {exp.company}</S.ComparisonTitle>
                               <S.ComparisonContent>
                                 {exp.description || 'Sem descrição'}
                               </S.ComparisonContent>
                             </S.ComparisonCard>
                             <S.ComparisonCard variant="after">
-                              <S.ComparisonTitle>{exp.company} - {exp.position}</S.ComparisonTitle>
+                              <S.ComparisonTitle>{exp.position} - {exp.company}</S.ComparisonTitle>
                               <S.ComparisonContent>
                                 {exp.description ? `${exp.description}\n\n✨ Palavras-chave sugeridas para incorporar: ${keywords.slice(0, 3).join(', ')}` : `Adicione as palavras-chave relevantes na descrição: ${keywords.slice(0, 3).join(', ')}`}
                               </S.ComparisonContent>
