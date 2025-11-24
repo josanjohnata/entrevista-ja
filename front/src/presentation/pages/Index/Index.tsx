@@ -463,19 +463,7 @@ export const IndexPage: React.FC = () => {
       if (previousAnalysis) {
         const analysisCount = (previousAnalysis.analysisCount || 1) + 1;
         
-        if (analysisCount === 2) {
-          const optimizedScore = currentScore >= 70 && currentScore < 99 ? 99 : currentScore;
-          const scoreImprovement = optimizedScore - previousAnalysis.score;
-          
-          improvementData = {
-            previousScore: previousAnalysis.score,
-            currentScore: optimizedScore,
-            improvement: scoreImprovement,
-            analysisCount: analysisCount
-          };
-          
-          toast.success(`🎉 Evolução detectada! Score: ${previousAnalysis.score}% → ${optimizedScore}%`);
-        } else if (analysisCount >= 3) {
+        if (analysisCount >= 2) {
           const firstScore = previousAnalysis.firstScore || previousAnalysis.score;
           const optimizedScore = 99;
           
@@ -486,7 +474,11 @@ export const IndexPage: React.FC = () => {
             analysisCount: analysisCount
           };
           
-          toast.info('✨ Perfil já otimizado para esta vaga!');
+          if (analysisCount === 2) {
+            toast.success(`🎉 Perfil otimizado! Score: ${firstScore}% → ${optimizedScore}%`);
+          } else {
+            toast.info('✨ Perfil já otimizado para esta vaga!');
+          }
         }
       }
       
@@ -626,34 +618,6 @@ export const IndexPage: React.FC = () => {
                   onChange={(e) => setVaga(e.target.value)}
                   rows={10}
                 />
-                {vaga.trim() && (() => {
-                  const jobHash = generateJobHash(vaga);
-                  const analysisHistory = localStorage.getItem('analysisHistory');
-                  const history = analysisHistory ? JSON.parse(analysisHistory) : {};
-                  const analysisCount = history[jobHash]?.analysisCount || 0;
-                  
-                  if (analysisCount >= 2) {
-                    return (
-                      <div style={{ 
-                        marginTop: '0.5rem', 
-                        padding: '0.75rem', 
-                        borderRadius: '0.5rem', 
-                        backgroundColor: '#10b98115',
-                        border: '1px solid #10b981',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.5rem',
-                        fontSize: '0.875rem'
-                      }}>
-                        <Sparkles size={16} style={{ color: '#10b981', flexShrink: 0 }} />
-                        <span style={{ color: '#10b981' }}>
-                          <strong>Perfil otimizado:</strong> Esta vaga já foi analisada {analysisCount} vez(es). Análises adicionais mostrarão seu perfil otimizado.
-                        </span>
-                      </div>
-                    );
-                  }
-                  return null;
-                })()}
                 <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
                   <Button
                     type="button"

@@ -6,7 +6,6 @@ import {
   Lightbulb,
   FileText,
   Home,
-  User,
   CheckCircle,
   Award,
   Sparkles,
@@ -41,7 +40,7 @@ export const ResultadosPage: React.FC = () => {
   const improvementData = location.state?.improvementData as ImprovementData | undefined;
   const currentResume = location.state?.currentResume as string | undefined;
   const showOptimizedView = improvementData && improvementData.currentScore >= 75;
-  const isLowCompatibility = analysis?.placar < 40;
+  const isLowCompatibility = analysis?.placar < 50;
 
   useEffect(() => {
     window.scrollTo(0, 0);
