@@ -24,7 +24,7 @@ import { auth, db } from "../../lib/firebase";
 import { FeaturesList, FeatureItem } from "../../components/sections/Features/styles";
 import { useSearchParams } from "react-router-dom";
 import Checkout from "./Checkout";
-import { doc, setDoc } from "firebase/firestore";
+import { addDoc, collection } from "firebase/firestore";
 
 
 export const CheckoutScreen: React.FC = () => {
@@ -58,13 +58,14 @@ export const CheckoutScreen: React.FC = () => {
     );
 
     if (userCredential) {
-      await setDoc(doc(db, "users", userCredential.user.uid), {
+      await addDoc(collection(db, "users", userCredential.user.uid), {
         nome: formData.name,
         cpf: formData.doc || null,
         email: formData.email,
         criadoEm: new Date(),
         planId: null,
       });
+
       setParams(`?email=${formData.email}&userid=${userCredential.user.uid}`);
     }
   }
