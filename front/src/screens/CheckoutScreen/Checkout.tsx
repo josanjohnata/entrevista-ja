@@ -4,9 +4,10 @@ import { loadStripe } from '@stripe/stripe-js';
 
 type Props = {
   email: string;
+  userId: string;
 }
 
-function Checkout({ email }: Props) {
+function Checkout({ email, userId }: Props) {
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
@@ -14,7 +15,7 @@ function Checkout({ email }: Props) {
       const resp = await fetch('http://localhost:7777/create-checkout-session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email })
+        body: JSON.stringify({ email, userId })
       });
       const json = await resp.json();
       setToken(json?.client_secret);

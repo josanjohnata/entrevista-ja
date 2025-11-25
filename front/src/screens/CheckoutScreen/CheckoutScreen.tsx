@@ -30,6 +30,7 @@ import { addDoc, collection } from "firebase/firestore";
 export const CheckoutScreen: React.FC = () => {
   const [params, setParams] = useSearchParams();
   const isRegisterPlan = params.get("email");
+  const userId = params.get("userid");
 
   const [
     createUserWithEmailAndPassword,
@@ -77,7 +78,7 @@ export const CheckoutScreen: React.FC = () => {
           <MainTitle>Assine o Plano</MainTitle>
           <CheckoutGrid>
             <FormColumn>
-              {isRegisterPlan ? <Checkout email={isRegisterPlan} /> :
+              {isRegisterPlan && userId ? <Checkout email={isRegisterPlan} userId={userId} /> :
                 <form onSubmit={handleSignIn}>
                   <FormSection>
                     <SectionHeader><FiUser /> Dados</SectionHeader>
