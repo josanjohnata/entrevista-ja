@@ -97,8 +97,11 @@ app.post(
     // 1. Cria uma referência para a coleção 'users'
     const usersRef = collection(db, "users");
 
-    // 2. Cria a consulta: Selecione onde o campo "email" é igual (==) ao valor
-    const q = query(usersRef, where("customerID", "==", (event.data.object as Stripe.Checkout.Session)?.id));
+    const session = event.data.object as Stripe.Checkout.Session;
+    const userId = session.metadata?.userId;
+
+    // 2. Cria a consulta: Selecione onde o campo "userID" é igual (==) ao valor
+    const q = query(usersRef, where("userID", "==", userId));
 
     // 3. Executa a busca
     const querySnapshot = await getDocs(q);
@@ -109,18 +112,12 @@ app.post(
     // =======================
 
     switch (event.type) {
-
       // --------------------
       //  PAGAMENTO COMPLETO
       // --------------------
       case "checkout.session.completed": {
-        const session = event.data.object as Stripe.Checkout.Session;
 
-        const userId = session.metadata?.userId;
-
-        if (!userId) break;
-
-        await addDoc(collection(db, "users", userId, "payments", session.id), {
+        await addDoc(collection(db, "users", docID, "payments", session.id), {
           status: "paid",
           amount: session.amount_total,
           subscriptionId: session.subscription,
@@ -137,10 +134,6 @@ app.post(
       // --------------------
       case "customer.subscription.created": {
         const subscription = event.data.object as Stripe.Subscription;
-
-        const customerId = subscription.customer as string;
-
-        if (!customerId) break;
 
         await setDoc(
           doc(db, "users", docID, "payments", subscription.id),
@@ -163,10 +156,6 @@ app.post(
       // --------------------
       case "customer.subscription.updated": {
         const subscription = event.data.object as Stripe.Subscription;
-
-        const customerId = subscription.customer as string;
-
-        if (!customerId) break;
 
         await setDoc(
           doc(db, "users", docID, "subscriptions", subscription.id),
@@ -217,7 +206,6 @@ app.post(
           },
           { merge: true }
         );
-
 
         console.log("✅ Pagamento da invoice confirmado:", invoice.id);
         break;
