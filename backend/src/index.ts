@@ -1,22 +1,28 @@
-// 1. Importações (agora usando 'import' do ES6)
 import express, { Request, Response } from "express";
 import Stripe from "stripe";
 import cors from 'cors';
+import bodyParser from "body-parser";
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
-// 2. Inicializa a aplicação Express
 const app = express();
 
-// 3. Define a porta (com tipo 'number')
-const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 7777;
+//Marlon
 
-// 4. Middleware para "parsear" JSON
-app.use(express.json());
+
+const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+
+// Middleware para health check e rotas que não precisam de raw body
+// app.use(express.json());
 app.use(cors());
 
-// Health
 app.post("/create-checkout-session", async (req: Request, res: Response) => {
+  const { email, userId } = req.body;
+
+  if (!email || !userId) {
+    return res.status(400).json({ error: 'Email and userId are required.' });
+  }
+
   const plan = {
     id: "prod_TOtu3U0m2c5IxG",
     name: "Starter",
@@ -30,40 +36,92 @@ app.post("/create-checkout-session", async (req: Request, res: Response) => {
       "Analytics básico",
       "Comunidade de usuários",
     ],
-  }
-  const session = await stripe.checkout.sessions.create({
-    ui_mode: "embedded",
-    redirect_on_completion: "never",
-    customer_email: req?.body?.email,
-    line_items: [
-      {
-        price_data: {
-          currency: "BRL",
-          product_data: {
-            name: plan.name,
-            description: plan.description,
-          },
-          unit_amount: plan.priceInCents,
-          recurring: {
-            interval: plan.interval as "month" | "year",
-            interval_count: 1,
-          },
-        },
-        quantity: 1,
+  };
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      ui_mode: "embedded",
+      redirect_on_completion: "never",
+      customer_email: email,
+      metadata: {
+        userId: userId,
       },
-    ],
-    mode: "subscription",
-    // Para adicionar PIX (boleto), ative em: https://dashboard.stripe.com/account/payments/settings
-    payment_method_types: ["card"],
-  })
-  res.json(session);
+      line_items: [
+        {
+          price_data: {
+            currency: "BRL",
+            product_data: {
+              name: plan.name,
+              description: plan.description,
+            },
+            unit_amount: plan.priceInCents,
+            recurring: {
+              interval: plan.interval as "month" | "year",
+            },
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "subscription",
+      payment_method_types: ["card"],
+    });
+    res.json(session);
+  } catch (error) {
+    console.error("Error creating checkout session:", error);
+    res.status(500).json({ error: 'Failed to create checkout session.' });
+  }
 });
 
-app.post("/webhook", (req: Request, res: Response) => {
-  return {}
+
+// Rota de webhook do Stripe precisa do raw body para verificar a assinatura
+app.post("/webhook", bodyParser.raw({ type: "application/json" }), async (req: Request, res: Response) => {
+  const endpointSecret = "whsec_a5e0723cdbaa4653f3c794fa1757249c9e2418ea7caf5ada5aded9bba26d05f9"; // vindo do painel do Stripe
+
+  const signature = req.headers["stripe-signature"]!;
+
+  let event: Stripe.Event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      req.body,
+      signature,
+      endpointSecret
+    );
+    console.log(event);
+
+  } catch (err: any) {
+    console.error("⚠️  Erro no webhook:", err.message);
+    return res.status(400).send(`Webhook error: ${err.message}`);
+  }
+
+  // -------------------------------
+  // 🔥 EVENTOS DO STRIPE TRATADOS
+  // -------------------------------
+
+  switch (event.type) {
+    case "checkout.session.completed":
+      const session = event.data.object;
+      console.log("Pagamento aprovado, session:", session);
+      // Exemplo: marcar pedido como pago no banco
+      break;
+
+    case "payment_intent.succeeded":
+      const paymentIntent = event.data.object;
+      console.log("PaymentIntent pago:", paymentIntent.id);
+      break;
+
+    case "payment_intent.payment_failed":
+      const failedIntent = event.data.object;
+      console.log("Pagamento falhou:", failedIntent.id);
+      break;
+
+    default:
+      console.log(`Evento não tratado: ${event.type}`);
+  }
+
+  res.status(200).json({ received: true });
 });
 
-// 5. Inicia o servidor
 app.listen(PORT, () => {
   console.log(`🚀 Servidor rodando em http://localhost:${PORT}`);
 });

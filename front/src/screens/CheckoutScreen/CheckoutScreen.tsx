@@ -62,8 +62,6 @@ export const CheckoutScreen: React.FC = () => {
       await addDoc(collection(db, "users"), {
         nome: formData.name,
         cpf: formData.doc || null,
-        email: formData.email,
-        criadoEm: new Date(),
         planId: null,
         userId: userCredential.user.uid,
       });
