@@ -59,12 +59,13 @@ export const CheckoutScreen: React.FC = () => {
     );
 
     if (userCredential) {
-      await addDoc(collection(db, "users", userCredential.user.uid), {
+      await addDoc(collection(db, "users"), {
         nome: formData.name,
         cpf: formData.doc || null,
         email: formData.email,
         criadoEm: new Date(),
         planId: null,
+        userId: userCredential.user.uid,
       });
 
       setParams(`?email=${formData.email}&userid=${userCredential.user.uid}`);
